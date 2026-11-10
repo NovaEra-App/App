@@ -831,15 +831,15 @@
                 document.getElementById('loader-tasks').classList.add('hidden');
             }
         }
-
-        function popularMenusIniciais() {
+function popularMenusIniciais() {
             const selPosto = document.getElementById('posto-trabalho');
             if (window.clientesDB.length > 0) {
                 selPosto.innerHTML = window.clientesDB.map(c => `<option value="${c.nome}" ${c.nome === clienteAtivo ? 'selected' : ''}>${c.nome}</option>`).join('');
             }
 
-            // Inclui OPERADOR e ENCARREGADO do contrato atual
-            const colabsPosto = window.colaboradoresTodosDB.filter(c => !c.cliente_padrao || c.cliente_padrao === clienteAtivo || ['ENCARREGADO', 'SUPERVISOR'].includes(c.perfil));
+            // TRAVA: Puxa APENAS quem é Operador ou Encarregado (exclui Supervisores da execução física)
+            const colabsPosto = window.colaboradoresTodosDB.filter(c => c.ativo !== false && (!c.cliente_padrao || c.cliente_padrao === clienteAtivo) && ['OPERADOR', 'ENCARREGADO'].includes(c.perfil));
+            
             const nomesValidos = colabsPosto.map(c => c.nome);
             equipeLogada = equipeLogada.filter(n => nomesValidos.includes(n));
 
