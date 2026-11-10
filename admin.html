@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <title>Nova Era • Central de Governança & Supervisão</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 5rem); }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(249, 115, 22, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
+        .highlight-edit { animation: pulse-ring 1.2s ease-out; border-color: #f97316 !important; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 relative min-h-screen select-none">
+
+    <!-- ================================================================= -->
+    <!-- TELA DE LOGIN CORPORATIVO (BLOQUEIO INICIAL)                      -->
+    <!-- ================================================================= -->
+    <div id="login-screen" class="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl text-white">
+            <div class="flex items-center gap-3 mb-6">
+                <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 20 L20 80 L35 80 L35 45 L70 70 L80 60 L45 35 Z" fill="url(#grad1)"/>
+                    <path d="M55 25 L85 45 L95 35 L65 15 Z" fill="url(#grad1)"/>
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FF9A44;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#FC6076;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-tight">Nova Era Serviços</h1>
+                    <p class="text-xs text-slate-400 font-medium">Central de Governança & Supervisão</p>
+                </div>
+            </div>
+
+            <div class="space-y-3.5">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Usuário / Login</label>
+                    <input type="text" id="login-user" autocapitalize="none" placeholder="Digite seu usuário" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Senha de Acesso</label>
+                    <input type="password" id="login-pass" onkeypress="if(event.key==='Enter') realizarLoginAdmin()" placeholder="••••••••" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none focus:border-orange-500">
+                </div>
+                <p id="login-erro" class="hidden text-xs font-bold text-red-400 bg-red-950/60 border border-red-800/60 p-2.5 rounded-xl text-center">
+                    Credenciais inválidas ou usuário inativo.
+                </p>
+                <button onclick="realizarLoginAdmin()" id="btn-login" class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-extrabold py-3 rounded-xl text-sm shadow-lg shadow-orange-500/20 transition-all mt-2">
+                    Acessar Painel de Controle
+                </button>
+            </div>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-4">Ambiente Restrito • Auditoria em Tempo Real</p>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- PAINEL ADMINISTRATIVO DESBLOQUEADO                                -->
+    <!-- ================================================================= -->
+    <div id="admin-app" class="hidden">
+        <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
+            <div class="max-w-xl mx-auto px-4 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <h1 class="font-extrabold text-sm tracking-tight text-white">Central de Governança</h1>
+                            <span id="admin-perfil-badge" class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-orange-500 text-white uppercase">ADMIN</span>
+                        </div>
+                        <p id="admin-user-name" class="text-[11px] text-slate-400 font-medium">Supervisão</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="carregarDadosAdmin()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl border border-slate-700" title="Sincronizar Agora">
+                        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="logoutAdmin()" class="bg-red-950/60 hover:bg-red-900 text-red-300 border border-red-800/50 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Sair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-xl mx-auto pb-safe pt-3.5 px-3.5 space-y-3.5">
+
+            <!-- SELETOR GLOBAL DE CONTRATO / CLIENTE -->
+            <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Contrato em Inspeção</p>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <i data-lucide="building-2" class="w-4 h-4 text-orange-500"></i>
+                        <select id="admin-select-cliente" onchange="trocarClienteAdmin(this.value)" class="text-base font-extrabold text-slate-900 bg-transparent border-none p-0 focus:ring-0 cursor-pointer outline-none">
+                            <option value="Miss Silvia">Miss Silvia</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span id="admin-teto-badge" class="text-xs font-extrabold bg-slate-100 text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200">Teto: 6h/dia</span>
+                </div>
+            </div>
+
+            <!-- MENU DE 5 ABAS DE GESTÃO -->
+            <div class="grid grid-cols-5 gap-1 bg-slate-200/90 p-1 rounded-2xl border border-slate-300/60">
+                <button onclick="selecionarAbaAdmin('auditoria')" id="btn-tab-auditoria" class="py-2 px-1 rounded-xl text-[10px] font-extrabold bg-slate-900 text-white shadow-sm transition-all">
+                    📊 Auditoria
+                </button>
+                <button onclick="selecionarAbaAdmin('tarefas')" id="btn-tab-tarefas" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
+                    📋 Tarefas
+                </button>
+                <button onclick="selecionarAbaAdmin('equipe')" id="btn-tab-equipe" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
+                    👷 Equipe
+                </button>
+                <button onclick="selecionarAbaAdmin('contratos')" id="btn-tab-contratos" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
+                    🏢 Contratos
+                </button>
+                <button onclick="selecionarAbaAdmin('chat')" id="btn-tab-chat" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative">
+                    💬 Canais
+                    <span id="admin-chat-dot" class="hidden w-2 h-2 rounded-full bg-red-500 absolute top-1 right-1"></span>
+                </button>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ABA 1: AUDITORIA, PLANTÃO, FTE E CAIXA-PRETA              -->
+            <!-- ========================================================= -->
+            <div id="view-auditoria" class="space-y-3.5">
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Carga Mensal / FTE</p>
+                        <p class="text-lg font-extrabold text-slate-900 mt-0.5" id="kpi-fte-horas">0h / 0h</p>
+                        <p class="text-[11px] font-semibold text-emerald-600 mt-0.5" id="kpi-fte-pessoas">FTE Técnico: 1.0 op.</p>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Clima & Conformidade</p>
+                        <p class="text-lg font-extrabold text-slate-900 mt-0.5" id="kpi-conformidade">100%</p>
+                        <p class="text-[11px] font-semibold text-blue-600 mt-0.5" id="kpi-chuva-resumo">Chuva hoje: 0m</p>
+                    </div>
+                </div>
+
+                <!-- Controle de Plantão e Presença do Posto -->
+                <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-sm space-y-2.5">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] font-extrabold text-orange-400 uppercase tracking-wider">Status do Posto Hoje</p>
+                            <h4 class="text-xs font-bold text-white mt-0.5" id="gestao-status-plantao">Verificando...</h4>
+                            <p class="text-[10px] text-slate-400 mt-0.5" id="gestao-sub-plantao"></p>
+                        </div>
+                        <i data-lucide="calendar-clock" class="w-5 h-5 text-orange-400"></i>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="autorizarPlantaoExcepcional()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold text-[11px] py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-sm">
+                            <i data-lucide="unlock" class="w-3.5 h-3.5"></i> Liberar Plantão Hoje
+                        </button>
+                        <button onclick="encerrarOuBloquearPostoHoje()" class="bg-slate-800 hover:bg-red-950 hover:text-red-300 text-slate-300 border border-slate-700 font-bold text-[11px] py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5">
+                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Fechar / Limpar Hoje
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                    <p class="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1">Relatórios & Ferramentas</p>
+                    <button onclick="copiarResumoWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 shadow-sm">
+                        <i data-lucide="share-2" class="w-4 h-4"></i> Copiar Relatório do Turno (WhatsApp)
+                    </button>
+                    <button onclick="importarPlanilhaGoogleCSV()" id="btn-import-csv" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 border border-slate-300">
+                        <i data-lucide="database-backup" class="w-4 h-4 text-orange-500"></i> Sincronizar Grade da Planilha Google (CSV)
+                    </button>
+                </div>
+
+                <!-- Lista de Execuções Auditadas -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-slate-800">Execuções, Vistorias e Atividades em Curso</h4>
+                        <span class="text-[10px] font-bold text-slate-500">Tempo Líquido vs. SLA</span>
+                    </div>
+                    <div id="gestao-execucoes-list" class="divide-y divide-slate-100 max-h-96 overflow-y-auto"></div>
+                </div>
+
+                <!-- Caixa-Preta: Tentativas Rejeitadas (Erro 422) -->
+                <div class="bg-white rounded-2xl border border-red-200 shadow-sm overflow-hidden">
+                    <div class="bg-red-50 px-3.5 py-2.5 border-b border-red-100 flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-red-900 flex items-center gap-1.5">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-red-600"></i> Caixa-Preta • Fotos Rejeitadas (Erro 422)
+                        </h4>
+                        <span id="badge-rejeicoes" class="text-[10px] font-extrabold bg-red-200 text-red-900 px-2 py-0.5 rounded-full">0</span>
+                    </div>
+                    <div id="gestao-rejeicoes-list" class="divide-y divide-slate-100 max-h-60 overflow-y-auto"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ABA 2: GESTÃO DE TAREFAS E RECORRÊNCIA DO CONTRATO        -->
+            <!-- ========================================================= -->
+            <div id="view-tarefas" class="hidden space-y-3.5">
+                <div id="card-form-tarefa" class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 transition-all">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase" id="form-tarefa-titulo">➕ Cadastrar Nova Tarefa</h4>
+                        <button onclick="limparFormTarefaGestao()" class="text-[10px] font-extrabold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200">+ Limpar / Nova</button>
+                    </div>
+                    <input type="hidden" id="edit-tarefa-id">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Setor / Local</label>
+                            <input type="text" id="edit-tarefa-setor" placeholder="Ex: Fumódromo" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Espécie / Alvo</label>
+                            <input type="text" id="edit-tarefa-especie" placeholder="Ex: Grama Amendoim" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Descrição da Atividade</label>
+                        <input type="text" id="edit-tarefa-nome" placeholder="Ex: Poda de contenção e limpeza" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Recorrência</label>
+                            <select id="edit-tarefa-freq" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2 py-2 text-xs font-bold">
+                                <option value="Seg a Sex">Seg a Sex</option>
+                                <option value="Seg, Qua, Sex">Seg, Qua, Sex</option>
+                                <option value="Ter, Qui">Ter, Qui</option>
+                                <option value="Seg">Toda Segunda</option>
+                                <option value="Ter">Toda Terça</option>
+                                <option value="Qua">Toda Quarta</option>
+                                <option value="Qui">Toda Quinta</option>
+                                <option value="Sex">Toda Sexta</option>
+                                <option value="Quinzenal">Quinzenal</option>
+                                <option value="1x/mês">1x/mês (Mensal)</option>
+                                <option value="Quadrimestral">Quadrimestral</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">SLA (Minutos)</label>
+                            <input type="number" id="edit-tarefa-min" value="45" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Prioridade</label>
+                            <select id="edit-tarefa-prio" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2 py-2 text-xs font-bold">
+                                <option value="1">1 • VIP Manhã</option>
+                                <option value="2" selected>2 • Rotina</option>
+                                <option value="3">3 • Baixa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer">
+                            <input type="checkbox" id="edit-tarefa-chuva" checked class="rounded text-orange-500 w-4 h-4"> Permite fazer com chuva
+                        </label>
+                        <button onclick="salvarTarefaGestao()" id="btn-salvar-tarefa" class="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
+                            Salvar Tarefa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-slate-800">Grade de Atividades deste Contrato</h4>
+                        <span class="text-[10px] text-slate-500">Clique em Configurar para editar</span>
+                    </div>
+                    <div id="gestao-lista-tarefas-crud" class="divide-y divide-slate-100"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ABA 3: GESTÃO DE EFETIVO (INCLUINDO FUNÇÃO ENCARREGADO)   -->
+            <!-- ========================================================= -->
+            <div id="view-equipe" class="hidden space-y-3.5">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <h4 class="text-xs font-extrabold text-slate-900 uppercase">➕ Cadastrar Novo Colaborador</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Nome Completo / Operacional</label>
+                            <input type="text" id="novo-colab-nome" placeholder="Ex: Leandro" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Posto Alocado</label>
+                            <select id="novo-colab-posto" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2 py-2 text-xs font-bold"></select>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 items-end">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Função / Cargo</label>
+                            <select id="novo-colab-perfil" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                                <option value="OPERADOR">Operador de Campo (Jardineiro)</option>
+                                <option value="ENCARREGADO">Encarregado de Equipe</option>
+                                <option value="SUPERVISOR">Supervisor Operacional</option>
+                                <option value="GESTOR">Gestor de Contrato</option>
+                            </select>
+                        </div>
+                        <button onclick="adicionarColaboradorGestao()" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
+                            + Adicionar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-slate-800">Quadro Geral de Efetivo</h4>
+                        <span class="text-[10px] text-slate-500">Altere função, posto ou inative</span>
+                    </div>
+                    <div id="gestao-lista-equipe-crud" class="divide-y divide-slate-100"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ABA 4: GESTÃO DE CONTRATOS / CLIENTES                     -->
+            <!-- ========================================================= -->
+            <div id="view-contratos" class="hidden space-y-3.5">
+                <div id="card-form-contrato" class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 transition-all">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase" id="form-contrato-titulo">➕ Cadastrar Novo Contrato / Cliente</h4>
+                        <button onclick="limparFormContratoGestao()" class="text-[10px] font-extrabold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200">+ Limpar / Novo</button>
+                    </div>
+                    <input type="hidden" id="edit-cli-id">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Nome do Condomínio/Posto</label>
+                            <input type="text" id="edit-cli-nome" placeholder="Ex: Miss Silvia" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Endereço</label>
+                            <input type="text" id="edit-cli-end" placeholder="Av. Faria Lima, 4100" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Teto Diário (h)</label>
+                            <input type="number" step="0.5" id="edit-cli-teto" value="6" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Raio GPS (m)</label>
+                            <input type="number" id="edit-cli-raio" value="300" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Código Interno</label>
+                            <input type="text" id="edit-cli-pin" value="2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Latitude (Sede)</label>
+                            <input type="text" id="edit-cli-lat" placeholder="-23.5888" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Longitude (Sede)</label>
+                            <input type="text" id="edit-cli-lng" placeholder="-46.6819" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div class="flex gap-2 pt-1">
+                        <button type="button" onclick="usarGpsAtualNoContrato()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold text-[11px] py-2.5 px-3 rounded-xl flex-1 flex items-center justify-center gap-1">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-500"></i> Capturar Meu GPS Atual
+                        </button>
+                        <button type="button" onclick="salvarContratoGestao()" id="btn-salvar-contrato" class="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs py-2.5 px-4 rounded-xl shadow-sm">
+                            Salvar Contrato
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-slate-800">Contratos Cadastrados</h4>
+                        <span class="text-[10px] text-slate-500">Clique em Configurar para carregar acima</span>
+                    </div>
+                    <div id="gestao-lista-contratos-crud" class="divide-y divide-slate-100"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ABA 5: CENTRAL DE COMUNICAÇÃO (SUPERVISÃO / CLIENTE)      -->
+            <!-- ========================================================= -->
+            <div id="view-chat" class="hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[68vh]">
+                    <div class="grid grid-cols-3 gap-1 p-1.5 bg-slate-100 border-b border-slate-200">
+                        <button onclick="selecionarCanalChatAdmin('SUPERVISAO')" id="btn-adm-canal-SUPERVISAO" class="py-2 px-2 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-sm">
+                            📢 Supervisão
+                        </button>
+                        <button onclick="selecionarCanalChatAdmin('CLIENTE')" id="btn-adm-canal-CLIENTE" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600">
+                            🏢 Cliente (Joelma)
+                        </button>
+                        <button onclick="selecionarCanalChatAdmin('EQUIPE')" id="btn-adm-canal-EQUIPE" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600">
+                            💬 Equipe Local
+                        </button>
+                    </div>
+
+                    <div id="admin-chat-messages" class="flex-1 p-3 overflow-y-auto space-y-2.5 bg-slate-50"></div>
+
+                    <div class="p-2.5 bg-white border-t border-slate-200 flex items-center gap-2">
+                        <label class="flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 px-2 py-2 rounded-lg border border-red-100 cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="admin-chat-urgente" class="rounded text-red-600"> Prioridade
+                        </label>
+                        <input type="text" id="admin-chat-input" onkeypress="if(event.key==='Enter') enviarMensagemAdmin()" placeholder="Enviar orientação da Supervisão..." class="flex-1 bg-slate-100 text-xs rounded-xl px-3 py-2.5 outline-none border border-transparent focus:border-orange-500 focus:bg-white">
+                        <button onclick="enviarMensagemAdmin()" class="bg-orange-500 hover:bg-orange-600 text-white p-2.5 rounded-xl shadow-sm">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 1. CONFIGURAÇÃO SUPABASE (CENTRAL ADMIN v9.0)
+        // =========================================================================
+        const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const CSV_ATIVIDADES_LEGADO = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRN1yS8KhREsbwrhSO8WVWfAZR4dpiiqsi_7POztsYEQ7v1UNxY-LCjO4l-HDr1Yk-cbLfyOAerTsK/pub?gid=1700868305&single=true&output=csv";
+
+        let adminLogado = JSON.parse(sessionStorage.getItem('novaera_admin_session') || 'null');
+        let clienteAtivo = localStorage.getItem('novaera_admin_cliente') || 'Miss Silvia';
+        let canalChatAdmin = 'SUPERVISAO';
+
+        window.clientesDB = [];
+        window.colaboradoresTodosDB = [];
+        window.cronogramaTodosDB = [];
+        window.execucoesMesDB = [];
+        window.feriadosDB = [];
+        window.presencaHojeDB = null;
+
+        function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
+        function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+        function formatarMinutosStr(min) {
+            const mTotal = Math.max(0, Math.round(Number(min) || 0));
+            if (mTotal === 0) return '0m';
+            const h = Math.floor(mTotal / 60), m = mTotal % 60;
+            if (h > 0 && m > 0) return `${h}h ${m}m`;
+            if (h > 0) return `${h}h`;
+            return `${m}m`;
+        }
+        function ehFeriado(d) { return window.feriadosDB.includes(dataISO(d)); }
+        function diaUtil(d) { return d.getDay() !== 0 && d.getDay() !== 6 && !ehFeriado(d); }
+
+        // =========================================================================
+        // 2. AUTENTICAÇÃO REAL NA TABELA `usuarios_admin`
+        // =========================================================================
+        async function realizarLoginAdmin() {
+            const login = document.getElementById('login-user').value.trim().toLowerCase();
+            const senha = document.getElementById('login-pass').value.trim();
+            const erroEl = document.getElementById('login-erro');
+            const btn = document.getElementById('btn-login');
+
+            if (!login || !senha) return;
+            btn.disabled = true; btn.textContent = "Verificando credenciais...";
+            erroEl.classList.add('hidden');
+
+            const { data, error } = await sb.from('usuarios_admin')
+                .select('*')
+                .eq('login', login)
+                .eq('senha', senha)
+                .eq('ativo', true)
+                .limit(1);
+
+            btn.disabled = false; btn.textContent = "Acessar Painel de Controle";
+
+            if (error || !data || data.length === 0) {
+                erroEl.classList.remove('hidden');
+                return;
+            }
+
+            adminLogado = {
+                login: data[0].login,
+                nome: data[0].nome_exibicao,
+                perfil: data[0].perfil
+            };
+            sessionStorage.setItem('novaera_admin_session', JSON.stringify(adminLogado));
+            iniciarSessaoAdmin();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('novaera_admin_session');
+            adminLogado = null;
+            document.getElementById('admin-app').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-pass').value = '';
+        }
+
+        function iniciarSessaoAdmin() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('admin-app').classList.remove('hidden');
+            document.getElementById('admin-user-name').textContent = adminLogado.nome;
+            document.getElementById('admin-perfil-badge').textContent = adminLogado.perfil;
+            initIcons();
+            carregarDadosAdmin();
+            iniciarRealtimeAdmin();
+        }
+
+        // =========================================================================
+        // 3. CARREGAMENTO E SINCRONIZAÇÃO DE DADOS
+        // =========================================================================
+        async function carregarDadosAdmin() {
+            const hojeStr = dataISO();
+            const inicioMes = dataISO(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+
+            const [resCli, resColab, resCrono, resExec, resFer, resPres] = await Promise.all([
+                sb.from('clientes').select('*').order('nome', { ascending: true }),
+                sb.from('colaboradores').select('*').order('nome', { ascending: true }),
+                sb.from('cronograma_mestre').select('*').order('prioridade', { ascending: true }),
+                sb.from('execucoes_auditoria').select('*').gte('data_referencia', inicioMes).order('dh_envio_servidor', { ascending: false }),
+                sb.from('feriados_config').select('*'),
+                sb.from('presenca_posto').select('*').eq('data_turno', hojeStr).eq('cliente', clienteAtivo).order('dh_checkin_aparelho', { ascending: false }).limit(1)
+            ]);
+
+            if (resCli.data) window.clientesDB = resCli.data;
+            if (resColab.data) window.colaboradoresTodosDB = resColab.data;
+            if (resCrono.data) window.cronogramaTodosDB = resCrono.data;
+            if (resExec.data) window.execucoesMesDB = resExec.data;
+            if (resFer.data) window.feriadosDB = resFer.data.map(f => f.data_feriado);
+            window.presencaHojeDB = resPres.data?.[0] || null;
+
+            popularSeletorClientes();
+            renderizarTudoAdmin();
+        }
+
+        function popularSeletorClientes() {
+            const sel = document.getElementById('admin-select-cliente');
+            const selColab = document.getElementById('novo-colab-posto');
+            if (window.clientesDB.length > 0) {
+                const html = window.clientesDB.map(c => `<option value="${c.nome}" ${c.nome === clienteAtivo ? 'selected' : ''}>${c.nome}</option>`).join('');
+                sel.innerHTML = html;
+                if (selColab) selColab.innerHTML = html;
+            }
+            const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
+            if (cliObj) {
+                document.getElementById('admin-teto-badge').textContent = `Teto: ${cliObj.teto_diario_horas}h/dia`;
+            }
+        }
+
+        function trocarClienteAdmin(novoCli) {
+            clienteAtivo = novoCli;
+            localStorage.setItem('novaera_admin_cliente', clienteAtivo);
+            carregarDadosAdmin();
+        }
+
+        function selecionarAbaAdmin(aba) {
+            ['auditoria', 'tarefas', 'equipe', 'contratos', 'chat'].forEach(a => {
+                document.getElementById(`view-${a}`).classList.toggle('hidden', a !== aba);
+                document.getElementById(`btn-tab-${a}`).className = (a === aba)
+                    ? "py-2 px-1 rounded-xl text-[10px] font-extrabold bg-slate-900 text-white shadow-sm transition-all relative"
+                    : "py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative";
+            });
+            if (aba === 'chat') {
+                document.getElementById('admin-chat-dot').classList.add('hidden');
+                carregarChatAdmin();
+            }
+        }
+
+        function calcularMinutosChuvaHoje() {
+            if (!window.presencaHojeDB) return 0;
+            let base = Number(window.presencaHojeDB.minutos_chuva_acumulados) || 0;
+            if (window.presencaHojeDB.modo_chuva_ativo && window.presencaHojeDB.dh_inicio_chuva_atual) {
+                base += Math.max(0, Math.round((Date.now() - new Date(window.presencaHojeDB.dh_inicio_chuva_atual).getTime()) / 60000));
+            }
+            return base;
+        }
+
+        async function renderizarTudoAdmin() {
+            // 1. Status do Posto e Plantão
+            const stPlantao = document.getElementById('gestao-status-plantao');
+            const subPlantao = document.getElementById('gestao-sub-plantao');
+            const hoje = new Date();
+            const isFdsFeriado = !diaUtil(hoje);
+
+            if (window.presencaHojeDB) {
+                const h = new Date(window.presencaHojeDB.dh_checkin_aparelho).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                if (window.presencaHojeDB.status_validacao === 'TURNO_ENCERRADO') {
+                    stPlantao.textContent = `🏁 Expediente Encerrado`;
+                    subPlantao.textContent = `Equipe: ${window.presencaHojeDB.equipe_presente}`;
+                } else if (window.presencaHojeDB.status_validacao === 'AUTORIZADO_GESTAO') {
+                    stPlantao.textContent = `🔓 Plantão Liberado pela Supervisão`;
+                    subPlantao.textContent = `Aguardando chegada da equipe no local`;
+                } else {
+                    stPlantao.textContent = `🟢 Posto Ativo desde ${h} (${window.presencaHojeDB.status_validacao})`;
+                    subPlantao.textContent = `Equipe: ${window.presencaHojeDB.equipe_presente} • Dist. GPS: ${window.presencaHojeDB.distancia_metros ?? 'Subsolo'}m`;
+                }
+            } else if (isFdsFeriado) {
+                stPlantao.textContent = "🔒 Posto Fechado (Fim de Semana / Feriado)";
+                subPlantao.textContent = "Toque em 'Liberar Plantão Hoje' caso haja escala extraordinária.";
+            } else {
+                stPlantao.textContent = "⏳ Dia Útil Normal • Aguardando Ativação da Equipe";
+                subPlantao.textContent = "Nenhum check-in registrado até o momento.";
+            }
+
+            // 2. Cálculo de FTE Mensal e Conformidade
+            const tarefasAtivasCli = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo && t.ativo !== false);
+            let minEstimadosMes = 0;
+            tarefasAtivasCli.forEach(t => {
+                const f = (t.frequencia || '').toLowerCase();
+                const min = Number(t.duracao_minutos) || 30;
+                if (f.includes('seg a sex') || f.includes('diári') || f.includes('5x')) minEstimadosMes += min * 22;
+                else if (f.includes('seg, qua, sex') || f.includes('3x')) minEstimadosMes += min * 13;
+                else if (f.includes('ter, qui') || f.includes('2x')) minEstimadosMes += min * 9;
+                else if (f.includes('quinzenal')) minEstimadosMes += min * 2;
+                else if (f.includes('mês') || f.includes('mensal') || f.includes('quadrimestral')) minEstimadosMes += min;
+                else minEstimadosMes += min * 4;
+            });
+
+            const execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
+            const execsConcluidas = execsCli.filter(e => e.status_execucao === 'CONCLUIDO');
+            const minRealizadosMes = execsConcluidas.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
+
+            const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
+            const tetoMinDia = (cliObj ? Number(cliObj.teto_diario_horas) : 6) * 60;
+            const fte = (minEstimadosMes / (22 * tetoMinDia)).toFixed(2);
+
+            document.getElementById('kpi-fte-horas').textContent = `${(minRealizadosMes / 60).toFixed(1)}h / ${Math.round(minEstimadosMes / 60)}h`;
+            document.getElementById('kpi-fte-pessoas').textContent = `FTE Técnico: ${fte} op.`;
+
+            const divergentes = execsConcluidas.filter(e => e.flag_auditoria !== 'CONFORME');
+            const pctConf = execsConcluidas.length > 0 ? Math.round(((execsConcluidas.length - divergentes.length) / execsConcluidas.length) * 100) : 100;
+            document.getElementById('kpi-conformidade').textContent = `${pctConf}% (${divergentes.length} flags)`;
+            document.getElementById('kpi-chuva-resumo').textContent = `Chuva hoje: ${formatarMinutosStr(calcularMinutosChuvaHoje())}`;
+
+            // 3. Lista de Execuções Auditadas
+            document.getElementById('gestao-execucoes-list').innerHTML = execsCli.slice(0, 35).map(e => {
+                let badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded ${e.flag_auditoria === 'CONFORME' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${e.flag_auditoria}</span>`;
+                if (e.status_execucao === 'PAUSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-amber-200 text-amber-900">⏸️ PAUSADO</span>`;
+                else if (e.status_execucao === 'EM_ANDAMENTO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-orange-500 text-white">🟠 EM CURSO</span>`;
+                else if (e.status_execucao === 'DISPENSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-sky-100 text-sky-800">⏭️ DISPENSADO</span>`;
+
+                const linkFotos = e.foto_depois_url
+                    ? `<a href="${e.foto_depois_url}" target="_blank" class="text-[10px] font-bold text-orange-600 underline ml-1">Ver Foto</a>`
+                    : (e.foto_antes_url ? `<a href="${e.foto_antes_url}" target="_blank" class="text-[10px] font-bold text-blue-600 underline ml-1">Foto Antes</a>` : '');
+                const pausaTxt = e.minutos_pausa_descontados > 0 ? ` (Pausa: -${e.minutos_pausa_descontados}m)` : '';
+
+                return `
+                <div class="p-3 text-xs flex justify-between items-start gap-2">
+                    <div>
+                        <p class="font-bold text-slate-800">${e.setor} • ${e.atividade}</p>
+                        <p class="text-[10px] text-slate-500">${e.equipe_executora} • Líq: <b>${e.duracao_real_min || 0}m</b>${pausaTxt} / SLA: ${e.duracao_estimada_min}m ${linkFotos}</p>
+                        <p class="text-[10px] text-slate-400 italic mt-0.5">"${e.observacao || ''}"</p>
+                    </div>
+                    <div class="flex-shrink-0">${badge}</div>
+                </div>`;
+            }).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma execução registrada neste mês.</p>`;
+
+            // 4. Caixa-Preta (Logs Erro 422)
+            const { data: logsRej } = await sb.from('logs_rejeicao').select('*').eq('cliente', clienteAtivo).order('dh_tentativa', { ascending: false }).limit(20);
+            document.getElementById('badge-rejeicoes').textContent = (logsRej || []).length;
+            document.getElementById('gestao-rejeicoes-list').innerHTML = (logsRej || []).map(l => {
+                const dh = new Date(l.dh_tentativa).toLocaleString('pt-BR');
+                return `
+                <div class="p-3 text-xs">
+                    <div class="flex justify-between font-bold text-red-800">
+                        <span>${l.operador} • ${l.motivo_tecnico}</span>
+                        <span class="text-[10px] text-slate-400">${dh}</span>
+                    </div>
+                    <p class="text-[10px] text-slate-600 mt-0.5">${l.setor} (${l.atividade}) — ${l.detalhes_exif || ''}</p>
+                </div>`;
+            }).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma foto rejeitada neste contrato.</p>`;
+
+            renderizarCrudTarefas();
+            renderizarCrudEquipe();
+            renderizarCrudContratos();
+        }
+
+        // =========================================================================
+        // 4. CONTROLE DE PLANTÃO, RELATÓRIO WHATSAPP E IMPORTADOR CSV
+        // =========================================================================
+        async function autorizarPlantaoExcepcional() {
+            const hojeStr = dataISO();
+            const reg = {
+                data_turno: hojeStr,
+                cliente: clienteAtivo,
+                equipe_presente: `Liberado por ${adminLogado?.nome || 'Supervisão'}`,
+                qtd_operadores: 1,
+                modo_checkin: 'PLANTAO_AUTORIZADO',
+                status_validacao: 'AUTORIZADO_GESTAO',
+                dh_checkin_aparelho: new Date().toISOString()
+            };
+            await sb.from('presenca_posto').delete().eq('data_turno', hojeStr).eq('cliente', clienteAtivo);
+            await sb.from('presenca_posto').insert([reg]);
+            await carregarDadosAdmin();
+            alert(`🔓 Plantão autorizado hoje para ${clienteAtivo}!`);
+        }
+
+        async function encerrarOuBloquearPostoHoje() {
+            if (!confirm(`Deseja limpar/fechar o turno de hoje do posto ${clienteAtivo}?`)) return;
+            await sb.from('presenca_posto').delete().eq('data_turno', dataISO()).eq('cliente', clienteAtivo);
+            await carregarDadosAdmin();
+        }
+
+        function copiarResumoWhatsApp() {
+            const hojeStr = dataISO();
+            const execsHoje = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && e.data_referencia === hojeStr && e.status_execucao === 'CONCLUIDO');
+            const dispensadasHoje = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && e.data_referencia === hojeStr && e.status_execucao === 'DISPENSADO');
+            const emCurso = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
+            const minHoje = execsHoje.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
+            const minChuva = calcularMinutosChuvaHoje();
+
+            const texto = `📋 *RELATÓRIO DE SUPERVISÃO — NOVA ERA*\n📍 *Contrato:* ${clienteAtivo}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n👷 *Equipe no Posto:* ${window.presencaHojeDB?.equipe_presente || 'Sem check-in'}\n✅ *Concluídas:* ${execsHoje.length} atividades\n☑️ *Vistoriadas/Dispensadas:* ${dispensadasHoje.length}\n🔄 *Em Curso/Transbordo:* ${emCurso.length}\n⏱️ *Tempo Líquido Auditado:* ${formatarMinutosStr(minHoje)}\n🌦️ *Chuva Acumulada no Dia:* ${formatarMinutosStr(minChuva)}`;
+            navigator.clipboard.writeText(texto);
+            alert("Relatório copiado! Basta colar no WhatsApp.");
+        }
+
+        async function importarPlanilhaGoogleCSV() {
+            if (!confirm(`Importar e substituir a grade do contrato ${clienteAtivo} a partir da planilha Google Sheets?`)) return;
+            const btn = document.getElementById('btn-import-csv');
+            btn.disabled = true; btn.textContent = "Importando...";
+            try {
+                const res = await fetch(CSV_ATIVIDADES_LEGADO);
+                const csv = await res.text();
+                const linhas = csv.split(/\r?\n/).map(l => l.split(','));
+                const novos = [];
+                for (let i = 1; i < linhas.length; i++) {
+                    const col = linhas[i];
+                    if (!col || col.length < 3 || !col[2]) continue;
+                    const durStr = (col[4] || '30m').trim();
+                    let min = 30;
+                    const hM = durStr.match(/(\d+)\s*h/i); const mM = durStr.match(/(\d+)\s*m/i);
+                    if (hM || mM) min = (hM ? parseInt(hM[1]) * 60 : 0) + (mM ? parseInt(mM[1]) : 0);
+                    novos.push({
+                        cliente: clienteAtivo,
+                        setor: (col[0] || 'Geral').replace(/"/g, '').trim(),
+                        ambiente: (col[1] || '').replace(/"/g, '').trim(),
+                        atividade: (col[2] || '').replace(/"/g, '').trim(),
+                        frequencia: (col[3] || 'Semanal').replace(/"/g, '').trim(),
+                        duracao_str: durStr,
+                        duracao_minutos: min,
+                        especie: (col[5] || 'Diversas').replace(/"/g, '').trim(),
+                        permite_chuva: !(col[7] || '').toLowerCase().includes('n'),
+                        prioridade: parseInt(col[8]) === 1 ? 1 : 2
+                    });
+                }
+                if (novos.length > 0) {
+                    await sb.from('cronograma_mestre').delete().eq('cliente', clienteAtivo);
+                    await sb.from('cronograma_mestre').insert(novos);
+                    alert(`${novos.length} atividades sincronizadas com sucesso!`);
+                    carregarDadosAdmin();
+                }
+            } catch (e) { alert("Erro ao importar: " + e.message); }
+            finally { btn.disabled = false; btn.textContent = "Sincronizar Grade da Planilha Google (CSV)"; }
+        }
+
+        // =========================================================================
+        // 5. CRUD DE TAREFAS (COM ROLAGEM E DESTAQUE VISUAL AO EDITAR)
+        // =========================================================================
+        function renderizarCrudTarefas() {
+            const lista = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo);
+            const el = document.getElementById('gestao-lista-tarefas-crud');
+            el.innerHTML = lista.map(t => `
+                <div class="p-3.5 flex justify-between items-center gap-2 ${t.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
+                    <div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">${t.setor}</span>
+                            <span class="text-[10px] font-bold text-orange-600">${t.frequencia} • ${t.duracao_str}</span>
+                            ${t.prioridade === 1 ? `<span class="text-[9px] font-extrabold bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded">VIP</span>` : ''}
+                        </div>
+                        <p class="text-xs font-bold text-slate-900 mt-1">${t.atividade}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button onclick='carregarTarefaNoForm(${JSON.stringify(t).replace(/'/g, "&apos;")})' class="text-[10px] font-extrabold bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-1.5 rounded-xl border border-orange-200 shadow-sm">
+                            ✏️ Configurar
+                        </button>
+                        <button onclick="alternarAtivoTarefa(${t.id}, ${t.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-xl ${t.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-700'}">
+                            ${t.ativo === false ? 'Ativar' : 'Pausar'}
+                        </button>
+                    </div>
+                </div>
+            `).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma tarefa cadastrada neste contrato.</p>`;
+        }
+
+        function carregarTarefaNoForm(t) {
+            document.getElementById('edit-tarefa-id').value = t.id;
+            document.getElementById('edit-tarefa-setor').value = t.setor;
+            document.getElementById('edit-tarefa-especie').value = t.especie || '';
+            document.getElementById('edit-tarefa-nome').value = t.atividade;
+            document.getElementById('edit-tarefa-freq').value = t.frequencia;
+            document.getElementById('edit-tarefa-min').value = t.duracao_minutos || 30;
+            document.getElementById('edit-tarefa-prio').value = t.prioridade || 2;
+            document.getElementById('edit-tarefa-chuva').checked = t.permite_chuva !== false;
+            document.getElementById('form-tarefa-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando Tarefa: ${t.setor}</span>`;
+            document.getElementById('btn-salvar-tarefa').textContent = "Atualizar Tarefa";
+
+            const card = document.getElementById('card-form-tarefa');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.classList.remove('highlight-edit');
+            void card.offsetWidth;
+            card.classList.add('highlight-edit');
+        }
+
+        function limparFormTarefaGestao() {
+            document.getElementById('edit-tarefa-id').value = '';
+            document.getElementById('edit-tarefa-setor').value = '';
+            document.getElementById('edit-tarefa-especie').value = '';
+            document.getElementById('edit-tarefa-nome').value = '';
+            document.getElementById('edit-tarefa-min').value = 45;
+            document.getElementById('form-tarefa-titulo').textContent = '➕ Cadastrar Nova Tarefa';
+            document.getElementById('btn-salvar-tarefa').textContent = "Salvar Tarefa";
+            document.getElementById('card-form-tarefa').classList.remove('highlight-edit');
+        }
+
+        async function salvarTarefaGestao() {
+            const id = document.getElementById('edit-tarefa-id').value;
+            const setor = document.getElementById('edit-tarefa-setor').value.trim();
+            const nome = document.getElementById('edit-tarefa-nome').value.trim();
+            const freq = document.getElementById('edit-tarefa-freq').value;
+            const min = parseInt(document.getElementById('edit-tarefa-min').value, 10) || 30;
+            const prio = parseInt(document.getElementById('edit-tarefa-prio').value, 10) || 2;
+            const especie = document.getElementById('edit-tarefa-especie').value.trim() || 'Diversas';
+            const chuva = document.getElementById('edit-tarefa-chuva').checked;
+
+            if (!setor || !nome) { alert("Preencha o Setor e a Descrição da Atividade."); return; }
+
+            const payload = {
+                cliente: clienteAtivo,
+                setor,
+                atividade: nome,
+                frequencia: freq,
+                duracao_minutos: min,
+                duracao_str: formatarMinutosStr(min),
+                especie,
+                prioridade: prio,
+                permite_chuva: chuva,
+                ativo: true
+            };
+
+            if (id) await sb.from('cronograma_mestre').update(payload).eq('id', id);
+            else await sb.from('cronograma_mestre').insert([payload]);
+
+            limparFormTarefaGestao();
+            carregarDadosAdmin();
+        }
+
+        async function alternarAtivoTarefa(id, novoAtivo) {
+            await sb.from('cronograma_mestre').update({ ativo: novoAtivo }).eq('id', id);
+            carregarDadosAdmin();
+        }
+
+        // =========================================================================
+        // 6. CRUD DE EQUIPE (COM FUNÇÃO ENCARREGADO, REALOCAÇÃO E INATIVAÇÃO)
+        // =========================================================================
+        function renderizarCrudEquipe() {
+            const el = document.getElementById('gestao-lista-equipe-crud');
+            const opcoesClientes = window.clientesDB.map(c => c.nome);
+            const perfis = ['OPERADOR', 'ENCARREGADO', 'SUPERVISOR', 'GESTOR'];
+
+            el.innerHTML = window.colaboradoresTodosDB.map(c => {
+                const selectPosto = `
+                    <select onchange="realocarColaboradorGestao(${c.id}, this.value)" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-800">
+                        ${opcoesClientes.map(nomeCli => `<option value="${nomeCli}" ${c.cliente_padrao === nomeCli ? 'selected' : ''}>${nomeCli}</option>`).join('')}
+                    </select>`;
+                const selectPerfil = `
+                    <select onchange="alterarPerfilColaboradorGestao(${c.id}, this.value)" class="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1 text-[10px] font-extrabold text-orange-800">
+                        ${perfis.map(p => `<option value="${p}" ${c.perfil === p ? 'selected' : ''}>${p}</option>`).join('')}
+                    </select>`;
+
+                return `
+                <div class="p-3.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-55' : ''}">
+                    <div>
+                        <p class="text-xs font-extrabold text-slate-900">${c.nome}</p>
+                        <p class="text-[10px] font-bold ${c.ativo === false ? 'text-red-600' : 'text-emerald-600'}">${c.ativo === false ? '🔴 Inativo / Desligado' : '🟢 Ativo na Operação'}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        ${c.ativo !== false ? selectPerfil : ''}
+                        ${c.ativo !== false ? selectPosto : ''}
+                        <button onclick="alternarStatusColaboradorGestao(${c.id}, ${c.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg ${c.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                            ${c.ativo === false ? 'Reativar' : 'Inativar'}
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function adicionarColaboradorGestao() {
+            const nome = document.getElementById('novo-colab-nome').value.trim();
+            const posto = document.getElementById('novo-colab-posto').value || clienteAtivo;
+            const perfil = document.getElementById('novo-colab-perfil').value;
+            if (!nome) { alert("Digite o nome do colaborador."); return; }
+            await sb.from('colaboradores').insert([{ nome, cliente_padrao: posto, perfil, ativo: true }]);
+            document.getElementById('novo-colab-nome').value = '';
+            carregarDadosAdmin();
+        }
+
+        async function realocarColaboradorGestao(id, novoPosto) {
+            await sb.from('colaboradores').update({ cliente_padrao: novoPosto }).eq('id', id);
+            carregarDadosAdmin();
+        }
+
+        async function alterarPerfilColaboradorGestao(id, novoPerfil) {
+            await sb.from('colaboradores').update({ perfil: novoPerfil }).eq('id', id);
+            carregarDadosAdmin();
+        }
+
+        async function alternarStatusColaboradorGestao(id, novoStatus) {
+            await sb.from('colaboradores').update({ ativo: novoStatus }).eq('id', id);
+            carregarDadosAdmin();
+        }
+
+        // =========================================================================
+        // 7. CRUD DE CONTRATOS (COM ROLAGEM E DESTAQUE VISUAL NO BOTÃO CONFIGURAR)
+        // =========================================================================
+        function renderizarCrudContratos() {
+            const el = document.getElementById('gestao-lista-contratos-crud');
+            el.innerHTML = window.clientesDB.map(c => `
+                <div class="p-3.5 flex justify-between items-center gap-2">
+                    <div>
+                        <p class="text-xs font-extrabold text-slate-900">${c.nome}</p>
+                        <p class="text-[10px] text-slate-500">${c.endereco || 'Sem endereço'} • Teto: <b>${c.teto_diario_horas}h/dia</b> • Raio GPS: ${c.raio_metros}m</p>
+                    </div>
+                    <button onclick='carregarContratoNoForm(${JSON.stringify(c).replace(/'/g, "&apos;")})' class="text-[10px] font-extrabold bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1 flex-shrink-0">
+                        ⚙️ Configurar
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function carregarContratoNoForm(c) {
+            document.getElementById('edit-cli-id').value = c.id;
+            document.getElementById('edit-cli-nome').value = c.nome;
+            document.getElementById('edit-cli-end').value = c.endereco || '';
+            document.getElementById('edit-cli-teto').value = c.teto_diario_horas || 6;
+            document.getElementById('edit-cli-raio').value = c.raio_metros || 300;
+            document.getElementById('edit-cli-pin').value = c.pin_gestor || '2026';
+            document.getElementById('edit-cli-lat').value = c.latitude;
+            document.getElementById('edit-cli-lng').value = c.longitude;
+
+            document.getElementById('form-contrato-titulo').innerHTML = `<span class="text-orange-600">⚙️ Editando Contrato: ${c.nome}</span>`;
+            document.getElementById('btn-salvar-contrato').textContent = `Atualizar ${c.nome}`;
+
+            const card = document.getElementById('card-form-contrato');
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.classList.remove('highlight-edit');
+            void card.offsetWidth;
+            card.classList.add('highlight-edit');
+        }
+
+        function limparFormContratoGestao() {
+            document.getElementById('edit-cli-id').value = '';
+            document.getElementById('edit-cli-nome').value = '';
+            document.getElementById('edit-cli-end').value = '';
+            document.getElementById('edit-cli-teto').value = 6;
+            document.getElementById('edit-cli-raio').value = 300;
+            document.getElementById('edit-cli-pin').value = '2026';
+            document.getElementById('edit-cli-lat').value = '';
+            document.getElementById('edit-cli-lng').value = '';
+            document.getElementById('form-contrato-titulo').textContent = '➕ Cadastrar Novo Contrato / Cliente';
+            document.getElementById('btn-salvar-contrato').textContent = "Salvar Contrato";
+            document.getElementById('card-form-contrato').classList.remove('highlight-edit');
+        }
+
+        function usarGpsAtualNoContrato() {
+            if (!navigator.geolocation) { alert("GPS não suportado neste navegador."); return; }
+            navigator.geolocation.getCurrentPosition(pos => {
+                document.getElementById('edit-cli-lat').value = pos.coords.latitude.toFixed(6);
+                document.getElementById('edit-cli-lng').value = pos.coords.longitude.toFixed(6);
+            }, () => alert("Não foi possível obter sua localização atual."));
+        }
+
+        async function salvarContratoGestao() {
+            const id = document.getElementById('edit-cli-id').value;
+            const nome = document.getElementById('edit-cli-nome').value.trim();
+            const end = document.getElementById('edit-cli-end').value.trim();
+            const teto = parseFloat(document.getElementById('edit-cli-teto').value) || 6;
+            const raio = parseInt(document.getElementById('edit-cli-raio').value, 10) || 300;
+            const pin = document.getElementById('edit-cli-pin').value.trim() || '2026';
+            const lat = parseFloat(document.getElementById('edit-cli-lat').value) || -23.5888;
+            const lng = parseFloat(document.getElementById('edit-cli-lng').value) || -46.6819;
+
+            if (!nome) { alert("Informe o nome do cliente/posto."); return; }
+            const codigo = nome.toUpperCase().replace(/[^A-Z0-9]/g, '_');
+
+            const payload = { codigo, nome, endereco: end, latitude: lat, longitude: lng, raio_metros: raio, teto_diario_horas: teto, pin_gestor: pin, ativo: true };
+            if (id) await sb.from('clientes').update(payload).eq('id', id);
+            else await sb.from('clientes').insert([payload]);
+
+            limparFormContratoGestao();
+            await carregarDadosAdmin();
+            alert(`Contrato "${nome}" salvo com sucesso!`);
+        }
+
+        // =========================================================================
+        // 8. CENTRAL DE COMUNICAÇÃO DA SUPERVISÃO
+        // =========================================================================
+        function selecionarCanalChatAdmin(canal) {
+            canalChatAdmin = canal;
+            ['SUPERVISAO', 'CLIENTE', 'EQUIPE'].forEach(c => {
+                document.getElementById(`btn-adm-canal-${c}`).className = (c === canal)
+                    ? "py-2 px-2 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-sm"
+                    : "py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600";
+            });
+            carregarChatAdmin();
+        }
+
+        async function carregarChatAdmin() {
+            const { data } = await sb.from('mensagens_chat')
+                .select('*')
+                .eq('cliente', clienteAtivo)
+                .eq('canal', canalChatAdmin)
+                .order('criado_em', { ascending: true })
+                .limit(60);
+
+            const box = document.getElementById('admin-chat-messages');
+            if (!data || data.length === 0) {
+                box.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">Nenhuma mensagem neste canal.</p>`;
+                return;
+            }
+            box.innerHTML = data.map(m => {
+                const souSupervisao = m.autor_perfil === 'SUPERVISOR' || m.autor_perfil === 'ADMIN';
+                const dh = new Date(m.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                const badgeUrg = m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase mr-1">Prioridade</span>` : '';
+                return `
+                <div class="flex flex-col ${souSupervisao ? 'items-end' : 'items-start'}">
+                    <div class="max-w-[82%] rounded-2xl px-3.5 py-2.5 ${souSupervisao ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm">
+                        <div class="flex items-center gap-1.5 mb-0.5">
+                            ${badgeUrg}
+                            <span class="text-[10px] font-extrabold ${souSupervisao ? 'text-orange-400' : 'text-emerald-600'}">${m.autor_nome}</span>
+                            <span class="text-[9px] opacity-60">• ${dh}</span>
+                        </div>
+                        <p class="text-xs leading-relaxed">${m.mensagem}</p>
+                    </div>
+                </div>`;
+            }).join('');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function enviarMensagemAdmin() {
+            const input = document.getElementById('admin-chat-input');
+            const texto = input.value.trim();
+            if (!texto) return;
+            const urgente = document.getElementById('admin-chat-urgente').checked;
+            input.value = '';
+            document.getElementById('admin-chat-urgente').checked = false;
+
+            await sb.from('mensagens_chat').insert([{
+                cliente: clienteAtivo,
+                canal: canalChatAdmin,
+                autor_nome: adminLogado?.nome || 'Supervisão',
+                autor_perfil: 'SUPERVISOR',
+                mensagem: texto,
+                urgente: urgente
+            }]);
+            carregarChatAdmin();
+        }
+
+        function iniciarRealtimeAdmin() {
+            sb.channel('novaera-admin-v9')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarDadosAdmin())
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarDadosAdmin())
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
+                    if (payload.new.cliente === clienteAtivo) {
+                        document.getElementById('admin-chat-dot').classList.remove('hidden');
+                        carregarChatAdmin();
+                    }
+                })
+                .subscribe();
+        }
+
+        window.onload = () => {
+            initIcons();
+            if (adminLogado) iniciarSessaoAdmin();
+        };
+    </script>
+</body>
+</html>
