@@ -112,7 +112,7 @@
                 </div>
             </div>
 
-            <!-- MENU DE 5 ABAS DE GESTÃO -->
+            <!-- MENU DE ABAS DE GESTÃO -->
             <div class="grid grid-cols-5 gap-1 bg-slate-200/90 p-1 rounded-2xl border border-slate-300/60">
                 <button onclick="selecionarAbaAdmin('auditoria')" id="btn-tab-auditoria" class="py-2 px-1 rounded-xl text-[10px] font-extrabold bg-slate-900 text-white shadow-sm transition-all">
                     📊 Auditoria
@@ -149,7 +149,6 @@
                     </div>
                 </div>
 
-                <!-- Controle de Plantão e Presença do Posto -->
                 <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-sm space-y-2.5">
                     <div class="flex justify-between items-center">
                         <div>
@@ -161,39 +160,36 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <button onclick="autorizarPlantaoExcepcional()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold text-[11px] py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-sm">
-                            <i data-lucide="unlock" class="w-3.5 h-3.5"></i> Liberar Plantão Hoje
+                            <i data-lucide="unlock" class="w-3.5 h-3.5"></i> Liberar Plantão
                         </button>
                         <button onclick="encerrarOuBloquearPostoHoje()" class="bg-slate-800 hover:bg-red-950 hover:text-red-300 text-slate-300 border border-slate-700 font-bold text-[11px] py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5">
-                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Fechar / Limpar Hoje
+                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Fechar Turno
                         </button>
                     </div>
                 </div>
 
-                <!-- Ações Rápidas -->
                 <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
                     <p class="text-xs font-extrabold text-slate-800 uppercase tracking-wider mb-1">Relatórios & Ferramentas</p>
                     <button onclick="copiarResumoWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 shadow-sm">
                         <i data-lucide="share-2" class="w-4 h-4"></i> Copiar Relatório do Turno (WhatsApp)
                     </button>
                     <button onclick="importarPlanilhaGoogleCSV()" id="btn-import-csv" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 border border-slate-300">
-                        <i data-lucide="database-backup" class="w-4 h-4 text-orange-500"></i> Sincronizar Grade da Planilha Google (CSV)
+                        <i data-lucide="database-backup" class="w-4 h-4 text-orange-500"></i> Sincronizar Grade Google (CSV)
                     </button>
                 </div>
 
-                <!-- Lista de Execuções Auditadas -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
-                        <h4 class="text-xs font-extrabold text-slate-800">Execuções, Vistorias e Atividades em Curso</h4>
+                        <h4 class="text-xs font-extrabold text-slate-800">Auditoria de Execuções e Vistorias</h4>
                         <span class="text-[10px] font-bold text-slate-500">Tempo Líquido vs. SLA</span>
                     </div>
                     <div id="gestao-execucoes-list" class="divide-y divide-slate-100 max-h-96 overflow-y-auto"></div>
                 </div>
 
-                <!-- Caixa-Preta: Tentativas Rejeitadas (Erro 422) -->
                 <div class="bg-white rounded-2xl border border-red-200 shadow-sm overflow-hidden">
                     <div class="bg-red-50 px-3.5 py-2.5 border-b border-red-100 flex justify-between items-center">
                         <h4 class="text-xs font-extrabold text-red-900 flex items-center gap-1.5">
-                            <i data-lucide="shield-alert" class="w-4 h-4 text-red-600"></i> Caixa-Preta • Fotos Rejeitadas (Erro 422)
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-red-600"></i> Fotos Rejeitadas (Erro 422)
                         </h4>
                         <span id="badge-rejeicoes" class="text-[10px] font-extrabold bg-red-200 text-red-900 px-2 py-0.5 rounded-full">0</span>
                     </div>
@@ -223,7 +219,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Descrição da Atividade</label>
-                        <input type="text" id="edit-tarefa-nome" placeholder="Ex: Poda de contenção e limpeza" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                        <input type="text" id="edit-tarefa-nome" placeholder="Ex: Poda de contenção" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
@@ -238,7 +234,7 @@
                                 <option value="Qui">Toda Quinta</option>
                                 <option value="Sex">Toda Sexta</option>
                                 <option value="Quinzenal">Quinzenal</option>
-                                <option value="1x/mês">1x/mês (Mensal)</option>
+                                <option value="1x/mês">1x/mês</option>
                                 <option value="Quadrimestral">Quadrimestral</option>
                             </select>
                         </div>
@@ -257,7 +253,7 @@
                     </div>
                     <div class="flex items-center justify-between pt-1">
                         <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer">
-                            <input type="checkbox" id="edit-tarefa-chuva" checked class="rounded text-orange-500 w-4 h-4"> Permite fazer com chuva
+                            <input type="checkbox" id="edit-tarefa-chuva" checked class="rounded text-orange-500 w-4 h-4"> Permite c/ chuva
                         </label>
                         <button onclick="salvarTarefaGestao()" id="btn-salvar-tarefa" class="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
                             Salvar Tarefa
@@ -267,22 +263,24 @@
 
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
-                        <h4 class="text-xs font-extrabold text-slate-800">Grade de Atividades deste Contrato</h4>
-                        <span class="text-[10px] text-slate-500">Clique em Configurar para editar</span>
+                        <h4 class="text-xs font-extrabold text-slate-800">Grade de Atividades do Contrato</h4>
+                        <span class="text-[10px] text-slate-500">Clique em Configurar</span>
                     </div>
                     <div id="gestao-lista-tarefas-crud" class="divide-y divide-slate-100"></div>
                 </div>
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 3: GESTÃO DE EFETIVO (INCLUINDO FUNÇÃO ENCARREGADO)   -->
+            <!-- ABA 3: GESTÃO DE EFETIVO E LOGINS DO PAINEL (RBAC)        -->
             <!-- ========================================================= -->
             <div id="view-equipe" class="hidden space-y-3.5">
+                
+                <!-- BLOCO 1: OPERADORES DE CAMPO -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                    <h4 class="text-xs font-extrabold text-slate-900 uppercase">➕ Cadastrar Novo Colaborador</h4>
+                    <h4 class="text-xs font-extrabold text-slate-900 uppercase">➕ Cadastrar Operador / Encarregado</h4>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Nome Completo / Operacional</label>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Nome de Exibição</label>
                             <input type="text" id="novo-colab-nome" placeholder="Ex: Leandro" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
                         </div>
                         <div>
@@ -292,15 +290,14 @@
                     </div>
                     <div class="flex gap-2 items-end">
                         <div class="flex-1">
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Função / Cargo</label>
-                            <select id="novo-colab-perfil" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
-                                <option value="OPERADOR">Operador de Campo (Jardineiro)</option>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Função (Muda o acesso no celular)</label>
+                            <select id="novo-colab-perfil" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold text-emerald-800">
+                                <option value="OPERADOR">Operador de Campo</option>
                                 <option value="ENCARREGADO">Encarregado de Equipe</option>
-                                <option value="SUPERVISOR">Supervisor Operacional</option>
-                                <option value="GESTOR">Gestor de Contrato</option>
+                                <option value="SUPERVISOR">Supervisor (Fora da execução)</option>
                             </select>
                         </div>
-                        <button onclick="adicionarColaboradorGestao()" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
+                        <button onclick="adicionarColaboradorGestao()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
                             + Adicionar
                         </button>
                     </div>
@@ -308,20 +305,51 @@
 
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
-                        <h4 class="text-xs font-extrabold text-slate-800">Quadro Geral de Efetivo</h4>
-                        <span class="text-[10px] text-slate-500">Altere função, posto ou inative</span>
+                        <h4 class="text-xs font-extrabold text-slate-800">Quadro de Efetivo</h4>
+                        <span class="text-[10px] text-slate-500">Realocação imediata</span>
                     </div>
                     <div id="gestao-lista-equipe-crud" class="divide-y divide-slate-100"></div>
                 </div>
+
+                <!-- BLOCO 2: LOGINS DE ACESSO AO ADMIN (SÓ PARA PERFIL 'ADMIN') -->
+                <div id="bloco-gestao-logins" class="hidden">
+                    <div class="mt-6 mb-2 flex items-center gap-2 px-1">
+                        <i data-lucide="key" class="w-4 h-4 text-orange-500"></i>
+                        <h3 class="text-xs font-extrabold text-slate-800 uppercase">Credenciais de Acesso (Painel Admin)</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-orange-200 shadow-sm space-y-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Usuário (Login)</label>
+                                <input type="text" id="novo-login-user" autocapitalize="none" placeholder="Ex: ramos2" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Senha Nova</label>
+                                <input type="text" id="novo-login-pass" placeholder="••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 items-end">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Nome no Painel</label>
+                                <input type="text" id="novo-login-nome" placeholder="Ex: Ramos Zona Sul" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                            </div>
+                            <button onclick="adicionarOuAtualizarLoginAdmin()" class="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
+                                Salvar Credencial
+                            </button>
+                        </div>
+                        <div id="lista-logins-crud" class="divide-y divide-slate-100 mt-2 border-t border-slate-100 pt-2"></div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 4: GESTÃO DE CONTRATOS / CLIENTES                     -->
+            <!-- ABA 4: GESTÃO DE CONTRATOS E TETOS (RBAC)                 -->
             <!-- ========================================================= -->
             <div id="view-contratos" class="hidden space-y-3.5">
                 <div id="card-form-contrato" class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 transition-all">
                     <div class="flex justify-between items-center">
-                        <h4 class="text-xs font-extrabold text-slate-900 uppercase" id="form-contrato-titulo">➕ Cadastrar Novo Contrato / Cliente</h4>
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase" id="form-contrato-titulo">➕ Cadastrar Novo Contrato</h4>
                         <button onclick="limparFormContratoGestao()" class="text-[10px] font-extrabold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200">+ Limpar / Novo</button>
                     </div>
                     <input type="hidden" id="edit-cli-id">
@@ -335,18 +363,14 @@
                             <input type="text" id="edit-cli-end" placeholder="Av. Faria Lima, 4100" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2">
+                    <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Teto Diário (h)</label>
                             <input type="number" step="0.5" id="edit-cli-teto" value="6" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Raio GPS (m)</label>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Raio GPS de Tolerância (m)</label>
                             <input type="number" id="edit-cli-raio" value="300" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Código Interno</label>
-                            <input type="text" id="edit-cli-pin" value="2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -359,10 +383,10 @@
                             <input type="text" id="edit-cli-lng" placeholder="-46.6819" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
                         </div>
                     </div>
-                    <div class="flex gap-2 pt-1">
-                        <button type="button" onclick="usarGpsAtualNoContrato()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold text-[11px] py-2.5 px-3 rounded-xl flex-1 flex items-center justify-center gap-1">
-                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-orange-500"></i> Capturar Meu GPS Atual
-                        </button>
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 cursor-pointer">
+                            <input type="checkbox" id="edit-cli-ativo" checked class="rounded text-emerald-600 w-4 h-4"> Contrato Ativo
+                        </label>
                         <button type="button" onclick="salvarContratoGestao()" id="btn-salvar-contrato" class="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs py-2.5 px-4 rounded-xl shadow-sm">
                             Salvar Contrato
                         </button>
@@ -371,8 +395,8 @@
 
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
-                        <h4 class="text-xs font-extrabold text-slate-800">Contratos Cadastrados</h4>
-                        <span class="text-[10px] text-slate-500">Clique em Configurar para carregar acima</span>
+                        <h4 class="text-xs font-extrabold text-slate-800">Contratos na Base</h4>
+                        <span class="text-[10px] text-slate-500">Clique em Configurar</span>
                     </div>
                     <div id="gestao-lista-contratos-crud" class="divide-y divide-slate-100"></div>
                 </div>
@@ -388,7 +412,7 @@
                             📢 Supervisão
                         </button>
                         <button onclick="selecionarCanalChatAdmin('CLIENTE')" id="btn-adm-canal-CLIENTE" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600">
-                            🏢 Cliente (Joelma)
+                            🏢 Cliente
                         </button>
                         <button onclick="selecionarCanalChatAdmin('EQUIPE')" id="btn-adm-canal-EQUIPE" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600">
                             💬 Equipe Local
@@ -413,9 +437,6 @@
     </div>
 
     <script>
-        // =========================================================================
-        // 1. CONFIGURAÇÃO SUPABASE (CENTRAL ADMIN v9.0)
-        // =========================================================================
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -432,6 +453,7 @@
         window.execucoesMesDB = [];
         window.feriadosDB = [];
         window.presencaHojeDB = null;
+        window.loginsAdminDB = [];
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -446,9 +468,6 @@
         function ehFeriado(d) { return window.feriadosDB.includes(dataISO(d)); }
         function diaUtil(d) { return d.getDay() !== 0 && d.getDay() !== 6 && !ehFeriado(d); }
 
-        // =========================================================================
-        // 2. AUTENTICAÇÃO REAL NA TABELA `usuarios_admin`
-        // =========================================================================
         async function realizarLoginAdmin() {
             const login = document.getElementById('login-user').value.trim().toLowerCase();
             const senha = document.getElementById('login-pass').value.trim();
@@ -460,24 +479,15 @@
             erroEl.classList.add('hidden');
 
             const { data, error } = await sb.from('usuarios_admin')
-                .select('*')
-                .eq('login', login)
-                .eq('senha', senha)
-                .eq('ativo', true)
-                .limit(1);
+                .select('*').eq('login', login).eq('senha', senha).eq('ativo', true).limit(1);
 
             btn.disabled = false; btn.textContent = "Acessar Painel de Controle";
 
             if (error || !data || data.length === 0) {
-                erroEl.classList.remove('hidden');
-                return;
+                erroEl.classList.remove('hidden'); return;
             }
 
-            adminLogado = {
-                login: data[0].login,
-                nome: data[0].nome_exibicao,
-                perfil: data[0].perfil
-            };
+            adminLogado = { login: data[0].login, nome: data[0].nome_exibicao, perfil: data[0].perfil };
             sessionStorage.setItem('novaera_admin_session', JSON.stringify(adminLogado));
             iniciarSessaoAdmin();
         }
@@ -495,14 +505,21 @@
             document.getElementById('admin-app').classList.remove('hidden');
             document.getElementById('admin-user-name').textContent = adminLogado.nome;
             document.getElementById('admin-perfil-badge').textContent = adminLogado.perfil;
+            
+            // TRAVA DE PERFIL (RBAC)
+            if (adminLogado.perfil !== 'ADMIN') {
+                document.getElementById('btn-tab-contratos').classList.add('hidden');
+                document.getElementById('bloco-gestao-logins').classList.add('hidden');
+            } else {
+                document.getElementById('btn-tab-contratos').classList.remove('hidden');
+                document.getElementById('bloco-gestao-logins').classList.remove('hidden');
+            }
+
             initIcons();
             carregarDadosAdmin();
             iniciarRealtimeAdmin();
         }
 
-        // =========================================================================
-        // 3. CARREGAMENTO E SINCRONIZAÇÃO DE DADOS
-        // =========================================================================
         async function carregarDadosAdmin() {
             const hojeStr = dataISO();
             const inicioMes = dataISO(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
@@ -522,6 +539,11 @@
             if (resExec.data) window.execucoesMesDB = resExec.data;
             if (resFer.data) window.feriadosDB = resFer.data.map(f => f.data_feriado);
             window.presencaHojeDB = resPres.data?.[0] || null;
+
+            if (adminLogado.perfil === 'ADMIN') {
+                const resUsr = await sb.from('usuarios_admin').select('*').order('nome_exibicao');
+                window.loginsAdminDB = resUsr.data || [];
+            }
 
             popularSeletorClientes();
             renderizarTudoAdmin();
@@ -570,7 +592,6 @@
         }
 
         async function renderizarTudoAdmin() {
-            // 1. Status do Posto e Plantão
             const stPlantao = document.getElementById('gestao-status-plantao');
             const subPlantao = document.getElementById('gestao-sub-plantao');
             const hoje = new Date();
@@ -590,13 +611,12 @@
                 }
             } else if (isFdsFeriado) {
                 stPlantao.textContent = "🔒 Posto Fechado (Fim de Semana / Feriado)";
-                subPlantao.textContent = "Toque em 'Liberar Plantão Hoje' caso haja escala extraordinária.";
+                subPlantao.textContent = "Toque em 'Liberar Plantão' caso haja escala extraordinária.";
             } else {
                 stPlantao.textContent = "⏳ Dia Útil Normal • Aguardando Ativação da Equipe";
                 subPlantao.textContent = "Nenhum check-in registrado até o momento.";
             }
 
-            // 2. Cálculo de FTE Mensal e Conformidade
             const tarefasAtivasCli = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo && t.ativo !== false);
             let minEstimadosMes = 0;
             tarefasAtivasCli.forEach(t => {
@@ -626,16 +646,13 @@
             document.getElementById('kpi-conformidade').textContent = `${pctConf}% (${divergentes.length} flags)`;
             document.getElementById('kpi-chuva-resumo').textContent = `Chuva hoje: ${formatarMinutosStr(calcularMinutosChuvaHoje())}`;
 
-            // 3. Lista de Execuções Auditadas
             document.getElementById('gestao-execucoes-list').innerHTML = execsCli.slice(0, 35).map(e => {
                 let badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded ${e.flag_auditoria === 'CONFORME' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${e.flag_auditoria}</span>`;
                 if (e.status_execucao === 'PAUSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-amber-200 text-amber-900">⏸️ PAUSADO</span>`;
                 else if (e.status_execucao === 'EM_ANDAMENTO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-orange-500 text-white">🟠 EM CURSO</span>`;
                 else if (e.status_execucao === 'DISPENSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-sky-100 text-sky-800">⏭️ DISPENSADO</span>`;
 
-                const linkFotos = e.foto_depois_url
-                    ? `<a href="${e.foto_depois_url}" target="_blank" class="text-[10px] font-bold text-orange-600 underline ml-1">Ver Foto</a>`
-                    : (e.foto_antes_url ? `<a href="${e.foto_antes_url}" target="_blank" class="text-[10px] font-bold text-blue-600 underline ml-1">Foto Antes</a>` : '');
+                const linkFotos = e.foto_depois_url ? `<a href="${e.foto_depois_url}" target="_blank" class="text-[10px] font-bold text-orange-600 underline ml-1">Ver Foto</a>` : (e.foto_antes_url ? `<a href="${e.foto_antes_url}" target="_blank" class="text-[10px] font-bold text-blue-600 underline ml-1">Foto Antes</a>` : '');
                 const pausaTxt = e.minutos_pausa_descontados > 0 ? ` (Pausa: -${e.minutos_pausa_descontados}m)` : '';
 
                 return `
@@ -649,7 +666,6 @@
                 </div>`;
             }).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma execução registrada neste mês.</p>`;
 
-            // 4. Caixa-Preta (Logs Erro 422)
             const { data: logsRej } = await sb.from('logs_rejeicao').select('*').eq('cliente', clienteAtivo).order('dh_tentativa', { ascending: false }).limit(20);
             document.getElementById('badge-rejeicoes').textContent = (logsRej || []).length;
             document.getElementById('gestao-rejeicoes-list').innerHTML = (logsRej || []).map(l => {
@@ -660,18 +676,16 @@
                         <span>${l.operador} • ${l.motivo_tecnico}</span>
                         <span class="text-[10px] text-slate-400">${dh}</span>
                     </div>
-                    <p class="text-[10px] text-slate-600 mt-0.5">${l.setor} (${l.atividade}) — ${l.detalhes_exif || ''}</p>
+                    <p class="text-[10px] text-slate-600 mt-0.5">${l.setor} (${l.atividade})</p>
                 </div>`;
             }).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma foto rejeitada neste contrato.</p>`;
 
             renderizarCrudTarefas();
             renderizarCrudEquipe();
+            renderizarCrudLogins();
             renderizarCrudContratos();
         }
 
-        // =========================================================================
-        // 4. CONTROLE DE PLANTÃO, RELATÓRIO WHATSAPP E IMPORTADOR CSV
-        // =========================================================================
         async function autorizarPlantaoExcepcional() {
             const hojeStr = dataISO();
             const reg = {
@@ -744,11 +758,11 @@
                     carregarDadosAdmin();
                 }
             } catch (e) { alert("Erro ao importar: " + e.message); }
-            finally { btn.disabled = false; btn.textContent = "Sincronizar Grade da Planilha Google (CSV)"; }
+            finally { btn.disabled = false; btn.textContent = "Sincronizar Grade Google (CSV)"; }
         }
 
         // =========================================================================
-        // 5. CRUD DE TAREFAS (COM ROLAGEM E DESTAQUE VISUAL AO EDITAR)
+        // CRUD TAREFAS
         // =========================================================================
         function renderizarCrudTarefas() {
             const lista = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo);
@@ -759,7 +773,6 @@
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">${t.setor}</span>
                             <span class="text-[10px] font-bold text-orange-600">${t.frequencia} • ${t.duracao_str}</span>
-                            ${t.prioridade === 1 ? `<span class="text-[9px] font-extrabold bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded">VIP</span>` : ''}
                         </div>
                         <p class="text-xs font-bold text-slate-900 mt-1">${t.atividade}</p>
                     </div>
@@ -767,12 +780,12 @@
                         <button onclick='carregarTarefaNoForm(${JSON.stringify(t).replace(/'/g, "&apos;")})' class="text-[10px] font-extrabold bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-1.5 rounded-xl border border-orange-200 shadow-sm">
                             ✏️ Configurar
                         </button>
-                        <button onclick="alternarAtivoTarefa(${t.id}, ${t.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-xl ${t.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-700'}">
+                        <button onclick="alternarAtivoTarefa(${t.id}, ${t.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-xl ${t.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600 hover:bg-red-50'}">
                             ${t.ativo === false ? 'Ativar' : 'Pausar'}
                         </button>
                     </div>
                 </div>
-            `).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma tarefa cadastrada neste contrato.</p>`;
+            `).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma tarefa neste contrato.</p>`;
         }
 
         function carregarTarefaNoForm(t) {
@@ -784,7 +797,8 @@
             document.getElementById('edit-tarefa-min').value = t.duracao_minutos || 30;
             document.getElementById('edit-tarefa-prio').value = t.prioridade || 2;
             document.getElementById('edit-tarefa-chuva').checked = t.permite_chuva !== false;
-            document.getElementById('form-tarefa-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando Tarefa: ${t.setor}</span>`;
+            
+            document.getElementById('form-tarefa-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando: ${t.atividade.substring(0,20)}...</span>`;
             document.getElementById('btn-salvar-tarefa').textContent = "Atualizar Tarefa";
 
             const card = document.getElementById('card-form-tarefa');
@@ -812,38 +826,21 @@
             const freq = document.getElementById('edit-tarefa-freq').value;
             const min = parseInt(document.getElementById('edit-tarefa-min').value, 10) || 30;
             const prio = parseInt(document.getElementById('edit-tarefa-prio').value, 10) || 2;
-            const especie = document.getElementById('edit-tarefa-especie').value.trim() || 'Diversas';
             const chuva = document.getElementById('edit-tarefa-chuva').checked;
+            if (!setor || !nome) { alert("Preencha Setor e Atividade."); return; }
 
-            if (!setor || !nome) { alert("Preencha o Setor e a Descrição da Atividade."); return; }
-
-            const payload = {
-                cliente: clienteAtivo,
-                setor,
-                atividade: nome,
-                frequencia: freq,
-                duracao_minutos: min,
-                duracao_str: formatarMinutosStr(min),
-                especie,
-                prioridade: prio,
-                permite_chuva: chuva,
-                ativo: true
-            };
-
+            const payload = { cliente: clienteAtivo, setor, atividade: nome, frequencia: freq, duracao_minutos: min, duracao_str: formatarMinutosStr(min), especie: document.getElementById('edit-tarefa-especie').value.trim() || 'Diversas', prioridade: prio, permite_chuva: chuva, ativo: true };
             if (id) await sb.from('cronograma_mestre').update(payload).eq('id', id);
             else await sb.from('cronograma_mestre').insert([payload]);
-
-            limparFormTarefaGestao();
-            carregarDadosAdmin();
+            limparFormTarefaGestao(); carregarDadosAdmin();
         }
 
         async function alternarAtivoTarefa(id, novoAtivo) {
-            await sb.from('cronograma_mestre').update({ ativo: novoAtivo }).eq('id', id);
-            carregarDadosAdmin();
+            await sb.from('cronograma_mestre').update({ ativo: novoAtivo }).eq('id', id); carregarDadosAdmin();
         }
 
         // =========================================================================
-        // 6. CRUD DE EQUIPE (COM FUNÇÃO ENCARREGADO, REALOCAÇÃO E INATIVAÇÃO)
+        // CRUD EQUIPE & LOGINS ADMIN
         // =========================================================================
         function renderizarCrudEquipe() {
             const el = document.getElementById('gestao-lista-equipe-crud');
@@ -853,18 +850,18 @@
             el.innerHTML = window.colaboradoresTodosDB.map(c => {
                 const selectPosto = `
                     <select onchange="realocarColaboradorGestao(${c.id}, this.value)" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-800">
-                        ${opcoesClientes.map(nomeCli => `<option value="${nomeCli}" ${c.cliente_padrao === nomeCli ? 'selected' : ''}>${nomeCli}</option>`).join('')}
+                        ${opcoesClientes.map(n => `<option value="${n}" ${c.cliente_padrao === n ? 'selected' : ''}>${n}</option>`).join('')}
+                        <option value="" ${!c.cliente_padrao ? 'selected' : ''}>[ Sem Posto Fixo ]</option>
                     </select>`;
                 const selectPerfil = `
-                    <select onchange="alterarPerfilColaboradorGestao(${c.id}, this.value)" class="bg-orange-50 border border-orange-200 rounded-lg px-2 py-1 text-[10px] font-extrabold text-orange-800">
+                    <select onchange="alterarPerfilColaboradorGestao(${c.id}, this.value)" class="bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-extrabold text-emerald-800">
                         ${perfis.map(p => `<option value="${p}" ${c.perfil === p ? 'selected' : ''}>${p}</option>`).join('')}
                     </select>`;
-
                 return `
                 <div class="p-3.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-55' : ''}">
                     <div>
                         <p class="text-xs font-extrabold text-slate-900">${c.nome}</p>
-                        <p class="text-[10px] font-bold ${c.ativo === false ? 'text-red-600' : 'text-emerald-600'}">${c.ativo === false ? '🔴 Inativo / Desligado' : '🟢 Ativo na Operação'}</p>
+                        <p class="text-[10px] font-bold ${c.ativo === false ? 'text-red-600' : 'text-emerald-600'}">${c.ativo === false ? '🔴 Inativo' : '🟢 Ativo'}</p>
                     </div>
                     <div class="flex items-center gap-1.5 flex-wrap">
                         ${c.ativo !== false ? selectPerfil : ''}
@@ -888,30 +885,63 @@
         }
 
         async function realocarColaboradorGestao(id, novoPosto) {
-            await sb.from('colaboradores').update({ cliente_padrao: novoPosto }).eq('id', id);
-            carregarDadosAdmin();
+            await sb.from('colaboradores').update({ cliente_padrao: novoPosto || null }).eq('id', id); carregarDadosAdmin();
         }
-
         async function alterarPerfilColaboradorGestao(id, novoPerfil) {
-            await sb.from('colaboradores').update({ perfil: novoPerfil }).eq('id', id);
-            carregarDadosAdmin();
+            await sb.from('colaboradores').update({ perfil: novoPerfil }).eq('id', id); carregarDadosAdmin();
+        }
+        async function alternarStatusColaboradorGestao(id, novoStatus) {
+            await sb.from('colaboradores').update({ ativo: novoStatus }).eq('id', id); carregarDadosAdmin();
         }
 
-        async function alternarStatusColaboradorGestao(id, novoStatus) {
-            await sb.from('colaboradores').update({ ativo: novoStatus }).eq('id', id);
+        // FÁBRICA DE LOGINS (EXCLUSIVA ADMIN)
+        function renderizarCrudLogins() {
+            const el = document.getElementById('lista-logins-crud');
+            el.innerHTML = window.loginsAdminDB.map(u => `
+                <div class="py-2.5 flex justify-between items-center ${u.ativo === false ? 'opacity-50' : ''}">
+                    <div>
+                        <p class="text-[11px] font-extrabold text-slate-800">${u.nome_exibicao} <span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">${u.perfil}</span></p>
+                        <p class="text-[10px] font-bold text-slate-500">Usuário: <span class="text-orange-600">${u.login}</span></p>
+                    </div>
+                    <button onclick="alternarStatusLogin(${u.id}, ${u.ativo === false ? 'true' : 'false'})" class="text-[9px] font-extrabold px-2 py-1 rounded-lg ${u.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-700'}">
+                        ${u.ativo === false ? 'Ativar Acesso' : 'Bloquear Acesso'}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function adicionarOuAtualizarLoginAdmin() {
+            const login = document.getElementById('novo-login-user').value.trim().toLowerCase();
+            const senha = document.getElementById('novo-login-pass').value.trim();
+            const nome = document.getElementById('novo-login-nome').value.trim();
+            if (!login || !senha || !nome) { alert("Preencha Usuário, Senha e Nome para criar o acesso."); return; }
+            
+            // Impede criar perfil ADMIN pela tela para evitar problemas. Cria sempre como SUPERVISOR.
+            const { error } = await sb.from('usuarios_admin').insert([{ login, senha, nome_exibicao: nome, perfil: 'SUPERVISOR', ativo: true }]);
+            if (error) { alert("Usuário já existe! Tente outro login (ex: ramos3)."); return; }
+            
+            document.getElementById('novo-login-user').value = '';
+            document.getElementById('novo-login-pass').value = '';
+            document.getElementById('novo-login-nome').value = '';
             carregarDadosAdmin();
+            alert(`Acesso criado com sucesso! Login: ${login}`);
+        }
+
+        async function alternarStatusLogin(id, novoStatus) {
+            await sb.from('usuarios_admin').update({ ativo: novoStatus }).eq('id', id); carregarDadosAdmin();
         }
 
         // =========================================================================
-        // 7. CRUD DE CONTRATOS (COM ROLAGEM E DESTAQUE VISUAL NO BOTÃO CONFIGURAR)
+        // CRUD CONTRATOS (COM ATIVO/INATIVO E DESTAQUE)
         // =========================================================================
         function renderizarCrudContratos() {
             const el = document.getElementById('gestao-lista-contratos-crud');
             el.innerHTML = window.clientesDB.map(c => `
-                <div class="p-3.5 flex justify-between items-center gap-2">
+                <div class="p-3.5 flex justify-between items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
                     <div>
                         <p class="text-xs font-extrabold text-slate-900">${c.nome}</p>
-                        <p class="text-[10px] text-slate-500">${c.endereco || 'Sem endereço'} • Teto: <b>${c.teto_diario_horas}h/dia</b> • Raio GPS: ${c.raio_metros}m</p>
+                        <p class="text-[10px] text-slate-500">Teto: <b>${c.teto_diario_horas}h/dia</b> • Raio GPS: ${c.raio_metros}m</p>
+                        ${c.ativo === false ? `<p class="text-[10px] font-bold text-red-600 mt-0.5">Contrato Inativo</p>` : ''}
                     </div>
                     <button onclick='carregarContratoNoForm(${JSON.stringify(c).replace(/'/g, "&apos;")})' class="text-[10px] font-extrabold bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1 flex-shrink-0">
                         ⚙️ Configurar
@@ -926,11 +956,11 @@
             document.getElementById('edit-cli-end').value = c.endereco || '';
             document.getElementById('edit-cli-teto').value = c.teto_diario_horas || 6;
             document.getElementById('edit-cli-raio').value = c.raio_metros || 300;
-            document.getElementById('edit-cli-pin').value = c.pin_gestor || '2026';
             document.getElementById('edit-cli-lat').value = c.latitude;
             document.getElementById('edit-cli-lng').value = c.longitude;
+            document.getElementById('edit-cli-ativo').checked = c.ativo !== false;
 
-            document.getElementById('form-contrato-titulo').innerHTML = `<span class="text-orange-600">⚙️ Editando Contrato: ${c.nome}</span>`;
+            document.getElementById('form-contrato-titulo').innerHTML = `<span class="text-orange-600">⚙️ Editando: ${c.nome}</span>`;
             document.getElementById('btn-salvar-contrato').textContent = `Atualizar ${c.nome}`;
 
             const card = document.getElementById('card-form-contrato');
@@ -946,9 +976,10 @@
             document.getElementById('edit-cli-end').value = '';
             document.getElementById('edit-cli-teto').value = 6;
             document.getElementById('edit-cli-raio').value = 300;
-            document.getElementById('edit-cli-pin').value = '2026';
             document.getElementById('edit-cli-lat').value = '';
             document.getElementById('edit-cli-lng').value = '';
+            document.getElementById('edit-cli-ativo').checked = true;
+
             document.getElementById('form-contrato-titulo').textContent = '➕ Cadastrar Novo Contrato / Cliente';
             document.getElementById('btn-salvar-contrato').textContent = "Salvar Contrato";
             document.getElementById('card-form-contrato').classList.remove('highlight-edit');
@@ -968,14 +999,14 @@
             const end = document.getElementById('edit-cli-end').value.trim();
             const teto = parseFloat(document.getElementById('edit-cli-teto').value) || 6;
             const raio = parseInt(document.getElementById('edit-cli-raio').value, 10) || 300;
-            const pin = document.getElementById('edit-cli-pin').value.trim() || '2026';
             const lat = parseFloat(document.getElementById('edit-cli-lat').value) || -23.5888;
             const lng = parseFloat(document.getElementById('edit-cli-lng').value) || -46.6819;
+            const ativo = document.getElementById('edit-cli-ativo').checked;
 
-            if (!nome) { alert("Informe o nome do cliente/posto."); return; }
+            if (!nome) { alert("Informe o nome do cliente."); return; }
             const codigo = nome.toUpperCase().replace(/[^A-Z0-9]/g, '_');
 
-            const payload = { codigo, nome, endereco: end, latitude: lat, longitude: lng, raio_metros: raio, teto_diario_horas: teto, pin_gestor: pin, ativo: true };
+            const payload = { codigo, nome, endereco: end, latitude: lat, longitude: lng, raio_metros: raio, teto_diario_horas: teto, pin_gestor: '2026', ativo };
             if (id) await sb.from('clientes').update(payload).eq('id', id);
             else await sb.from('clientes').insert([payload]);
 
@@ -985,7 +1016,7 @@
         }
 
         // =========================================================================
-        // 8. CENTRAL DE COMUNICAÇÃO DA SUPERVISÃO
+        // CENTRAL DE COMUNICAÇÃO
         // =========================================================================
         function selecionarCanalChatAdmin(canal) {
             canalChatAdmin = canal;
@@ -998,22 +1029,13 @@
         }
 
         async function carregarChatAdmin() {
-            const { data } = await sb.from('mensagens_chat')
-                .select('*')
-                .eq('cliente', clienteAtivo)
-                .eq('canal', canalChatAdmin)
-                .order('criado_em', { ascending: true })
-                .limit(60);
-
+            const { data } = await sb.from('mensagens_chat').select('*').eq('cliente', clienteAtivo).eq('canal', canalChatAdmin).order('criado_em', { ascending: true }).limit(60);
             const box = document.getElementById('admin-chat-messages');
-            if (!data || data.length === 0) {
-                box.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">Nenhuma mensagem neste canal.</p>`;
-                return;
-            }
+            if (!data || data.length === 0) { box.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">Nenhuma mensagem neste canal.</p>`; return; }
             box.innerHTML = data.map(m => {
                 const souSupervisao = m.autor_perfil === 'SUPERVISOR' || m.autor_perfil === 'ADMIN';
                 const dh = new Date(m.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-                const badgeUrg = m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase mr-1">Prioridade</span>` : '';
+                const badgeUrg = m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded mr-1">Prioridade</span>` : '';
                 return `
                 <div class="flex flex-col ${souSupervisao ? 'items-end' : 'items-start'}">
                     <div class="max-w-[82%] rounded-2xl px-3.5 py-2.5 ${souSupervisao ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm">
@@ -1034,17 +1056,8 @@
             const texto = input.value.trim();
             if (!texto) return;
             const urgente = document.getElementById('admin-chat-urgente').checked;
-            input.value = '';
-            document.getElementById('admin-chat-urgente').checked = false;
-
-            await sb.from('mensagens_chat').insert([{
-                cliente: clienteAtivo,
-                canal: canalChatAdmin,
-                autor_nome: adminLogado?.nome || 'Supervisão',
-                autor_perfil: 'SUPERVISOR',
-                mensagem: texto,
-                urgente: urgente
-            }]);
+            input.value = ''; document.getElementById('admin-chat-urgente').checked = false;
+            await sb.from('mensagens_chat').insert([{ cliente: clienteAtivo, canal: canalChatAdmin, autor_nome: adminLogado?.nome || 'Supervisão', autor_perfil: adminLogado?.perfil || 'SUPERVISOR', mensagem: texto, urgente: urgente }]);
             carregarChatAdmin();
         }
 
@@ -1053,18 +1066,11 @@
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarDadosAdmin())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarDadosAdmin())
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
-                    if (payload.new.cliente === clienteAtivo) {
-                        document.getElementById('admin-chat-dot').classList.remove('hidden');
-                        carregarChatAdmin();
-                    }
-                })
-                .subscribe();
+                    if (payload.new.cliente === clienteAtivo) { document.getElementById('admin-chat-dot').classList.remove('hidden'); carregarChatAdmin(); }
+                }).subscribe();
         }
 
-        window.onload = () => {
-            initIcons();
-            if (adminLogado) iniciarSessaoAdmin();
-        };
+        window.onload = () => { initIcons(); if (adminLogado) iniciarSessaoAdmin(); };
     </script>
 </body>
 </html>
