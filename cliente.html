@@ -25,7 +25,7 @@
         .dot { width: 6px; height: 6px; border-radius: 9999px; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 relative min-h-screen select-none">
+<body class="bg-slate-100 text-slate-800 relative min-h-screen select-none" onclick="desbloquearAudioNotificacao()">
 
     <!-- CABEÇALHO EXECUTIVO DO CLIENTE -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
@@ -92,21 +92,19 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 1: GALERIA DE ENTREGAS (ANTES/DEPOIS)  -->
+        <!-- ABA 1: GALERIA DE ENTREGAS (MÚLTIPLAS FOTOS)-->
         <!-- ========================================== -->
         <div id="tab-view-entregas" class="space-y-3.5">
-            <!-- Cronograma do Dia + Status Ao Vivo (Em Execução / Pausado / Vistoriado / Concluído) -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
                     <h3 class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
                         <i data-lucide="activity" class="w-4 h-4 text-orange-500"></i> Painel de Atividades de Hoje
                     </h3>
-                    <span class="text-[10px] font-bold text-slate-500">Atualização automática</span>
+                    <span class="text-[10px] font-bold text-slate-500">Atualização ao vivo</span>
                 </div>
                 <div id="lista-programadas-hoje" class="divide-y divide-slate-100 p-2"></div>
             </div>
 
-            <!-- Feed Fotográfico (Em Andamento + Vistoriadas + Concluídas) -->
             <div>
                 <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider px-1 mb-2 flex items-center gap-1.5">
                     <i data-lucide="camera" class="w-4 h-4 text-emerald-600"></i> Evidências Fotográficas e Vistorias
@@ -139,16 +137,18 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 3: CANAL DIRETO (SOLICITAÇÕES JOELMA)  -->
+        <!-- ABA 3: CANAL DIRETO (EQUIPE + SUPERVISÃO)  -->
         <!-- ========================================== -->
         <div id="tab-view-solicitacoes" class="hidden">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[65vh]">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[66vh]">
                 <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
                     <div>
-                        <h3 class="text-xs font-extrabold">Canal Direto • Supervisão & Equipe</h3>
-                        <p class="text-[10px] text-slate-400">Seus pedidos aparecem instantaneamente para a equipe no prédio</p>
+                        <h3 class="text-xs font-extrabold">Canal Direto • Equipe Local & Supervisão</h3>
+                        <p class="text-[10px] text-slate-400">Comunicação instantânea com os operadores e o supervisor Ramos</p>
                     </div>
-                    <i data-lucide="messages-square" class="w-5 h-5 text-orange-400"></i>
+                    <button onclick="solicitarPermissaoNotificacoes()" class="text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-orange-400 px-2.5 py-1.5 rounded-xl border border-slate-700 flex-shrink-0">
+                        🔔 Ativar Som
+                    </button>
                 </div>
 
                 <div id="chat-cliente-box" class="flex-1 p-3.5 overflow-y-auto space-y-2.5 bg-slate-50"></div>
@@ -161,7 +161,7 @@
                         </label>
                     </div>
                     <div class="flex gap-2">
-                        <input type="text" id="input-msg-cliente" onkeypress="if(event.key==='Enter') enviarSolicitacaoCliente()" placeholder="Digite uma orientação ou pedido especial..." class="flex-1 bg-slate-100 text-xs rounded-xl px-3.5 py-2.5 outline-none border border-transparent focus:border-orange-500 focus:bg-white">
+                        <input type="text" id="input-msg-cliente" onkeypress="if(event.key==='Enter') enviarSolicitacaoCliente()" placeholder="Digite uma orientação para a equipe ou supervisão..." class="flex-1 bg-slate-100 text-xs rounded-xl px-3.5 py-2.5 outline-none border border-transparent focus:border-orange-500 focus:bg-white">
                         <button onclick="enviarSolicitacaoCliente()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1 shadow-sm">
                             <i data-lucide="send" class="w-4 h-4"></i> Enviar
                         </button>
@@ -182,25 +182,25 @@
     <!-- NAVEGAÇÃO INFERIOR DO CLIENTE -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
         <div class="max-w-md mx-auto grid grid-cols-3 px-2 pb-3 pt-1.5">
-            <button onclick="trocarAbaCliente('entregas')" id="nav-entregas" class="flex flex-col items-center py-1.5 text-emerald-600 transition-colors">
+            <button onclick="trocarAbaCliente('entregas')" id="nav-entregas" class="flex flex-col items-center py-1.5 text-emerald-600 transition-colors relative">
                 <i data-lucide="check-circle-2" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Entregas & Fotos</span>
             </button>
-            <button onclick="trocarAbaCliente('calendario')" id="nav-calendario" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors">
+            <button onclick="trocarAbaCliente('calendario')" id="nav-calendario" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors relative">
                 <i data-lucide="calendar-days" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Cronograma</span>
             </button>
             <button onclick="trocarAbaCliente('solicitacoes')" id="nav-solicitacoes" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors relative">
                 <i data-lucide="message-square-plus" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Solicitações</span>
-                <span id="dot-msg-cliente" class="hidden w-2 h-2 rounded-full bg-red-500 absolute top-1.5 right-10"></span>
+                <span id="dot-msg-cliente" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-red-600 rounded-full flex items-center justify-center absolute top-1 right-7 shadow-sm">0</span>
             </button>
         </div>
     </nav>
 
     <script>
         // =========================================================================
-        // CONFIGURAÇÃO TRAVADA PARA O CONDOMÍNIO MISS SILVIA (v9.0)
+        // CONFIGURAÇÃO TRAVADA PARA O CONDOMÍNIO MISS SILVIA (v9.1)
         // =========================================================================
         const CLIENTE_FIXO = "Miss Silvia";
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
@@ -212,6 +212,8 @@
         let execucoesDB = [];
         let feriadosDB = [];
         let agendaMensal = {};
+        let abaClienteAtiva = 'entregas';
+        let naoLidasCliente = 0;
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -222,7 +224,116 @@
             if (h > 0) return `${h}h`;
             return `${m}m`;
         }
+        function extrairListaFotos(campoUrl) {
+            if (!campoUrl) return [];
+            return String(campoUrl).split('|').map(s => s.trim()).filter(Boolean);
+        }
 
+        // =========================================================================
+        // MOTOR DE SOM (WEB AUDIO API), POP-UP E MARQUINHAS DE NÃO LIDAS
+        // =========================================================================
+        let audioCtxGlobal = null;
+
+        function desbloquearAudioNotificacao() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
+            } catch (e) {}
+        }
+
+        function tocarChimeNotificacao() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
+
+                const osc = audioCtxGlobal.createOscillator();
+                const gain = audioCtxGlobal.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtxGlobal.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtxGlobal.currentTime);
+                osc.frequency.setValueAtTime(880.00, audioCtxGlobal.currentTime + 0.12);
+
+                gain.gain.setValueAtTime(0.22, audioCtxGlobal.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtxGlobal.currentTime + 0.55);
+
+                osc.start(audioCtxGlobal.currentTime);
+                osc.stop(audioCtxGlobal.currentTime + 0.55);
+            } catch (e) {}
+        }
+
+        function solicitarPermissaoNotificacoes() {
+            desbloquearAudioNotificacao();
+            if ("Notification" in window) {
+                Notification.requestPermission().then(perm => {
+                    if (perm === 'granted') {
+                        tocarChimeNotificacao();
+                        alert("🔔 Alertas sonoros e notificações ativados!");
+                    }
+                });
+            }
+        }
+
+        function dispararNotificacaoCliente(autor, texto, urgente) {
+            const titulo = urgente ? `🚨 Prioridade • ${autor}` : `💬 Nova mensagem de ${autor}`;
+            if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+                try { new Notification(titulo, { body: texto }); } catch (e) {}
+            }
+            mostrarToastCliente(titulo, texto);
+        }
+
+        function mostrarToastCliente(titulo, texto) {
+            let toast = document.getElementById('toast-chat-cliente');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-chat-cliente';
+                toast.className = 'fixed top-3 left-3 right-3 max-w-md mx-auto bg-slate-900/95 border border-emerald-500/60 text-white p-3 rounded-2xl shadow-2xl z-50 flex items-center justify-between gap-2.5 transition-all duration-300 transform -translate-y-24 opacity-0 cursor-pointer';
+                document.body.appendChild(toast);
+            }
+            toast.onclick = () => {
+                toast.classList.add('-translate-y-24', 'opacity-0');
+                trocarAbaCliente('solicitacoes');
+            };
+            toast.innerHTML = `
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                    </div>
+                    <div class="truncate">
+                        <p class="text-[11px] font-extrabold text-emerald-400 truncate">${titulo}</p>
+                        <p class="text-xs text-slate-100 truncate">${texto}</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Abrir</span>
+            `;
+            initIcons();
+            toast.classList.remove('-translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.add('-translate-y-24', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 5000);
+        }
+
+        function atualizarBadgeCliente() {
+            const dot = document.getElementById('dot-msg-cliente');
+            if (!dot) return;
+            if (naoLidasCliente > 0) {
+                dot.classList.remove('hidden');
+                dot.textContent = naoLidasCliente > 9 ? '9+' : naoLidasCliente;
+            } else {
+                dot.classList.add('hidden');
+            }
+        }
+
+        // =========================================================================
+        // CARREGAMENTO DO PORTAL E AGENDA
+        // =========================================================================
         async function carregarPortalCliente() {
             const inicioMes = dataISO(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
             const hojeStr = dataISO();
@@ -390,6 +501,9 @@
             });
         }
 
+        // =========================================================================
+        // RENDERIZAÇÃO DE ENTREGAS COM SUPORTE A MÚLTIPLAS FOTOS E PROGRESSO
+        // =========================================================================
         function renderizarEntregasCliente() {
             const hojeStr = dataISO();
             const tarefasHoje = agendaMensal[hojeStr]?.tarefas || [];
@@ -449,10 +563,10 @@
             document.getElementById('contagem-tarefas').textContent = `${resolvidasHoje} de ${tarefasHoje.length} hoje`;
             document.getElementById('barra-progresso-cliente').style.width = `${pct}%`;
 
-            // Feed de Evidências (Suporta Vistoria Única, Em Execução e Antes/Depois)
+            // Feed de Evidências Fotográficas (Com suporte a múltiplas fotos no Antes/Avanço e Depois)
             const feedEl = document.getElementById('feed-auditoria-fotos');
             if (execucoesDB.length === 0) {
-                feedEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-slate-200 text-xs text-slate-400">As fotos de Antes, Depois e Vistorias aparecerão aqui assim que as atividades forem iniciadas.</div>`;
+                feedEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-slate-200 text-xs text-slate-400">As fotos de Antes, Avanço, Depois e Vistorias aparecerão aqui assim que as atividades forem iniciadas.</div>`;
                 return;
             }
 
@@ -460,6 +574,9 @@
                 const isDispensado = e.status_execucao === 'DISPENSADO';
                 const emCurso = !['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao);
                 const dataFmt = new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+                const fotosAntesArr = extrairListaFotos(e.foto_antes_url);
+                const fotosDepoisArr = extrairListaFotos(e.foto_depois_url);
 
                 let badgeTopo = `<span class="text-[10px] font-semibold text-slate-400">${dataFmt}</span>`;
                 if (isDispensado) {
@@ -470,22 +587,36 @@
                     badgeTopo = `<span class="text-[10px] font-extrabold bg-orange-500 text-white px-2 py-0.5 rounded-full animate-pulse">🟠 Em Execução Agora</span>`;
                 }
 
-                // Se foi Dispensado por Vistoria (ex: chuva anterior), exibe 1 foto ampla de vistoria
+                // Miniaturas extras se houver mais de 1 foto no Antes/Progresso ou Depois
+                const thumbsAntesExtras = fotosAntesArr.length > 1
+                    ? `<div class="flex gap-1.5 mt-1.5">${fotosAntesArr.map((u, idx) => `<img onclick="abrirZoomFoto('${u}', '${idx === 0 ? 'ANTES' : 'AVANÇO ' + idx} • ${e.setor}')" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-slate-300 cursor-pointer">`).join('')}</div>`
+                    : '';
+
+                const thumbsDepoisExtras = fotosDepoisArr.length > 1
+                    ? `<div class="flex gap-1.5 mt-1.5">${fotosDepoisArr.map((u, idx) => `<img onclick="abrirZoomFoto('${u}', 'DEPOIS (Foto ${idx + 1}) • ${e.setor}')" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-emerald-400 cursor-pointer">`).join('')}</div>`
+                    : '';
+
                 const blocoFotos = isDispensado
-                    ? `<div onclick="abrirZoomFoto('${e.foto_depois_url || e.foto_antes_url || ''}', 'VISTORIA TÉCNICA • ${e.setor}')" class="relative h-40 bg-slate-100 rounded-xl overflow-hidden border-2 border-sky-300 cursor-pointer">
-                            <img src="${e.foto_depois_url || e.foto_antes_url}" class="w-full h-full object-cover">
+                    ? `<div onclick="abrirZoomFoto('${fotosDepoisArr[0] || fotosAntesArr[0] || ''}', 'VISTORIA TÉCNICA • ${e.setor}')" class="relative h-40 bg-slate-100 rounded-xl overflow-hidden border-2 border-sky-300 cursor-pointer">
+                            <img src="${fotosDepoisArr[0] || fotosAntesArr[0]}" class="w-full h-full object-cover">
                             <span class="absolute bottom-2 left-2 bg-sky-900/90 text-white text-[9px] font-extrabold px-2.5 py-1 rounded">FOTO DE VISTORIA TÉCNICA NO LOCAL</span>
                        </div>`
                     : `<div class="grid grid-cols-2 gap-2.5">
-                        <div onclick="abrirZoomFoto('${e.foto_antes_url || ''}', 'ANTES • ${e.setor}')" class="relative h-32 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 cursor-pointer">
-                            ${e.foto_antes_url ? `<img src="${e.foto_antes_url}" class="w-full h-full object-cover">` : `<div class="flex items-center justify-center h-full text-[10px] text-slate-400">Sem foto</div>`}
-                            <span class="absolute bottom-1.5 left-1.5 bg-slate-900/80 text-white text-[9px] font-extrabold px-2 py-0.5 rounded">ANTES</span>
+                        <div>
+                            <div onclick="abrirZoomFoto('${fotosAntesArr[0] || ''}', 'ANTES • ${e.setor}')" class="relative h-32 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 cursor-pointer">
+                                ${fotosAntesArr[0] ? `<img src="${fotosAntesArr[0]}" class="w-full h-full object-cover">` : `<div class="flex items-center justify-center h-full text-[10px] text-slate-400">Sem foto</div>`}
+                                <span class="absolute bottom-1.5 left-1.5 bg-slate-900/80 text-white text-[9px] font-extrabold px-2 py-0.5 rounded">${fotosAntesArr.length > 1 ? `ANTES (+${fotosAntesArr.length - 1})` : 'ANTES'}</span>
+                            </div>
+                            ${thumbsAntesExtras}
                         </div>
-                        <div onclick="abrirZoomFoto('${e.foto_depois_url || ''}', 'DEPOIS • ${e.setor}')" class="relative h-32 bg-slate-100 rounded-xl overflow-hidden border-2 ${emCurso ? 'border-dashed border-orange-300' : 'border-emerald-400'} cursor-pointer">
-                            ${e.foto_depois_url
-                                ? `<img src="${e.foto_depois_url}" class="w-full h-full object-cover">`
-                                : `<div class="flex flex-col items-center justify-center h-full text-[10px] font-bold text-orange-600 bg-orange-50/50 p-2 text-center">⏳ Em execução...<br><span class="font-normal text-slate-400">Foto final ao concluir</span></div>`}
-                            <span class="absolute bottom-1.5 left-1.5 bg-emerald-700 text-white text-[9px] font-extrabold px-2 py-0.5 rounded">DEPOIS</span>
+                        <div>
+                            <div onclick="abrirZoomFoto('${fotosDepoisArr[0] || ''}', 'DEPOIS • ${e.setor}')" class="relative h-32 bg-slate-100 rounded-xl overflow-hidden border-2 ${emCurso ? 'border-dashed border-orange-300' : 'border-emerald-400'} cursor-pointer">
+                                ${fotosDepoisArr[0]
+                                    ? `<img src="${fotosDepoisArr[0]}" class="w-full h-full object-cover">`
+                                    : `<div class="flex flex-col items-center justify-center h-full text-[10px] font-bold text-orange-600 bg-orange-50/50 p-2 text-center">⏳ Em execução...<br><span class="font-normal text-slate-400">Foto final ao concluir</span></div>`}
+                                <span class="absolute bottom-1.5 left-1.5 bg-emerald-700 text-white text-[9px] font-extrabold px-2 py-0.5 rounded">${fotosDepoisArr.length > 1 ? `DEPOIS (${fotosDepoisArr.length} fotos)` : 'DEPOIS'}</span>
+                            </div>
+                            ${thumbsDepoisExtras}
                         </div>
                     </div>`;
 
@@ -568,6 +699,9 @@
                 </div>`).join('');
         }
 
+        // =========================================================================
+        // COMUNICADOR DO CLIENTE (FALA COM EQUIPE E SUPERVISÃO)
+        // =========================================================================
         async function carregarChatCliente() {
             const { data } = await sb.from('mensagens_chat')
                 .select('*')
@@ -577,19 +711,20 @@
 
             const box = document.getElementById('chat-cliente-box');
             if (!data || data.length === 0) {
-                box.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Envie abaixo qualquer solicitação especial para a equipe.</p>`;
+                box.innerHTML = `<p class="text-center text-xs text-slate-400 py-8">Envie abaixo qualquer solicitação especial para a equipe local ou supervisão.</p>`;
                 return;
             }
             box.innerHTML = data.map(m => {
                 const isCliente = m.autor_perfil === 'CLIENTE';
                 const dh = new Date(m.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
                 const tagUrg = m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase mr-1">Prioridade</span>` : '';
+                const tagCargo = !isCliente ? `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">${m.autor_perfil === 'SUPERVISOR' ? 'Supervisão' : 'Equipe'}</span>` : '';
                 return `
                 <div class="flex flex-col ${isCliente ? 'items-end' : 'items-start'}">
                     <div class="max-w-[85%] rounded-2xl px-3.5 py-2.5 ${isCliente ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm">
-                        <div class="flex items-center gap-1 mb-0.5">
-                            ${tagUrg}
-                            <span class="text-[10px] font-extrabold ${isCliente ? 'text-orange-400' : 'text-emerald-600'}">${m.autor_nome}</span>
+                        <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                            ${tagUrg} ${tagCargo}
+                            <span class="text-[10px] font-extrabold ${isCliente ? 'text-orange-400' : 'text-emerald-700'}">${m.autor_nome}</span>
                             <span class="text-[9px] opacity-60">• ${dh}</span>
                         </div>
                         <p class="text-xs leading-relaxed">${m.mensagem}</p>
@@ -620,6 +755,7 @@
         }
 
         function trocarAbaCliente(aba) {
+            abaClienteAtiva = aba;
             ['entregas', 'calendario', 'solicitacoes'].forEach(a => {
                 document.getElementById(`tab-view-${a}`).classList.toggle('hidden', a !== aba);
                 document.getElementById(`nav-${a}`).className = (a === aba)
@@ -627,17 +763,26 @@
                     : "flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors relative";
             });
             if (aba === 'solicitacoes') {
-                document.getElementById('dot-msg-cliente').classList.add('hidden');
+                naoLidasCliente = 0;
+                atualizarBadgeCliente();
                 carregarChatCliente();
             }
         }
 
-        sb.channel('portal-miss-silvia-v9')
+        sb.channel('portal-miss-silvia-v91')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarPortalCliente())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarPortalCliente())
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
-                if (payload.new.cliente === CLIENTE_FIXO && payload.new.canal === 'CLIENTE') {
-                    document.getElementById('dot-msg-cliente').classList.remove('hidden');
+                const msg = payload.new;
+                if (msg.cliente === CLIENTE_FIXO && msg.canal === 'CLIENTE') {
+                    if (msg.autor_perfil !== 'CLIENTE') {
+                        tocarChimeNotificacao();
+                        if (abaClienteAtiva !== 'solicitacoes') {
+                            naoLidasCliente++;
+                            atualizarBadgeCliente();
+                            dispararNotificacaoCliente(msg.autor_nome, msg.mensagem, msg.urgente);
+                        }
+                    }
                     carregarChatCliente();
                 }
             })
