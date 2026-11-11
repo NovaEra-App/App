@@ -92,7 +92,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 1: GALERIA DE ENTREGAS (MÚLTIPLAS FOTOS)-->
+        <!-- ABA 1: GALERIA DE ENTREGAS E HISTÓRICO     -->
         <!-- ========================================== -->
         <div id="tab-view-entregas" class="space-y-3.5">
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -105,34 +105,65 @@
                 <div id="lista-programadas-hoje" class="divide-y divide-slate-100 p-2"></div>
             </div>
 
-            <div>
-                <h3 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider px-1 mb-2 flex items-center gap-1.5">
-                    <i data-lucide="camera" class="w-4 h-4 text-emerald-600"></i> Evidências Fotográficas e Vistorias
-                </h3>
-                <div id="feed-auditoria-fotos" class="space-y-3"></div>
+            <!-- BARRA DE FILTRO DE HISTÓRICO DE FOTOS E ENTREGAS -->
+            <div class="bg-slate-900 text-white rounded-2xl p-3 shadow-sm space-y-2.5">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-extrabold flex items-center gap-1.5">
+                        <i data-lucide="camera" class="w-4 h-4 text-emerald-400"></i> Histórico de Fotos e Vistorias
+                    </h3>
+                    <span id="cliente-hist-count" class="text-[10px] font-extrabold bg-slate-800 text-emerald-300 px-2 py-0.5 rounded-full border border-slate-700">0 registros</span>
+                </div>
+
+                <div class="grid grid-cols-4 gap-1 bg-slate-800 p-1 rounded-xl">
+                    <button onclick="setFiltroPeriodoCliente('HOJE')" id="btn-cli-hist-HOJE" class="py-1.5 rounded-lg text-[10px] font-extrabold bg-emerald-600 text-white shadow-sm">Hoje</button>
+                    <button onclick="setFiltroPeriodoCliente('ONTEM')" id="btn-cli-hist-ONTEM" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Ontem</button>
+                    <button onclick="setFiltroPeriodoCliente('7DIAS')" id="btn-cli-hist-7DIAS" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">7 Dias</button>
+                    <button onclick="setFiltroPeriodoCliente('MES')" id="btn-cli-hist-MES" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Mês Atual</button>
+                </div>
+
+                <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5">
+                    <i data-lucide="calendar-search" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span class="text-[10px] font-bold text-slate-300">Consultar data específica:</span>
+                    <input type="date" id="input-data-cliente" onchange="filtrarDataEspecificaCliente(this.value)" class="bg-transparent text-white text-[11px] font-extrabold outline-none flex-1">
+                </div>
             </div>
+
+            <div id="feed-auditoria-fotos" class="space-y-3"></div>
         </div>
 
         <!-- ========================================== -->
-        <!-- ABA 2: CALENDÁRIO MENSAL DO CONDOMÍNIO     -->
+        <!-- ABA 2: CALENDÁRIO MENSAL & HISTÓRICO       -->
         <!-- ========================================== -->
-        <div id="tab-view-calendario" class="hidden space-y-4">
-            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                <span class="text-xs font-bold text-slate-600">Cronograma Mensal Previsto</span>
-                <span id="cal-mes-ano" class="text-xs font-extrabold text-slate-900 capitalize"></span>
+        <div id="tab-view-calendario" class="hidden space-y-3.5">
+            <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                <button onclick="mudarMesCalendarioCliente(-1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Ant.
+                </button>
+                <div class="text-center">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block leading-none">Histórico & Programação</span>
+                    <span id="cal-mes-ano" class="text-sm font-extrabold text-slate-900 capitalize mt-0.5 block"></span>
+                </div>
+                <button onclick="mudarMesCalendarioCliente(1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                    Próx. <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
             </div>
 
             <div class="month-grid shadow-sm" id="month-days-container"></div>
 
+            <div class="flex justify-center gap-4 text-[10px] font-bold text-slate-600">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Entregue c/ Foto</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Rotina Prevista</span>
+            </div>
+
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-50 p-3 border-b border-slate-200 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
-                        <i data-lucide="calendar-check" class="w-4 h-4 text-emerald-600"></i>
+                <div class="bg-slate-900 text-white p-3 flex justify-between items-center">
+                    <h3 class="font-bold text-xs flex items-center gap-1.5">
+                        <i data-lucide="calendar-check" class="w-4 h-4 text-emerald-400"></i>
                         <span id="selected-day-title">Dia Selecionado</span>
                     </h3>
-                    <span class="bg-white border border-slate-200 text-slate-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full" id="selected-day-count">0 ativ.</span>
+                    <span class="bg-slate-800 border border-slate-700 text-emerald-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full" id="selected-day-count">0 ativ.</span>
                 </div>
-                <div class="p-3 space-y-2" id="selected-day-list"></div>
+                <div class="p-3 space-y-2.5" id="selected-day-list"></div>
             </div>
         </div>
 
@@ -175,7 +206,7 @@
     <!-- MODAL DE ZOOM DAS FOTOS (LIGHTBOX) -->
     <div id="lightbox-modal" onclick="fecharZoomFoto()" class="fixed inset-0 bg-slate-950/90 z-50 hidden flex flex-col items-center justify-center p-4">
         <img id="lightbox-img" class="max-w-full max-h-[82vh] rounded-xl shadow-2xl border border-slate-700 object-contain">
-        <p id="lightbox-caption" class="text-xs font-bold text-white mt-3 bg-slate-900/80 px-3 py-1.5 rounded-full"></p>
+        <p id="lightbox-caption" class="text-xs font-bold text-white mt-3 bg-slate-900/80 px-3 py-1.5 rounded-full text-center"></p>
         <p class="text-[10px] text-slate-400 mt-1">Toque em qualquer lugar para fechar</p>
     </div>
 
@@ -188,7 +219,7 @@
             </button>
             <button onclick="trocarAbaCliente('calendario')" id="nav-calendario" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors relative">
                 <i data-lucide="calendar-days" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px] font-bold">Cronograma</span>
+                <span class="text-[10px] font-bold">Histórico & Mês</span>
             </button>
             <button onclick="trocarAbaCliente('solicitacoes')" id="nav-solicitacoes" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors relative">
                 <i data-lucide="message-square-plus" class="w-5 h-5 mb-0.5"></i>
@@ -200,7 +231,7 @@
 
     <script>
         // =========================================================================
-        // CONFIGURAÇÃO TRAVADA PARA O CONDOMÍNIO MISS SILVIA (v9.1)
+        // CONFIGURAÇÃO TRAVADA PARA O CONDOMÍNIO MISS SILVIA (v9.2 - HISTÓRICO)
         // =========================================================================
         const CLIENTE_FIXO = "Miss Silvia";
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
@@ -214,6 +245,16 @@
         let agendaMensal = {};
         let abaClienteAtiva = 'entregas';
         let naoLidasCliente = 0;
+
+        // Estado do Filtro de Histórico no Feed de Fotos
+        let filtroPeriodoCliente = '7DIAS'; // 'HOJE' | 'ONTEM' | '7DIAS' | 'MES' | 'DATA_ESPECIFICA'
+        let dataEspecificaCliente = '';
+        let execucoesDataEspecificaClienteDB = [];
+
+        // Estado do Calendário Mensal do Cliente
+        let calAnoCli = new Date().getFullYear();
+        let calMesCli = new Date().getMonth();
+        let execucoesCalendarioCliCache = [];
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -349,10 +390,13 @@
             if (resCli.data?.[0]) tetoHorasCliente = Number(resCli.data[0].teto_diario_horas) || 6;
             cronogramaDB = resCrono.data || [];
             execucoesDB = resExec.data || [];
+            if (calAnoCli === new Date().getFullYear() && calMesCli === new Date().getMonth()) {
+                execucoesCalendarioCliCache = execucoesDB;
+            }
             feriadosDB = (resFer.data || []).map(f => f.data_feriado);
 
             atualizarStatusPresenca(resPres.data?.[0] || null);
-            calcularAgendaCliente();
+            calcularAgendaCliente(new Date().getFullYear(), new Date().getMonth());
             renderizarEntregasCliente();
             renderizarCalendarioCliente();
             carregarChatCliente();
@@ -411,17 +455,15 @@
             return false;
         }
 
-        function calcularAgendaCliente() {
+        function calcularAgendaCliente(anoRef = calAnoCli, mesRef = calMesCli) {
             agendaMensal = {};
-            const agora = new Date();
-            const hojeStr = dataISO(agora);
-            const ano = agora.getFullYear(), mes = agora.getMonth();
-            const totalDias = new Date(ano, mes + 1, 0).getDate();
+            const hojeStr = dataISO(new Date());
+            const totalDias = new Date(anoRef, mesRef + 1, 0).getDate();
             const diasUteis = [];
             const LIMITE_DIARIO = tetoHorasCliente * 60;
 
             for (let dia = 1; dia <= totalDias; dia++) {
-                const d = new Date(ano, mes, dia);
+                const d = new Date(anoRef, mesRef, dia);
                 const dStr = dataISO(d);
                 const util = d.getDay() !== 0 && d.getDay() !== 6 && !feriadosDB.includes(dStr);
                 agendaMensal[dStr] = { data: d, util: util, tarefas: [], minutos: 0 };
@@ -443,7 +485,7 @@
                 const isFlutuante = f.includes('mês') || f.includes('mensal') || f.includes('quinzenal') || f.includes('quadrimestral');
                 const minT = Number(t.duracao_minutos) || 30;
 
-                if (t.data_alvo && t.data_alvo >= hojeStr && agendaMensal[t.data_alvo]) {
+                if (t.data_alvo && agendaMensal[t.data_alvo]) {
                     agendaMensal[t.data_alvo].tarefas.push({ ...t });
                     agendaMensal[t.data_alvo].minutos += minT;
                 } else if (!t.data_alvo && !isFlutuante) {
@@ -457,6 +499,8 @@
             });
 
             const diasFuturos = diasUteis.filter(d => d >= hojeStr);
+            const baseFlutuantes = diasFuturos.length > 0 ? diasFuturos : diasUteis;
+
             cronogramaDB.forEach(t => {
                 if (t.data_alvo) return;
                 const f = (t.frequencia || '').toLowerCase();
@@ -464,16 +508,16 @@
                 if (!isFlutuante) return;
 
                 const minTotal = Number(t.duracao_minutos) || 60;
-                const jaFeito = execucoesDB.filter(e => e.status_execucao === 'CONCLUIDO' && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade.startsWith(t.atividade))))
+                const jaFeito = execucoesCalendarioCliCache.filter(e => e.status_execucao === 'CONCLUIDO' && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade.startsWith(t.atividade))))
                     .reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
                 let rest = Math.max(0, minTotal - jaFeito);
                 if (rest === 0) return;
 
                 const fatiaIdeal = minTotal > 240 ? 120 : rest;
                 let guard = 0;
-                while (rest > 0 && diasFuturos.length > 0 && guard < 45) {
+                while (rest > 0 && baseFlutuantes.length > 0 && guard < 45) {
                     guard++;
-                    const candidatos = diasFuturos.filter(dStr => (LIMITE_DIARIO - agendaMensal[dStr].minutos) >= 15);
+                    const candidatos = baseFlutuantes.filter(dStr => (LIMITE_DIARIO - agendaMensal[dStr].minutos) >= 15);
                     if (candidatos.length === 0) break;
                     let melhor = candidatos[0];
                     candidatos.forEach(d => { if (agendaMensal[d].minutos < agendaMensal[melhor].minutos) melhor = d; });
@@ -502,8 +546,69 @@
         }
 
         // =========================================================================
-        // RENDERIZAÇÃO DE ENTREGAS COM SUPORTE A MÚLTIPLAS FOTOS E PROGRESSO
+        // FILTROS DE HISTÓRICO NO FEED DE FOTOS DO CLIENTE
         // =========================================================================
+        function setFiltroPeriodoCliente(periodo) {
+            filtroPeriodoCliente = periodo;
+            dataEspecificaCliente = '';
+            document.getElementById('input-data-cliente').value = '';
+
+            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
+                const btn = document.getElementById(`btn-cli-hist-${p}`);
+                if (p === periodo) {
+                    btn.className = "py-1.5 rounded-lg text-[10px] font-extrabold bg-emerald-600 text-white shadow-sm";
+                } else {
+                    btn.className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
+                }
+            });
+            renderizarFeedFotosCliente();
+        }
+
+        async function filtrarDataEspecificaCliente(dataVal) {
+            if (!dataVal) {
+                setFiltroPeriodoCliente('7DIAS');
+                return;
+            }
+            filtroPeriodoCliente = 'DATA_ESPECIFICA';
+            dataEspecificaCliente = dataVal;
+
+            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
+                document.getElementById(`btn-cli-hist-${p}`).className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
+            });
+
+            const { data } = await sb.from('execucoes_auditoria')
+                .select('*')
+                .eq('cliente', CLIENTE_FIXO)
+                .eq('data_referencia', dataVal)
+                .order('dh_envio_servidor', { ascending: false });
+
+            execucoesDataEspecificaClienteDB = data || [];
+            renderizarFeedFotosCliente();
+        }
+
+        function obterExecucoesFiltradasCliente() {
+            const hojeStr = dataISO();
+            if (filtroPeriodoCliente === 'DATA_ESPECIFICA' && dataEspecificaCliente) {
+                return execucoesDataEspecificaClienteDB;
+            }
+            if (filtroPeriodoCliente === 'HOJE') {
+                return execucoesDB.filter(e => e.data_referencia === hojeStr);
+            }
+            if (filtroPeriodoCliente === 'ONTEM') {
+                const ontem = new Date();
+                ontem.setDate(ontem.getDate() - 1);
+                const ontemStr = dataISO(ontem);
+                return execucoesDB.filter(e => e.data_referencia === ontemStr);
+            }
+            if (filtroPeriodoCliente === '7DIAS') {
+                const sete = new Date();
+                sete.setDate(sete.getDate() - 7);
+                const seteStr = dataISO(sete);
+                return execucoesDB.filter(e => e.data_referencia >= seteStr);
+            }
+            return execucoesDB; // 'MES'
+        }
+
         function renderizarEntregasCliente() {
             const hojeStr = dataISO();
             const tarefasHoje = agendaMensal[hojeStr]?.tarefas || [];
@@ -563,14 +668,20 @@
             document.getElementById('contagem-tarefas').textContent = `${resolvidasHoje} de ${tarefasHoje.length} hoje`;
             document.getElementById('barra-progresso-cliente').style.width = `${pct}%`;
 
-            // Feed de Evidências Fotográficas (Com suporte a múltiplas fotos no Antes/Avanço e Depois)
+            renderizarFeedFotosCliente();
+        }
+
+        function renderizarFeedFotosCliente() {
+            const listaFiltrada = obterExecucoesFiltradasCliente();
+            document.getElementById('cliente-hist-count').textContent = `${listaFiltrada.length} registro(s)`;
+
             const feedEl = document.getElementById('feed-auditoria-fotos');
-            if (execucoesDB.length === 0) {
-                feedEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-slate-200 text-xs text-slate-400">As fotos de Antes, Avanço, Depois e Vistorias aparecerão aqui assim que as atividades forem iniciadas.</div>`;
+            if (listaFiltrada.length === 0) {
+                feedEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-slate-200 text-xs text-slate-400">Nenhuma atividade ou foto encontrada para o período selecionado. Altere o filtro acima para consultar outros dias.</div>`;
                 return;
             }
 
-            feedEl.innerHTML = execucoesDB.slice(0, 25).map(e => {
+            feedEl.innerHTML = listaFiltrada.map(e => {
                 const isDispensado = e.status_execucao === 'DISPENSADO';
                 const emCurso = !['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao);
                 const dataFmt = new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -580,14 +691,13 @@
 
                 let badgeTopo = `<span class="text-[10px] font-semibold text-slate-400">${dataFmt}</span>`;
                 if (isDispensado) {
-                    badgeTopo = `<span class="text-[10px] font-extrabold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">☑️ Vistoriado • Não Necessário</span>`;
+                    badgeTopo = `<span class="text-[10px] font-extrabold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">☑️ Vistoriado • ${dataFmt}</span>`;
                 } else if (e.status_execucao === 'PAUSADO') {
                     badgeTopo = `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏸️ Pausado (${e.motivo_pausa || 'Intervalo'})</span>`;
                 } else if (e.status_execucao === 'EM_ANDAMENTO') {
                     badgeTopo = `<span class="text-[10px] font-extrabold bg-orange-500 text-white px-2 py-0.5 rounded-full animate-pulse">🟠 Em Execução Agora</span>`;
                 }
 
-                // Miniaturas extras se houver mais de 1 foto no Antes/Progresso ou Depois
                 const thumbsAntesExtras = fotosAntesArr.length > 1
                     ? `<div class="flex gap-1.5 mt-1.5">${fotosAntesArr.map((u, idx) => `<img onclick="abrirZoomFoto('${u}', '${idx === 0 ? 'ANTES' : 'AVANÇO ' + idx} • ${e.setor}')" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-slate-300 cursor-pointer">`).join('')}</div>`
                     : '';
@@ -648,31 +758,61 @@
         }
         function fecharZoomFoto() { document.getElementById('lightbox-modal').classList.add('hidden'); }
 
+        // =========================================================================
+        // CALENDÁRIO DO CLIENTE COM NAVEGAÇÃO DE MESES E HISTÓRICO REAL DO DIA
+        // =========================================================================
+        async function mudarMesCalendarioCliente(delta) {
+            calMesCli += delta;
+            if (calMesCli < 0) { calMesCli = 11; calAnoCli--; }
+            else if (calMesCli > 11) { calMesCli = 0; calAnoCli++; }
+
+            const inicioISO = dataISO(new Date(calAnoCli, calMesCli, 1));
+            const fimISO = dataISO(new Date(calAnoCli, calMesCli + 1, 0));
+
+            const { data } = await sb.from('execucoes_auditoria')
+                .select('*')
+                .eq('cliente', CLIENTE_FIXO)
+                .gte('data_referencia', inicioISO)
+                .lte('data_referencia', fimISO)
+                .order('dh_envio_servidor', { ascending: false });
+
+            execucoesCalendarioCliCache = data || [];
+            calcularAgendaCliente(calAnoCli, calMesCli);
+            renderizarCalendarioCliente();
+        }
+
         function renderizarCalendarioCliente() {
             const container = document.getElementById('month-days-container');
-            const hoje = new Date();
-            const ano = hoje.getFullYear(), mes = hoje.getMonth(), diaAtual = hoje.getDate();
-            document.getElementById('cal-mes-ano').textContent = hoje.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            const hojeReal = new Date();
+            const dataRefTitulo = new Date(calAnoCli, calMesCli, 1);
+            document.getElementById('cal-mes-ano').textContent = dataRefTitulo.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
             let html = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(d => `<div class="month-header">${d}</div>`).join('');
-            const primeiroDia = new Date(ano, mes, 1).getDay();
-            const totalDias = new Date(ano, mes + 1, 0).getDate();
+            const primeiroDia = new Date(calAnoCli, calMesCli, 1).getDay();
+            const totalDias = new Date(calAnoCli, calMesCli + 1, 0).getDate();
 
             for (let i = 0; i < primeiroDia; i++) html += `<div class="month-cell empty"></div>`;
 
+            const ehMesAtual = (calAnoCli === hojeReal.getFullYear() && calMesCli === hojeReal.getMonth());
+            const diaSelecionarPadrao = ehMesAtual ? hojeReal.getDate() : 1;
+
             for (let day = 1; day <= totalDias; day++) {
-                const dStr = dataISO(new Date(ano, mes, day));
+                const dStr = dataISO(new Date(calAnoCli, calMesCli, day));
                 const ag = agendaMensal[dStr];
+                const execsNoDia = execucoesCalendarioCliCache.filter(e => e.data_referencia === dStr);
+
                 let classes = "month-cell";
-                if (day === diaAtual) classes += " today selected";
-                if (!ag || !ag.util) classes += " bg-slate-50 opacity-60";
+                if (ehMesAtual && day === hojeReal.getDate()) classes += " today";
+                if (day === diaSelecionarPadrao) classes += " selected";
+                if ((!ag || !ag.util) && execsNoDia.length === 0) classes += " bg-slate-50 opacity-60";
 
                 let dots = '';
-                if (ag && ag.tarefas.length > 0) dots = `<div class="dot bg-emerald-500"></div><div class="dot bg-blue-500"></div>`;
+                if (execsNoDia.length > 0) dots += `<div class="dot bg-emerald-500"></div>`;
+                if (ag && ag.tarefas.length > 0) dots += `<div class="dot bg-blue-500"></div>`;
                 html += `<div class="${classes}" onclick="verDiaCalendarioCliente('${dStr}', ${day}, this)"><span class="day-num">${day}</span><div class="task-dots">${dots}</div></div>`;
             }
             container.innerHTML = html;
-            verDiaCalendarioCliente(dataISO(hoje), diaAtual, null);
+            verDiaCalendarioCliente(dataISO(new Date(calAnoCli, calMesCli, diaSelecionarPadrao)), diaSelecionarPadrao, null);
         }
 
         function verDiaCalendarioCliente(dStr, day, el) {
@@ -680,23 +820,66 @@
                 document.querySelectorAll('.month-cell.selected').forEach(c => c.classList.remove('selected'));
                 el.classList.add('selected');
             }
-            document.getElementById('selected-day-title').textContent = `Programação • Dia ${day}`;
+            const dataFmt = new Date(dStr + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+            document.getElementById('selected-day-title').textContent = `Auditoria & Grade • ${dataFmt}`;
+
             const ag = agendaMensal[dStr];
+            const execsDia = execucoesCalendarioCliCache.filter(e => e.data_referencia === dStr);
             const list = document.getElementById('selected-day-list');
-            if (!ag || !ag.util || ag.tarefas.length === 0) {
-                document.getElementById('selected-day-count').textContent = "Sem rotina fixa";
-                list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Fim de semana, feriado ou livre.</p>`;
-                return;
+
+            let html = '';
+
+            // 1. BLOCO DE HISTÓRICO REAL ENTREGUE NA DATA (COM FOTOS PARA A JOELMA)
+            if (execsDia.length > 0) {
+                document.getElementById('selected-day-count').textContent = `${execsDia.length} entregue(s)`;
+                html += `<p class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider px-1">✅ Realizado nesta data (${execsDia.length})</p>`;
+                html += execsDia.map(e => {
+                    const isDisp = e.status_execucao === 'DISPENSADO';
+                    const fotosAntes = extrairListaFotos(e.foto_antes_url);
+                    const fotosDepois = extrairListaFotos(e.foto_depois_url);
+                    const todasFotos = [...fotosAntes, ...fotosDepois];
+                    const thumbs = todasFotos.map(u => `<img onclick="abrirZoomFoto('${u}', '${e.setor} • ${e.atividade}')" src="${u}" class="w-11 h-11 rounded-lg object-cover border border-slate-300 cursor-pointer flex-shrink-0">`).join('');
+
+                    return `
+                    <div class="p-3 rounded-xl border ${isDisp ? 'bg-sky-50/70 border-sky-200' : 'bg-emerald-50/60 border-emerald-200'} space-y-1.5">
+                        <div class="flex justify-between items-start gap-2">
+                            <span class="text-[10px] font-extrabold ${isDisp ? 'bg-sky-200 text-sky-900' : 'bg-emerald-200 text-emerald-900'} px-2 py-0.5 rounded">${e.setor}</span>
+                            <span class="text-[10px] font-extrabold ${isDisp ? 'text-sky-800' : 'text-emerald-800'}">${isDisp ? '☑️ Vistoriado' : '✓ Concluído'}</span>
+                        </div>
+                        <p class="text-xs font-extrabold text-slate-900">${e.atividade}</p>
+                        <p class="text-[11px] text-slate-600 italic">"${e.observacao || ''}"</p>
+                        <p class="text-[10px] font-bold text-slate-500">👷 Equipe: ${e.equipe_executora}</p>
+                        ${thumbs ? `<div class="flex gap-1.5 pt-1 overflow-x-auto">${thumbs}</div>` : ''}
+                    </div>`;
+                }).join('');
             }
-            document.getElementById('selected-day-count').textContent = `${ag.tarefas.length} atividades`;
-            list.innerHTML = ag.tarefas.map(t => `
-                <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-800">${t.atividade}</p>
-                        <p class="text-[10px] text-slate-500">${t.setor} • ${t.especie || 'Geral'}</p>
-                    </div>
-                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">${t.frequencia}</span>
-                </div>`).join('');
+
+            // 2. BLOCO DE CRONOGRAMA PREVISTO PARA O DIA
+            if (ag && ag.util && ag.tarefas.length > 0) {
+                if (execsDia.length === 0) {
+                    document.getElementById('selected-day-count').textContent = `${ag.tarefas.length} prevista(s)`;
+                }
+                html += `<p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-1 pt-2">📋 Programação Prevista (${ag.tarefas.length})</p>`;
+                html += ag.tarefas.map(t => {
+                    const jaFeitaNoDia = execsDia.some(e => e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade));
+                    return `
+                    <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center ${jaFeitaNoDia ? 'opacity-60' : ''}">
+                        <div>
+                            <p class="text-xs font-bold ${jaFeitaNoDia ? 'line-through text-slate-500' : 'text-slate-800'}">${t.atividade}</p>
+                            <p class="text-[10px] text-slate-500">${t.setor} • ${t.especie || 'Geral'}</p>
+                        </div>
+                        <span class="text-[10px] font-bold ${jaFeitaNoDia ? 'text-emerald-700 bg-emerald-50' : 'text-slate-500 bg-white border border-slate-200'} px-2 py-0.5 rounded">${jaFeitaNoDia ? '✓ Entregue' : t.frequencia}</span>
+                    </div>`;
+                }).join('');
+            }
+
+            if (!html) {
+                document.getElementById('selected-day-count').textContent = "Sem rotina fixa";
+                list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Fim de semana, feriado ou sem registros nesta data.</p>`;
+            } else {
+                list.innerHTML = html;
+            }
+            initIcons();
         }
 
         // =========================================================================
@@ -762,6 +945,10 @@
                     ? "flex flex-col items-center py-1.5 text-emerald-600 transition-colors relative"
                     : "flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors relative";
             });
+            if (aba === 'calendario') {
+                calcularAgendaCliente(calAnoCli, calMesCli);
+                renderizarCalendarioCliente();
+            }
             if (aba === 'solicitacoes') {
                 naoLidasCliente = 0;
                 atualizarBadgeCliente();
@@ -769,7 +956,7 @@
             }
         }
 
-        sb.channel('portal-miss-silvia-v91')
+        sb.channel('portal-miss-silvia-v92')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarPortalCliente())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarPortalCliente())
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
