@@ -28,7 +28,7 @@
         .dot { width: 6px; height: 6px; border-radius: 9999px; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 relative min-h-screen select-none">
+<body class="bg-slate-100 text-slate-800 relative min-h-screen select-none" onclick="desbloquearAudioNotificacao()">
 
     <!-- CABEÇALHO OPERACIONAL -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
@@ -70,7 +70,7 @@
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="max-w-md mx-auto pb-safe pt-3 px-3.5" id="main-content">
 
-        <!-- BANNER DE PRESENÇA DO POSTO (COM VALIDAÇÃO DE PERÍMETRO GPS) -->
+        <!-- BANNER DE PRESENÇA DO POSTO -->
         <div id="checkin-banner" class="mb-3 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5 min-w-0">
                 <div id="checkin-icon-box" class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0">
@@ -101,7 +101,7 @@
         </div>
 
         <!-- SELETOR DO POSTO E CONTROLES DO TURNO -->
-        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 mb-4">
+        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 mb-3">
             <div class="flex justify-between items-start mb-2.5">
                 <div>
                     <div class="flex items-center gap-1.5">
@@ -141,9 +141,22 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- VISÃO 1: TAREFAS DE HOJE                   -->
+        <!-- VISÃO 1: TAREFAS DE HOJE + FILTRO RÁPIDO   -->
         <!-- ========================================== -->
         <div id="tasks-view">
+            <!-- BARRA DE FILTRO RÁPIDO (PENDENTES / TODAS / RESOLVIDAS) -->
+            <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl mb-3 border border-slate-300/60">
+                <button onclick="setFiltroTarefas('PENDENTES')" id="btn-filtro-PENDENTES" class="py-2 px-2 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white shadow-sm transition-all flex items-center justify-center gap-1">
+                    ⏳ Pendentes <span id="count-filtro-PENDENTES" class="bg-orange-500 text-white text-[9px] px-1.5 py-0.2 rounded-full">0</span>
+                </button>
+                <button onclick="setFiltroTarefas('TODAS')" id="btn-filtro-TODAS" class="py-2 px-2 rounded-xl text-[11px] font-extrabold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1">
+                    📋 Todas <span id="count-filtro-TODAS" class="bg-slate-300 text-slate-700 text-[9px] px-1.5 py-0.2 rounded-full">0</span>
+                </button>
+                <button onclick="setFiltroTarefas('RESOLVIDAS')" id="btn-filtro-RESOLVIDAS" class="py-2 px-2 rounded-xl text-[11px] font-extrabold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1">
+                    ✅ Feitas <span id="count-filtro-RESOLVIDAS" class="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.2 rounded-full">0</span>
+                </button>
+            </div>
+
             <div id="loader-tasks" class="py-12 text-center">
                 <i data-lucide="loader-2" class="w-8 h-8 mx-auto animate-spin text-orange-500 mb-3"></i>
                 <h3 class="text-sm font-bold text-slate-700">Sincronizando cronograma...</h3>
@@ -154,8 +167,8 @@
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 mb-3">
                     <i data-lucide="check-check" class="w-7 h-7"></i>
                 </div>
-                <h3 class="text-base font-bold text-slate-900">Cronograma em dia!</h3>
-                <p class="text-xs text-slate-500 mt-1" id="empty-state-sub">Nenhuma atividade pendente para o momento.</p>
+                <h3 class="text-base font-bold text-slate-900" id="empty-state-title">Tudo em dia por aqui!</h3>
+                <p class="text-xs text-slate-500 mt-1" id="empty-state-sub">Nenhuma atividade neste filtro no momento.</p>
             </div>
         </div>
 
@@ -195,19 +208,20 @@
         <div id="chat-view" class="hidden">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[68vh]">
                 <div class="grid grid-cols-3 gap-1 p-1.5 bg-slate-100 border-b border-slate-200">
-                    <button onclick="selecionarCanalChat('EQUIPE')" id="btn-canal-EQUIPE" class="py-2 px-2 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-sm transition-all">
-                        💬 Equipe (7d)
+                    <button onclick="selecionarCanalChat('EQUIPE')" id="btn-canal-EQUIPE" class="py-2 px-2 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-sm transition-all flex items-center justify-center">
+                        <span>💬 Equipe</span>
                     </button>
-                    <button onclick="selecionarCanalChat('SUPERVISAO')" id="btn-canal-SUPERVISAO" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600 hover:text-slate-900 transition-all">
-                        📢 Supervisão
+                    <button onclick="selecionarCanalChat('SUPERVISAO')" id="btn-canal-SUPERVISAO" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center">
+                        <span>📢 Supervisão</span>
                     </button>
-                    <button onclick="selecionarCanalChat('CLIENTE')" id="btn-canal-CLIENTE" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600 hover:text-slate-900 transition-all">
-                        🏢 Cliente
+                    <button onclick="selecionarCanalChat('CLIENTE')" id="btn-canal-CLIENTE" class="py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center">
+                        <span>🏢 Cliente</span>
                     </button>
                 </div>
 
                 <div id="chat-canal-info" class="bg-slate-50 px-3 py-1.5 text-[10px] text-slate-500 border-b border-slate-100 flex justify-between items-center">
-                    <span>Conversa rápida da equipe local (limpeza automática após 7 dias)</span>
+                    <span>Conversa rápida da equipe de campo</span>
+                    <button onclick="solicitarPermissaoNotificacoes()" class="text-[9px] font-bold text-orange-600 underline">🔔 Ativar Alertas</button>
                 </div>
 
                 <div id="chat-messages-box" class="flex-1 p-3 overflow-y-auto space-y-2.5 bg-slate-50/50"></div>
@@ -234,18 +248,18 @@
     <!-- NAVEGAÇÃO INFERIOR (3 ABAS - EXCLUSIVO OPERADOR) -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
         <div class="max-w-md mx-auto grid grid-cols-3 px-2 pb-3 pt-1.5">
-            <button onclick="switchTab('hoje')" id="tab-hoje" class="flex flex-col items-center py-1.5 text-orange-500 transition-colors">
+            <button onclick="switchTab('hoje')" id="tab-hoje" class="flex flex-col items-center py-1.5 text-orange-500 transition-colors relative">
                 <i data-lucide="list-checks" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Hoje</span>
             </button>
-            <button onclick="switchTab('calendario')" id="tab-calendario" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-orange-500 transition-colors">
+            <button onclick="switchTab('calendario')" id="tab-calendario" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-orange-500 transition-colors relative">
                 <i data-lucide="calendar-days" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Calendário</span>
             </button>
             <button onclick="switchTab('chat')" id="tab-chat" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-orange-500 transition-colors relative">
                 <i data-lucide="message-square-text" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Chat</span>
-                <span id="chat-unread-dot" class="hidden w-2 h-2 rounded-full bg-red-500 absolute top-1.5 right-10"></span>
+                <span id="chat-unread-dot" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-red-600 rounded-full flex items-center justify-center absolute top-1 right-8 shadow-sm">0</span>
             </button>
         </div>
     </nav>
@@ -254,7 +268,7 @@
     <input type="file" accept="image/*" capture="environment" id="camera-live-input" class="hidden">
     <input type="file" accept="image/*" id="gallery-exif-input" class="hidden">
 
-    <!-- MODAL 1: IDENTIFICAÇÃO DA EQUIPE (OBRIGATÓRIA NO 1º ACESSO E NO CHECK-IN) -->
+    <!-- MODAL 1: IDENTIFICAÇÃO DA EQUIPE -->
     <div id="team-modal" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl p-5">
             <div class="flex justify-between items-center mb-3">
@@ -275,7 +289,7 @@
         </div>
     </div>
 
-    <!-- MODAL 1.5: PAUSAR ATIVIDADE (ALMOÇO / ALTO FLUXO / CHUVA) -->
+    <!-- MODAL 1.5: PAUSAR ATIVIDADE -->
     <div id="pause-modal" class="fixed inset-0 bg-slate-950/70 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-3">
             <div class="flex justify-between items-center">
@@ -297,7 +311,43 @@
         </div>
     </div>
 
-    <!-- MODAL 1.8: DISPENSA TÉCNICA ("SKIP" - NÃO NECESSÁRIO HOJE COM FOTO E MOTIVO) -->
+    <!-- MODAL 1.7: ATUALIZAÇÃO DE PROGRESSO / +FOTO NO MEIO DO CAMINHO (SEM PAUSAR) -->
+    <div id="progresso-modal" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-3.5">
+        <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase bg-orange-100 text-orange-800 px-2 py-0.5 rounded">Sem pausar o relógio</span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Registrar Avanço / +Foto</h3>
+                </div>
+                <button onclick="fecharModalProgresso()"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+            </div>
+            <p class="text-xs font-bold text-orange-600" id="prog-task-title">Tarefa</p>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-1.5 uppercase">Fotos da Abertura / Andamento (Máx. 3)</label>
+                <div id="prog-fotos-grid" class="grid grid-cols-3 gap-2 mb-2"></div>
+                <div class="grid grid-cols-2 gap-2" id="prog-botoes-camera">
+                    <button type="button" onclick="dispararCamera('progresso', 'CAMERA_APP')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm">
+                        <i data-lucide="camera" class="w-4 h-4 text-orange-400"></i> + Câmera Agora
+                    </button>
+                    <button type="button" onclick="dispararCamera('progresso', 'GALERIA_EXIF')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-slate-300 text-xs">
+                        <i data-lucide="image" class="w-4 h-4"></i> + Galeria (EXIF)
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">Nota de Andamento (Opcional)</label>
+                <input type="text" id="prog-obs-input" placeholder="Ex: Primeira metade do canteiro finalizada..." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500">
+            </div>
+
+            <button onclick="salvarProgressoMeioCaminho()" id="btn-salvar-progresso" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 rounded-xl flex justify-center items-center gap-2 shadow-md text-xs">
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i> Atualizar Andamento Ao Vivo
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 1.8: DISPENSA TÉCNICA ("SKIP") -->
     <div id="skip-modal" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-3.5">
         <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-3.5">
             <div class="flex justify-between items-start">
@@ -341,7 +391,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: CONCLUSÃO DE TAREFA + ENTREGA PARCIAL + AUDITORIA EXIF -->
+    <!-- MODAL 2: CONCLUSÃO DE TAREFA (COM ATÉ 3 FOTOS DO DEPOIS) -->
     <div id="conclusion-modal" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-3.5">
         <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl max-h-[92vh] overflow-y-auto">
             <div class="flex justify-between items-start mb-1">
@@ -363,17 +413,17 @@
 
             <div class="space-y-3.5">
                 <div>
-                    <label class="block text-[11px] font-extrabold text-slate-700 mb-1.5 uppercase">1. Evidência do Depois <span class="text-red-500">*</span></label>
-                    <div id="preview-container" class="hidden mb-2 relative">
-                        <img id="foto-preview" class="w-full h-36 object-cover rounded-xl border border-slate-200">
-                        <span id="badge-origem-foto" class="text-[9px] text-white font-bold absolute bottom-2 left-2 bg-slate-900/80 px-2 py-1 rounded">CÂMERA AO VIVO</span>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-[11px] font-extrabold text-slate-700 uppercase">1. Fotos do Depois (1 a 3 fotos) <span class="text-red-500">*</span></label>
+                        <span id="contador-fotos-depois" class="text-[10px] font-bold text-orange-600">0/3 fotos</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div id="depois-fotos-grid" class="grid grid-cols-3 gap-2 mb-2 hidden"></div>
+                    <div class="grid grid-cols-2 gap-2" id="botoes-captura-depois">
                         <button type="button" onclick="dispararCamera('depois', 'CAMERA_APP')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm">
-                            <i data-lucide="camera" class="w-4 h-4 text-orange-400"></i> Câmera Agora
+                            <i data-lucide="camera" class="w-4 h-4 text-orange-400"></i> + Câmera Agora
                         </button>
                         <button type="button" onclick="dispararCamera('depois', 'GALERIA_EXIF')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 border border-slate-300 text-xs">
-                            <i data-lucide="image" class="w-4 h-4"></i> Galeria (EXIF)
+                            <i data-lucide="image" class="w-4 h-4"></i> + Galeria (EXIF)
                         </button>
                     </div>
                 </div>
@@ -392,7 +442,7 @@
                         <input type="checkbox" id="chk-entrega-parcial" class="mt-0.5 rounded text-orange-500 w-4 h-4">
                         <div>
                             <span class="block text-xs font-extrabold text-slate-800">Entrega Parcial (Continuar no próximo turno)</span>
-                            <span class="block text-[10px] text-slate-500">Contabiliza o avanço de hoje e agenda a continuação automaticamente para amanhã.</span>
+                            <span class="block text-[10px] text-slate-500">Contabiliza o avanço de hoje e agenda a continuação para amanhã.</span>
                         </div>
                     </label>
                 </div>
@@ -411,6 +461,47 @@
 
             <button onclick="finalizarProcesso()" id="btn-salvar" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 rounded-xl mt-4 flex justify-center items-center gap-2 shadow-md text-sm">
                 <i data-lucide="upload-cloud" class="w-4 h-4"></i> Salvar e Sincronizar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 2.5: CORRIGIR ENTREGA CONCLUÍDA HOJE (ATÉ O ENCERRAMENTO DO DIA) -->
+    <div id="edit-concluded-modal" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-3.5">
+        <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-3.5">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Ajuste de Turno Aberto</span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Corrigir Atividade Entregue</h3>
+                </div>
+                <button onclick="fecharModalEdicaoConcluida()"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+            </div>
+            <p class="text-xs font-bold text-orange-600" id="edit-conc-title">Tarefa</p>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-1.5 uppercase">1. Corrigir Equipe Executora <span class="text-red-500">*</span></label>
+                <div class="flex flex-wrap gap-1.5" id="edit-conc-executors"></div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">2. Corrigir Observação Técnica <span class="text-red-500">*</span></label>
+                <textarea id="edit-conc-obs" rows="2" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-1.5 uppercase">3. Fotos Finais Registradas (Máx. 3)</label>
+                <div id="edit-conc-fotos-grid" class="grid grid-cols-3 gap-2 mb-2"></div>
+                <div class="grid grid-cols-2 gap-2" id="edit-conc-botoes-foto">
+                    <button type="button" onclick="dispararCamera('edicao_concluida', 'CAMERA_APP')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-3 rounded-xl flex items-center justify-center gap-1 text-xs">
+                        <i data-lucide="camera" class="w-3.5 h-3.5 text-orange-400"></i> + Foto Câmera
+                    </button>
+                    <button type="button" onclick="dispararCamera('edicao_concluida', 'GALERIA_EXIF')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-xl flex items-center justify-center gap-1 border border-slate-300 text-xs">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i> + Foto Galeria
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="salvarCorrecaoConcluida()" id="btn-salvar-correcao" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-3 rounded-xl flex justify-center items-center gap-2 shadow-md text-xs">
+                <i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Salvar Alterações
             </button>
         </div>
     </div>
@@ -447,7 +538,7 @@
 
     <script>
         // =========================================================================
-        // 1. CONFIGURAÇÃO SUPABASE (NOVA ERA v9.0 - MÓDULO OPERACIONAL PURO)
+        // 1. CONFIGURAÇÃO SUPABASE (NOVA ERA v9.1 - OPERADOR TURBINADO)
         // =========================================================================
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
@@ -463,12 +554,12 @@
         window.agendaProjetada = {};
 
         let clienteAtivo = localStorage.getItem('novaera_cliente_ativo') || 'Miss Silvia';
-        // Sem nome pré-fixado: se for o 1º acesso no celular, começa vazio [] e abre o modal obrigatório
         let equipeLogada = JSON.parse(localStorage.getItem('novaera_equipe_v9') || '[]');
         let tarefasEmAndamentoLocal = JSON.parse(localStorage.getItem('novaera_tarefas_andamento') || '{}');
         let filaOffline = JSON.parse(localStorage.getItem('novaera_fila_offline') || '[]');
         let hashesConhecidos = new Set(JSON.parse(localStorage.getItem('novaera_hashes_fotos') || '[]'));
 
+        let filtroTarefasHoje = 'PENDENTES'; // 'PENDENTES' | 'TODAS' | 'RESOLVIDAS'
         let modoChuvaAtivo = false;
         let canalChatAtivo = 'EQUIPE';
         let tabAtual = 'hoje';
@@ -483,6 +574,10 @@
             if (h > 0 && m > 0) return `${h}h ${m}m`;
             if (h > 0) return `${h}h`;
             return `${m}m`;
+        }
+        function extrairListaFotos(campoUrl) {
+            if (!campoUrl) return [];
+            return String(campoUrl).split('|').map(s => s.trim()).filter(Boolean);
         }
 
         function ehFeriado(d) { return window.feriadosDB.includes(dataISO(d)); }
@@ -503,7 +598,132 @@
         }
 
         // =========================================================================
-        // 2. GEOFENCING HARVERSINE + VALIDAÇÃO AUTOMÁTICA DE SUBSOLO
+        // 2. MOTOR DE SOM (WEB AUDIO API), NOTIFICAÇÕES POP-UP E MARQUINHAS
+        // =========================================================================
+        let audioCtxGlobal = null;
+        let mensagensNaoLidas = { EQUIPE: 0, SUPERVISAO: 0, CLIENTE: 0 };
+
+        function desbloquearAudioNotificacao() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
+            } catch (e) {}
+        }
+
+        function tocarChimeNotificacao() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
+
+                const osc = audioCtxGlobal.createOscillator();
+                const gain = audioCtxGlobal.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtxGlobal.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtxGlobal.currentTime);
+                osc.frequency.setValueAtTime(880.00, audioCtxGlobal.currentTime + 0.12);
+
+                gain.gain.setValueAtTime(0.22, audioCtxGlobal.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtxGlobal.currentTime + 0.55);
+
+                osc.start(audioCtxGlobal.currentTime);
+                osc.stop(audioCtxGlobal.currentTime + 0.55);
+            } catch (e) {}
+        }
+
+        function solicitarPermissaoNotificacoes() {
+            desbloquearAudioNotificacao();
+            if ("Notification" in window) {
+                Notification.requestPermission().then(perm => {
+                    if (perm === 'granted') {
+                        tocarChimeNotificacao();
+                        alert("🔔 Alertas sonoros e notificações pop-up ativados!");
+                    }
+                });
+            }
+        }
+
+        function dispararNotificacaoVisual(autor, canal, texto, urgente) {
+            const canalNomes = { EQUIPE: 'Equipe', SUPERVISAO: 'Supervisão', CLIENTE: 'Cliente' };
+            const titulo = urgente ? `🚨 URGENTE • ${autor}` : `💬 ${autor} (${canalNomes[canal] || canal})`;
+
+            if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+                try { new Notification(titulo, { body: texto }); } catch (e) {}
+            }
+            mostrarToastFlutuante(titulo, texto, canal);
+        }
+
+        function mostrarToastFlutuante(titulo, texto, canal) {
+            let toast = document.getElementById('toast-chat-alerta');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-chat-alerta';
+                toast.className = 'fixed top-3 left-3 right-3 max-w-md mx-auto bg-slate-900/95 border border-orange-500/60 text-white p-3 rounded-2xl shadow-2xl z-50 flex items-center justify-between gap-2.5 transition-all duration-300 transform -translate-y-24 opacity-0 cursor-pointer';
+                document.body.appendChild(toast);
+            }
+            toast.onclick = () => {
+                toast.classList.add('-translate-y-24', 'opacity-0');
+                switchTab('chat');
+                selecionarCanalChat(canal);
+            };
+            toast.innerHTML = `
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="bell-ring" class="w-4 h-4"></i>
+                    </div>
+                    <div class="truncate">
+                        <p class="text-[11px] font-extrabold text-orange-400 truncate">${titulo}</p>
+                        <p class="text-xs text-slate-100 truncate">${texto}</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-extrabold bg-orange-500 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Ver</span>
+            `;
+            initIcons();
+            toast.classList.remove('-translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.add('-translate-y-24', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 5000);
+        }
+
+        function atualizarBadgesNaoLidas() {
+            const totalGeral = mensagensNaoLidas.EQUIPE + mensagensNaoLidas.SUPERVISAO + mensagensNaoLidas.CLIENTE;
+            const dotApp = document.getElementById('chat-unread-dot');
+            if (dotApp) {
+                if (totalGeral > 0) {
+                    dotApp.classList.remove('hidden');
+                    dotApp.textContent = totalGeral > 9 ? '9+' : totalGeral;
+                } else {
+                    dotApp.classList.add('hidden');
+                }
+            }
+
+            ['EQUIPE', 'SUPERVISAO', 'CLIENTE'].forEach(canal => {
+                const btnCanal = document.getElementById(`btn-canal-${canal}`);
+                if (btnCanal) {
+                    let badge = btnCanal.querySelector('.canal-badge-dot');
+                    if (mensagensNaoLidas[canal] > 0) {
+                        if (!badge) {
+                            badge = document.createElement('span');
+                            badge.className = 'canal-badge-dot ml-1 px-1.5 py-0.2 bg-red-600 text-white text-[9px] font-extrabold rounded-full';
+                            btnCanal.appendChild(badge);
+                        }
+                        badge.textContent = mensagensNaoLidas[canal];
+                    } else if (badge) {
+                        badge.remove();
+                    }
+                }
+            });
+        }
+
+        // =========================================================================
+        // 3. GEOFENCING HAVERSINE + VALIDAÇÃO AUTOMÁTICA DE SUBSOLO
         // =========================================================================
         function calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
             const R = 6371e3;
@@ -545,7 +765,7 @@
         }
 
         // =========================================================================
-        // 3. CHECK-IN DE POSTO COM TRAVA DE PERÍMETRO E CONFIRMAÇÃO DE EQUIPE
+        // 4. CHECK-IN DE POSTO E CONTROLE DE CHUVA / TURNO
         // =========================================================================
         function calcularMinutosChuvaHoje() {
             if (!window.presencaHojeDB) return 0;
@@ -562,16 +782,14 @@
                 alert("🔒 Operação bloqueada em finais de semana e feriados. Solicite liberação de plantão à Supervisão.");
                 return;
             }
-            // Abre o modal de equipe para confirmar quem está presente antes de ativar o posto
             checkinPendenteAposConfirmarEquipe = true;
             openTeamModal(false);
         }
 
         async function executarCheckinPostoValidado() {
             const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
-            const raioPermitido = (cliObj ? Number(cliObj.raio_metros) : 350) + 100; // Margem de antena urbana
+            const raioPermitido = (cliObj ? Number(cliObj.raio_metros) : 350) + 100;
 
-            // TRAVA DE PERÍMETRO: Se o GPS tem sinal e a pessoa está longe do condomínio, bloqueia!
             if (gpsAtual.lat !== null && gpsAtual.distCliente !== null && gpsAtual.distCliente > raioPermitido) {
                 alert(`📍 Fora do Perímetro do Contrato!\n\nSeu GPS indica que você está a ${gpsAtual.distCliente} metros de ${clienteAtivo} (limite: ${raioPermitido}m).\n\nAproxime-se do condomínio para ativar o posto.`);
                 return;
@@ -607,7 +825,6 @@
             } else {
                 window.presencaHojeDB = registro;
             }
-            localStorage.setItem(`novaera_checkin_${hojeStr}_${clienteAtivo}`, JSON.stringify(window.presencaHojeDB));
             recalcularTudo();
         }
 
@@ -631,8 +848,8 @@
         async function encerrarTurnoOperador() {
             const abertas = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
             const msg = abertas.length > 0
-                ? `Você possui ${abertas.length} atividade(s) em andamento/pausada. Elas ficarão salvas em Transbordo para amanhã.\n\nDeseja encerrar o expediente de hoje?`
-                : `Confirmar o encerramento do expediente de hoje em ${clienteAtivo}?`;
+                ? `Você possui ${abertas.length} atividade(s) em andamento/pausada. Elas ficarão salvas em Transbordo para amanhã.\n\nAtenção: Após encerrar o dia, as entregas concluídas hoje serão travadas para edição.\n\nConfirmar encerramento?`
+                : `Confirmar o encerramento do expediente de hoje em ${clienteAtivo}?\n\nApós encerrar, as atividades concluídas serão travadas para edição.`;
             if (!confirm(msg)) return;
 
             const agoraISO = new Date().toISOString();
@@ -661,7 +878,6 @@
         async function toggleChuva() {
             modoChuvaAtivo = !modoChuvaAtivo;
             const agoraISO = new Date().toISOString();
-
             if (window.presencaHojeDB) {
                 if (modoChuvaAtivo) {
                     window.presencaHojeDB.modo_chuva_ativo = true;
@@ -787,7 +1003,7 @@
         }
 
         // =========================================================================
-        // 4. CARREGAMENTO DO SUPABASE E MOTOR DE AGENDAMENTO + TRANSBORDO
+        // 5. CARREGAMENTO SUPABASE E MOTOR DE AGENDAMENTO
         // =========================================================================
         async function carregarDadosSupabase() {
             document.getElementById('loader-tasks').classList.remove('hidden');
@@ -820,10 +1036,7 @@
                 monitorarGPS();
                 iniciarRealtimeSupabase();
 
-                // Se for o 1º acesso no celular (equipeLogada vazia), abre o modal obrigatório!
-                if (equipeLogada.length === 0) {
-                    openTeamModal(true);
-                }
+                if (equipeLogada.length === 0) openTeamModal(true);
             } catch (err) {
                 console.error("Modo Offline ou falha:", err);
                 recalcularTudo();
@@ -831,15 +1044,15 @@
                 document.getElementById('loader-tasks').classList.add('hidden');
             }
         }
-function popularMenusIniciais() {
+
+        function popularMenusIniciais() {
             const selPosto = document.getElementById('posto-trabalho');
             if (window.clientesDB.length > 0) {
                 selPosto.innerHTML = window.clientesDB.map(c => `<option value="${c.nome}" ${c.nome === clienteAtivo ? 'selected' : ''}>${c.nome}</option>`).join('');
             }
 
-            // TRAVA: Puxa APENAS quem é Operador ou Encarregado (exclui Supervisores da execução física)
+            // TRAVA: Puxa APENAS OPERADOR e ENCARREGADO (exclui Supervisores da execução física)
             const colabsPosto = window.colaboradoresTodosDB.filter(c => c.ativo !== false && (!c.cliente_padrao || c.cliente_padrao === clienteAtivo) && ['OPERADOR', 'ENCARREGADO'].includes(c.perfil));
-            
             const nomesValidos = colabsPosto.map(c => c.nome);
             equipeLogada = equipeLogada.filter(n => nomesValidos.includes(n));
 
@@ -902,7 +1115,6 @@ function popularMenusIniciais() {
             const LIMITE_DIARIO = (cliObj ? Number(cliObj.teto_diario_horas) : 6) * 60;
             const tarefasCliente = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo && t.ativo !== false);
 
-            // 0. Transbordo de dias anteriores
             tarefasCliente.forEach(t => {
                 if (t.data_alvo && t.data_alvo < hojeStr) {
                     const foiResolvida = window.execucoesMesDB.some(e => e.cliente === clienteAtivo && ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade)));
@@ -913,7 +1125,6 @@ function popularMenusIniciais() {
                 }
             });
 
-            // 1. Tarefas fixas
             tarefasCliente.forEach(t => {
                 const f = (t.frequencia || '').toLowerCase();
                 const isFlutuante = f.includes('mês') || f.includes('mensal') || f.includes('quinzenal') || f.includes('quadrimestral');
@@ -933,7 +1144,6 @@ function popularMenusIniciais() {
                 }
             });
 
-            // 2. Tarefas flutuantes e fatiadas
             const diasUteisFuturosOuHoje = diasUteisMes.filter(dStr => dStr >= hojeStr);
             tarefasCliente.forEach(t => {
                 if (t.data_alvo) return;
@@ -974,7 +1184,6 @@ function popularMenusIniciais() {
                 }
             });
 
-            // 3. Tarefas abertas de dias anteriores
             const abertasAntigas = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
             abertasAntigas.forEach(execAberta => {
                 if (!window.agendaProjetada[hojeStr]) return;
@@ -995,7 +1204,6 @@ function popularMenusIniciais() {
                 }
             });
 
-            // 4. Ordenar
             Object.keys(window.agendaProjetada).forEach(dStr => {
                 let lista = window.agendaProjetada[dStr].tarefas;
                 if (dStr === hojeStr && modoChuvaAtivo) {
@@ -1015,15 +1223,30 @@ function popularMenusIniciais() {
             atualizarBotaoFilaOffline();
         }
 
+        function setFiltroTarefas(novoFiltro) {
+            filtroTarefasHoje = novoFiltro;
+            ['PENDENTES', 'TODAS', 'RESOLVIDAS'].forEach(f => {
+                const btn = document.getElementById(`btn-filtro-${f}`);
+                if (f === novoFiltro) {
+                    btn.className = "py-2 px-2 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white shadow-sm transition-all flex items-center justify-center gap-1";
+                } else {
+                    btn.className = "py-2 px-2 rounded-xl text-[11px] font-extrabold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1";
+                }
+            });
+            renderizarTarefasHoje();
+        }
+
         // =========================================================================
-        // 5. RENDERIZAÇÃO DOS CARTÕES (COM BOTÃO DISPENSAR / SKIP)
+        // 6. RENDERIZAÇÃO DOS CARTÕES (FILTRO + EDIÇÃO + FOTO PROGRESSO)
         // =========================================================================
         function renderizarTarefasHoje() {
             const container = document.getElementById('task-container');
             const emptyState = document.getElementById('empty-state-tasks');
+            const emptyTitle = document.getElementById('empty-state-title');
             const emptySub = document.getElementById('empty-state-sub');
             const hojeStr = dataISO();
             const bloqueado = postoBloqueadoHoje();
+            const turnoEncerradoHoje = window.presencaHojeDB?.status_validacao === 'TURNO_ENCERRADO';
 
             const diaAgenda = window.agendaProjetada[hojeStr] || { tarefas: [], minutos: 0 };
             const tarefasHoje = bloqueado ? [] : diaAgenda.tarefas;
@@ -1031,8 +1254,11 @@ function popularMenusIniciais() {
             const execsCliente = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
             const totalDia = tarefasHoje.length;
             let resolvidasCount = 0;
+            let pendentesCount = 0;
 
             let html = '';
+            let exibidasNoFiltro = 0;
+
             tarefasHoje.forEach((t, idx) => {
                 const chaveUnica = `${t.id || idx}_${t.setor}_${t.atividade}`;
 
@@ -1041,6 +1267,12 @@ function popularMenusIniciais() {
                 const emAndamentoLocal = tarefasEmAndamentoLocal[chaveUnica];
 
                 if (regFinalizadoHoje) resolvidasCount++;
+                else pendentesCount++;
+
+                // Aplica o filtro selecionado pelo operador
+                if (filtroTarefasHoje === 'PENDENTES' && regFinalizadoHoje) return;
+                if (filtroTarefasHoje === 'RESOLVIDAS' && !regFinalizadoHoje) return;
+                exibidasNoFiltro++;
 
                 const badgeTransbordo = t.is_transbordo ? `<span class="text-[9px] font-extrabold bg-red-100 text-red-800 px-1.5 py-0.5 rounded uppercase border border-red-200">🔄 Em Curso</span>` : '';
                 const badgePrio = t.prioridade === 1 ? `<span class="text-[9px] font-extrabold bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded uppercase">Prioridade Manhã</span>` : '';
@@ -1061,23 +1293,32 @@ function popularMenusIniciais() {
                         </div>`;
                 }
 
-                // ESTADO 1: CONCLUÍDA OU DISPENSADA HOJE
+                // ESTADO 1: CONCLUÍDA OU DISPENSADA HOJE (COM BOTÃO DE CORRIGIR ATÉ O FIM DO DIA)
                 if (regFinalizadoHoje) {
                     const foiDispensada = regFinalizadoHoje.status_execucao === 'DISPENSADO';
+                    const fotosDepoisArr = extrairListaFotos(regFinalizadoHoje.foto_depois_url);
+                    const btnEditarHoje = !turnoEncerradoHoje
+                        ? `<button onclick="abrirModalEdicaoConcluida(${regFinalizadoHoje.id})" class="mt-2.5 w-full bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold py-2 px-3 rounded-xl text-[11px] flex items-center justify-center gap-1.5 shadow-sm">
+                                <i data-lucide="pencil" class="w-3.5 h-3.5 text-orange-500"></i> ✏️ Corrigir Entrega (Equipe / Obs / Fotos)
+                           </button>`
+                        : '';
+
                     if (foiDispensada) {
                         html += `
-                        <div class="bg-sky-50/80 rounded-2xl p-4 border border-sky-200 shadow-sm opacity-90">
+                        <div class="bg-sky-50/80 rounded-2xl p-4 border border-sky-200 shadow-sm">
                             <div class="flex justify-between items-start mb-1.5">
                                 <span class="text-xs font-extrabold text-sky-900 bg-sky-200/70 px-2 py-0.5 rounded-lg">${t.setor}</span>
                                 <span class="text-[10px] font-extrabold text-sky-800 flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Vistoriado • Não Necessário</span>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-600 line-through">${t.atividade}</h3>
+                            <h3 class="text-sm font-bold text-slate-700 line-through">${t.atividade}</h3>
                             <p class="text-[11px] text-sky-900 mt-1 italic">"${regFinalizadoHoje.observacao}"</p>
+                            <p class="text-[10px] font-bold text-slate-500 mt-1">👷 Equipe: ${regFinalizadoHoje.equipe_executora}</p>
+                            ${btnEditarHoje}
                         </div>`;
                     } else {
                         const tagParcial = regFinalizadoHoje.entrega_parcial ? `<span class="text-[9px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Entrega Parcial</span>` : '';
                         html += `
-                        <div class="bg-emerald-50/70 rounded-2xl p-4 border border-emerald-200 shadow-sm opacity-90">
+                        <div class="bg-emerald-50/70 rounded-2xl p-4 border border-emerald-200 shadow-sm">
                             <div class="flex justify-between items-start mb-1.5">
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-xs font-extrabold text-emerald-900 bg-emerald-200/70 px-2 py-0.5 rounded-lg">${t.setor}</span>
@@ -1085,14 +1326,20 @@ function popularMenusIniciais() {
                                 </div>
                                 <span class="text-[10px] font-extrabold text-emerald-800 flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Concluído (${regFinalizadoHoje.duracao_real_min}m)</span>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-600 line-through">${t.atividade}</h3>
-                            <p class="text-[11px] text-slate-500 mt-1 italic">"${regFinalizadoHoje.observacao}"</p>
+                            <h3 class="text-sm font-bold text-slate-700 line-through">${t.atividade}</h3>
+                            <p class="text-[11px] text-slate-600 mt-1 italic">"${regFinalizadoHoje.observacao}"</p>
+                            <div class="flex justify-between items-center mt-1.5">
+                                <span class="text-[10px] font-bold text-slate-600">👷 ${regFinalizadoHoje.equipe_executora}</span>
+                                <span class="text-[10px] font-bold text-emerald-700">📸 ${fotosDepoisArr.length} foto(s)</span>
+                            </div>
+                            ${btnEditarHoje}
                         </div>`;
                     }
                 }
                 // ESTADO 2: PAUSADA
                 else if (regAtivoBanco && regAtivoBanco.status_execucao === 'PAUSADO') {
                     const horaPausa = regAtivoBanco.dh_inicio_pausa ? new Date(regAtivoBanco.dh_inicio_pausa).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+                    const fotosAntesArr = extrairListaFotos(regAtivoBanco.foto_antes_url);
                     html += `
                     <div class="bg-amber-50 rounded-2xl p-4 border-2 border-amber-300 shadow-sm">
                         <div class="flex justify-between items-start mb-1.5">
@@ -1102,7 +1349,7 @@ function popularMenusIniciais() {
                         <h3 class="text-sm font-extrabold text-slate-900">${t.atividade}</h3>
                         <p class="text-[11px] font-semibold text-amber-800 mt-1">Motivo: ${regAtivoBanco.motivo_pausa || 'Intervalo'}</p>
                         <div class="flex items-center gap-2 mt-3">
-                            ${regAtivoBanco.foto_antes_url ? `<img src="${regAtivoBanco.foto_antes_url}" class="w-12 h-12 rounded-xl object-cover border border-amber-300 flex-shrink-0">` : ''}
+                            ${fotosAntesArr[0] ? `<img src="${fotosAntesArr[0]}" class="w-12 h-12 rounded-xl object-cover border border-amber-300 flex-shrink-0">` : ''}
                             <button onclick="retomarTarefaPausada(${regAtivoBanco.id})" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm">
                                 <i data-lucide="play" class="w-4 h-4 text-emerald-400"></i> Retomar
                             </button>
@@ -1112,13 +1359,15 @@ function popularMenusIniciais() {
                         </div>
                     </div>`;
                 }
-                // ESTADO 3: EM EXECUÇÃO
+                // ESTADO 3: EM EXECUÇÃO (COM BOTÃO DE +FOTO / PROGRESSO NO MEIO DO CAMINHO)
                 else if (regAtivoBanco || emAndamentoLocal) {
                     const dhIni = regAtivoBanco ? regAtivoBanco.dh_inicio_tarefa : emAndamentoLocal.dh_inicio;
-                    const fotoA = regAtivoBanco ? regAtivoBanco.foto_antes_url : emAndamentoLocal.foto_antes;
+                    const fotosAntesArr = regAtivoBanco ? extrairListaFotos(regAtivoBanco.foto_antes_url) : [emAndamentoLocal.foto_antes];
                     const idBanco = regAtivoBanco ? regAtivoBanco.id : 'null';
                     const minPausaAcum = regAtivoBanco ? (Number(regAtivoBanco.minutos_pausa_descontados) || 0) : 0;
                     const horaIni = new Date(dhIni).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                    const miniaturasHtml = fotosAntesArr.map(u => `<img src="${u}" class="w-11 h-11 rounded-xl object-cover border border-orange-300 flex-shrink-0">`).join('');
 
                     html += `
                     <div class="bg-orange-50/90 rounded-2xl p-4 border-2 border-orange-300 shadow-sm">
@@ -1130,12 +1379,16 @@ function popularMenusIniciais() {
                             <span class="text-[10px] font-extrabold bg-orange-500 text-white px-2 py-0.5 rounded-full animate-pulse">🟠 Em Execução (${horaIni})</span>
                         </div>
                         <h3 class="text-sm font-extrabold text-slate-900">${t.atividade}</h3>
+                        ${regAtivoBanco?.observacao && regAtivoBanco.observacao !== 'Atividade em andamento...' ? `<p class="text-[11px] text-orange-900 mt-0.5 italic">"${regAtivoBanco.observacao}"</p>` : ''}
                         ${minPausaAcum > 0 ? `<p class="text-[10px] font-bold text-slate-500 mt-0.5">⏱️ Pausa já descontada: ${minPausaAcum}m</p>` : ''}
                         ${barraFatiadaHtml}
-                        <div class="flex items-center gap-2 mt-3">
-                            ${fotoA ? `<img src="${fotoA}" class="w-12 h-12 rounded-xl object-cover border border-orange-300 flex-shrink-0">` : ''}
+                        <div class="flex items-center gap-1.5 mt-2.5">${miniaturasHtml}</div>
+                        <div class="flex items-center gap-1.5 mt-3">
                             ${regAtivoBanco ? `
-                            <button onclick="abrirModalPausa(${regAtivoBanco.id})" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-extrabold py-2.5 px-3 rounded-xl text-xs flex items-center gap-1">
+                            <button onclick="abrirModalProgresso(${regAtivoBanco.id})" class="bg-white hover:bg-orange-100 text-orange-800 border border-orange-300 font-extrabold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1" title="Adicionar foto ou nota de progresso sem pausar">
+                                <i data-lucide="camera" class="w-3.5 h-3.5 text-orange-600"></i> +Foto
+                            </button>
+                            <button onclick="abrirModalPausa(${regAtivoBanco.id})" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-extrabold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1">
                                 <i data-lucide="pause" class="w-3.5 h-3.5"></i> Pausar
                             </button>` : ''}
                             <button onclick='abrirModalConclusao(${JSON.stringify(t).replace(/'/g, "&apos;")}, "${chaveUnica}", ${idBanco})' class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm">
@@ -1144,7 +1397,7 @@ function popularMenusIniciais() {
                         </div>
                     </div>`;
                 }
-                // ESTADO 4: PENDENTE (COM BOTÃO INICIAR + BOTÃO DISPENSAR/SKIP)
+                // ESTADO 4: PENDENTE
                 else {
                     const bordaPrio = t.prioridade === 1 ? 'border-l-4 border-l-orange-500' : '';
                     html += `
@@ -1166,13 +1419,18 @@ function popularMenusIniciais() {
                             <button onclick='iniciarTarefa(${JSON.stringify(t).replace(/'/g, "&apos;")}, "${chaveUnica}", "GALERIA_EXIF")' class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-2.5 rounded-xl text-xs border border-slate-200" title="Galeria com validação EXIF">
                                 <i data-lucide="image" class="w-4 h-4"></i>
                             </button>
-                            <button onclick='abrirModalSkip(${JSON.stringify(t).replace(/'/g, "&apos;")})' class="bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1" title="Dispensar por não necessidade hoje (ex: chuva anterior)">
+                            <button onclick='abrirModalSkip(${JSON.stringify(t).replace(/'/g, "&apos;")})' class="bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1" title="Dispensar por não necessidade hoje">
                                 <i data-lucide="skip-forward" class="w-3.5 h-3.5"></i> Dispensar
                             </button>
                         </div>
                     </div>`;
                 }
             });
+
+            // Atualiza contadores dos botões de filtro rápido
+            document.getElementById('count-filtro-PENDENTES').textContent = pendentesCount;
+            document.getElementById('count-filtro-TODAS').textContent = totalDia;
+            document.getElementById('count-filtro-RESOLVIDAS').textContent = resolvidasCount;
 
             const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
             const tetoH = cliObj ? Number(cliObj.teto_diario_horas) : 6;
@@ -1182,11 +1440,19 @@ function popularMenusIniciais() {
             const horasAlocadas = (diaAgenda.minutos / 60).toFixed(1).replace('.0', '');
             document.getElementById('carga-hoje-badge').textContent = `${horasAlocadas}h / ${tetoH}h`;
 
-            if (totalDia === 0) {
+            if (exibidasNoFiltro === 0) {
                 container.classList.add('hidden');
                 emptyState.classList.remove('hidden');
-                if (bloqueado) emptySub.textContent = "Expediente suspenso (Fim de Semana / Feriado).";
-                else emptySub.textContent = "Nenhuma atividade pendente para o clima atual.";
+                if (bloqueado) {
+                    emptyTitle.textContent = "Posto Fechado Hoje";
+                    emptySub.textContent = "Expediente suspenso (Fim de Semana / Feriado).";
+                } else if (filtroTarefasHoje === 'PENDENTES' && totalDia > 0) {
+                    emptyTitle.textContent = "🎉 Zero Pendências!";
+                    emptySub.textContent = "Todas as atividades programadas para hoje foram resolvidas. Toque na aba 'Todas' ou 'Feitas' para revisar.";
+                } else {
+                    emptyTitle.textContent = "Nenhuma atividade neste filtro";
+                    emptySub.textContent = "Altere o filtro acima para visualizar as demais tarefas.";
+                }
             } else {
                 emptyState.classList.add('hidden');
                 container.classList.remove('hidden');
@@ -1196,7 +1462,7 @@ function popularMenusIniciais() {
         }
 
         // =========================================================================
-        // 6. PAUSAR, RETOMAR E DISPENSA TÉCNICA ("SKIP")
+        // 7. PAUSAR, RETOMAR, PROGRESSO NO MEIO DO CAMINHO E SKIP
         // =========================================================================
         let idExecucaoParaPausa = null;
         function abrirModalPausa(execId) {
@@ -1236,7 +1502,70 @@ function popularMenusIniciais() {
             carregarDadosSupabase();
         }
 
-        // Fluxo de Dispensa Técnica (Não Necessário Hoje)
+        // MODAL DE PROGRESSO NO MEIO DO CAMINHO (+FOTO SEM PAUSAR)
+        let idExecucaoProgresso = null;
+        let fotosAtuaisProgresso = []; // URLs já salvas ou novas base64
+        function abrirModalProgresso(execId) {
+            const reg = window.execucoesMesDB.find(e => e.id === execId);
+            if (!reg) return;
+            idExecucaoProgresso = execId;
+            tarefaSelecionadaObj = { setor: reg.setor, atividade: reg.atividade };
+            fotosAtuaisProgresso = extrairListaFotos(reg.foto_antes_url).map(u => ({ tipo: 'URL', valor: u }));
+            document.getElementById('prog-task-title').textContent = `${reg.setor} • ${reg.atividade}`;
+            document.getElementById('prog-obs-input').value = reg.observacao === 'Atividade em andamento...' ? '' : (reg.observacao || '');
+            renderizarGridFotosProgresso();
+            document.getElementById('progresso-modal').classList.remove('hidden');
+            initIcons();
+        }
+        function fecharModalProgresso() {
+            idExecucaoProgresso = null;
+            document.getElementById('progresso-modal').classList.add('hidden');
+        }
+        function renderizarGridFotosProgresso() {
+            const grid = document.getElementById('prog-fotos-grid');
+            const botoes = document.getElementById('prog-botoes-camera');
+            grid.innerHTML = fotosAtuaisProgresso.map((f, i) => `
+                <div class="relative h-24 rounded-xl overflow-hidden border border-slate-200">
+                    <img src="${f.valor}" class="w-full h-full object-cover">
+                    ${i > 0 ? `<button onclick="removerFotoProgresso(${i})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1"><i data-lucide="x" class="w-3 h-3"></i></button>` : ''}
+                    <span class="absolute bottom-1 left-1 bg-slate-900/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">${i === 0 ? 'ABERTURA' : 'AVANÇO ' + i}</span>
+                </div>
+            `).join('');
+            botoes.classList.toggle('hidden', fotosAtuaisProgresso.length >= 3);
+            initIcons();
+        }
+        function removerFotoProgresso(idx) {
+            fotosAtuaisProgresso.splice(idx, 1);
+            renderizarGridFotosProgresso();
+        }
+        async function salvarProgressoMeioCaminho() {
+            if (!idExecucaoProgresso) return;
+            const btn = document.getElementById('btn-salvar-progresso');
+            btn.disabled = true; btn.textContent = "Enviando atualização...";
+            try {
+                const urlsFinais = [];
+                for (const item of fotosAtuaisProgresso) {
+                    if (item.tipo === 'URL') urlsFinais.push(item.valor);
+                    else {
+                        const novaUrl = await uploadBase64Storage(item.valor, 'PROGRESSO');
+                        urlsFinais.push(novaUrl);
+                    }
+                }
+                const nota = document.getElementById('prog-obs-input').value.trim();
+                await sb.from('execucoes_auditoria').update({
+                    foto_antes_url: urlsFinais.join('|'),
+                    observacao: nota ? `[Em andamento] ${nota}` : 'Atividade em andamento...'
+                }).eq('id', idExecucaoProgresso);
+                fecharModalProgresso();
+                carregarDadosSupabase();
+            } catch (e) {
+                alert("Erro ao atualizar andamento.");
+            } finally {
+                btn.disabled = false; btn.textContent = "Atualizar Andamento Ao Vivo";
+            }
+        }
+
+        // DISPENSA TÉCNICA ("SKIP")
         let dadosFotoSkip = null;
         function abrirModalSkip(tarefaObj) {
             if (postoBloqueadoHoje()) { alert("🔒 Posto fechado hoje."); return; }
@@ -1301,14 +1630,14 @@ function popularMenusIniciais() {
         }
 
         // =========================================================================
-        // 7. CÂMERA TÁTICA, MARCA D'ÁGUA, EXIF E FECHAMENTO
+        // 8. CÂMERA TÁTICA, MÚLTIPLAS FOTOS E EDIÇÃO DE CONCLUÍDA HOJE
         // =========================================================================
         let tarefaSelecionadaObj = null;
         let chaveTarefaAtiva = null;
         let idExecucaoBancoAtiva = null;
         let etapaCaptura = 'antes';
         let origemCaptura = 'CAMERA_APP';
-        let dadosFotoDepois = null;
+        let listaFotosDepois = []; // Array de objetos { base64, hash, dh_exif, modelo, origem }
 
         function iniciarTarefa(tarefaObj, chave, origem) {
             if (postoBloqueadoHoje()) { alert("🔒 Posto fechado hoje."); return; }
@@ -1381,7 +1710,7 @@ function popularMenusIniciais() {
         async function uploadBase64Storage(base64Str, prefixo) {
             const res = await fetch(base64Str);
             const blob = await res.blob();
-            const fileName = `${clienteAtivo.replace(/\s+/g, '_')}/${dataISO()}_${prefixo}_${Date.now()}.jpg`;
+            const fileName = `${clienteAtivo.replace(/\s+/g, '_')}/${dataISO()}_${prefixo}_${Date.now()}_${Math.floor(Math.random()*1000)}.jpg`;
             const { error } = await sb.storage.from('auditoria-fotos').upload(fileName, blob, { contentType: 'image/jpeg' });
             if (error) throw error;
             const { data } = sb.storage.from('auditoria-fotos').getPublicUrl(fileName);
@@ -1426,15 +1755,29 @@ function popularMenusIniciais() {
             const base64Carimbado = await estamparMarcaDagua(file, rodapeWatermark);
 
             if (etapaCaptura === 'skip') {
-                dadosFotoSkip = {
-                    base64: base64Carimbado,
-                    hash: hash,
-                    dh_exif: dhCapturaExif.toISOString(),
-                    modelo: modeloCamera,
-                    origem: origem
-                };
+                dadosFotoSkip = { base64: base64Carimbado, hash, dh_exif: dhCapturaExif.toISOString(), modelo: modeloCamera, origem };
                 document.getElementById('skip-preview-container').classList.remove('hidden');
                 document.getElementById('skip-foto-preview').src = base64Carimbado;
+                return;
+            }
+
+            if (etapaCaptura === 'progresso') {
+                if (fotosAtuaisProgresso.length < 3) {
+                    fotosAtuaisProgresso.push({ tipo: 'B64', valor: base64Carimbado });
+                    hashesConhecidos.add(hash);
+                    localStorage.setItem('novaera_hashes_fotos', JSON.stringify(Array.from(hashesConhecidos)));
+                    renderizarGridFotosProgresso();
+                }
+                return;
+            }
+
+            if (etapaCaptura === 'edicao_concluida') {
+                if (fotosEdicaoConcluida.length < 3) {
+                    fotosEdicaoConcluida.push({ tipo: 'B64', valor: base64Carimbado });
+                    hashesConhecidos.add(hash);
+                    localStorage.setItem('novaera_hashes_fotos', JSON.stringify(Array.from(hashesConhecidos)));
+                    renderizarGridFotosEdicaoConcluida();
+                }
                 return;
             }
 
@@ -1475,19 +1818,51 @@ function popularMenusIniciais() {
                 localStorage.setItem('novaera_tarefas_andamento', JSON.stringify(tarefasEmAndamentoLocal));
                 renderizarTarefasHoje();
             } else {
-                dadosFotoDepois = {
-                    base64: base64Carimbado,
-                    hash: hash,
-                    dh_exif: dhCapturaExif.toISOString(),
-                    modelo: modeloCamera,
-                    origem: origem
-                };
-                document.getElementById('preview-container').classList.remove('hidden');
-                document.getElementById('foto-preview').src = base64Carimbado;
-                document.getElementById('badge-origem-foto').textContent = origem === 'CAMERA_APP' ? 'CÂMERA AO VIVO' : `EXIF: ${dhCapturaExif.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
-                if (origem === 'GALERIA_EXIF') document.getElementById('box-contingencia').classList.remove('hidden');
-                else document.getElementById('box-contingencia').classList.add('hidden');
+                // Etapa 'depois' (Múltiplas fotos de 1 a 3)
+                if (listaFotosDepois.length < 3) {
+                    listaFotosDepois.push({
+                        base64: base64Carimbado,
+                        hash: hash,
+                        dh_exif: dhCapturaExif.toISOString(),
+                        modelo: modeloCamera,
+                        origem: origem
+                    });
+                    renderizarGridFotosDepois();
+                }
             }
+        }
+
+        function renderizarGridFotosDepois() {
+            const grid = document.getElementById('depois-fotos-grid');
+            const botoes = document.getElementById('botoes-captura-depois');
+            const cont = document.getElementById('contador-fotos-depois');
+            cont.textContent = `${listaFotosDepois.length}/3 fotos`;
+
+            if (listaFotosDepois.length === 0) {
+                grid.classList.add('hidden');
+                botoes.classList.remove('hidden');
+                document.getElementById('box-contingencia').classList.add('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            grid.innerHTML = listaFotosDepois.map((f, i) => `
+                <div class="relative h-24 rounded-xl overflow-hidden border border-slate-200">
+                    <img src="${f.base64}" class="w-full h-full object-cover">
+                    <button type="button" onclick="removerFotoDepois(${i})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1"><i data-lucide="x" class="w-3 h-3"></i></button>
+                    <span class="absolute bottom-1 left-1 bg-slate-900/80 text-white text-[8px] font-bold px-1.5 py-0.5 rounded">FOTO ${i + 1}</span>
+                </div>
+            `).join('');
+
+            botoes.classList.toggle('hidden', listaFotosDepois.length >= 3);
+            const temGaleria = listaFotosDepois.some(f => f.origem === 'GALERIA_EXIF');
+            document.getElementById('box-contingencia').classList.toggle('hidden', !temGaleria);
+            initIcons();
+        }
+
+        function removerFotoDepois(idx) {
+            listaFotosDepois.splice(idx, 1);
+            renderizarGridFotosDepois();
         }
 
         document.getElementById('camera-live-input').addEventListener('change', e => { processarArquivoImagem(e.target.files[0], 'CAMERA_APP'); e.target.value = ''; });
@@ -1497,11 +1872,11 @@ function popularMenusIniciais() {
             tarefaSelecionadaObj = tarefaObj;
             chaveTarefaAtiva = chave;
             idExecucaoBancoAtiva = idBanco || null;
-            dadosFotoDepois = null;
+            listaFotosDepois = [];
+            renderizarGridFotosDepois();
+
             document.getElementById('modal-task-title').textContent = tarefaObj.atividade;
             document.getElementById('modal-setor-title').textContent = `${tarefaObj.setor} • Estimado: ${tarefaObj.duracao_str}`;
-            document.getElementById('preview-container').classList.add('hidden');
-            document.getElementById('box-contingencia').classList.add('hidden');
             document.getElementById('chk-entrega-parcial').checked = false;
             document.getElementById('obs-input').value = '';
 
@@ -1520,7 +1895,7 @@ function popularMenusIniciais() {
         function closeConclusionModal() { document.getElementById('conclusion-modal').classList.add('hidden'); }
 
         async function finalizarProcesso() {
-            if (!dadosFotoDepois) { alert("Capture a foto de conclusão."); return; }
+            if (listaFotosDepois.length === 0) { alert("Capture ao menos 1 foto de conclusão."); return; }
             const execs = Array.from(document.querySelectorAll('#executors-checkboxes input:checked')).map(c => c.value);
             if (execs.length === 0) { alert("Selecione quem executou a atividade."); return; }
 
@@ -1533,11 +1908,14 @@ function popularMenusIniciais() {
             const btn = document.getElementById('btn-salvar');
             btn.disabled = true; btn.textContent = "Sincronizando...";
 
+            const ultimaFoto = listaFotosDepois[listaFotosDepois.length - 1];
+            const temGaleria = listaFotosDepois.some(f => f.origem === 'GALERIA_EXIF');
+
             const regBanco = idExecucaoBancoAtiva ? window.execucoesMesDB.find(e => e.id === idExecucaoBancoAtiva) : null;
             const dadosLocal = tarefasEmAndamentoLocal[chaveTarefaAtiva];
 
             const dhInicio = new Date(regBanco ? regBanco.dh_inicio_tarefa : (dadosLocal ? dadosLocal.dh_inicio : Date.now() - 1800000));
-            const dhFimExif = new Date(dadosFotoDepois.dh_exif);
+            const dhFimExif = new Date(ultimaFoto.dh_exif);
             const dhAgora = new Date();
 
             let minPausas = Number(regBanco?.minutos_pausa_descontados) || 0;
@@ -1560,7 +1938,7 @@ function popularMenusIniciais() {
             let flag = 'CONFORME';
             if (gpsAtual.suspeitoFake) flag = 'SINAL_GPS_ATIPICO';
             else if (gpsAtual.distCliente !== null && gpsAtual.distCliente > 450) flag = 'FORA_PERIMETRO';
-            else if (deltaEnvioMin > 15 || dadosFotoDepois.origem === 'GALERIA_EXIF') flag = 'ENVIO_DEFASADO';
+            else if (deltaEnvioMin > 15 || temGaleria) flag = 'ENVIO_DEFASADO';
             else if (!isParcial && duracaoEstMin >= 30 && duracaoRealMin < Math.round(duracaoEstMin * 0.2)) flag = 'DIVERGENCIA_SLA';
 
             const dadosFinais = {
@@ -1568,16 +1946,16 @@ function popularMenusIniciais() {
                 equipe_executora: execs.join(', '),
                 registrado_por: equipeLogada[0] || execs[0],
                 observacao: isParcial ? `[ENTREGA PARCIAL] ${obs}` : obs,
-                justificativa_contingencia: dadosFotoDepois.origem === 'GALERIA_EXIF' ? document.getElementById('select-contingencia').value : null,
-                hash_foto_depois: dadosFotoDepois.hash,
+                justificativa_contingencia: temGaleria ? document.getElementById('select-contingencia').value : null,
+                hash_foto_depois: ultimaFoto.hash,
                 dh_captura_exif: dhFimExif.toISOString(),
                 dh_envio_servidor: dhAgora.toISOString(),
                 duracao_estimada_min: duracaoEstMin,
                 duracao_real_min: duracaoRealMin,
                 minutos_pausa_descontados: minPausas,
                 delta_envio_min: deltaEnvioMin,
-                origem_midia: dadosFotoDepois.origem,
-                aparelho_modelo: dadosFotoDepois.modelo,
+                origem_midia: temGaleria ? 'GALERIA_EXIF' : 'CAMERA_APP',
+                aparelho_modelo: ultimaFoto.modelo,
                 lat_captura: gpsAtual.lat,
                 lng_captura: gpsAtual.lng,
                 precisao_gps_m: gpsAtual.acc,
@@ -1591,8 +1969,12 @@ function popularMenusIniciais() {
 
             try {
                 if (!navigator.onLine) throw new Error("OFFLINE");
-                const urlDepois = await uploadBase64Storage(dadosFotoDepois.base64, 'DEPOIS');
-                dadosFinais.foto_depois_url = urlDepois;
+                const urlsDepoisArr = [];
+                for (const f of listaFotosDepois) {
+                    const u = await uploadBase64Storage(f.base64, 'DEPOIS');
+                    urlsDepoisArr.push(u);
+                }
+                dadosFinais.foto_depois_url = urlsDepoisArr.join('|');
 
                 if (regBanco && regBanco.id) {
                     await sb.from('execucoes_auditoria').update(dadosFinais).eq('id', regBanco.id);
@@ -1639,12 +2021,12 @@ function popularMenusIniciais() {
                         dh_inicio_tarefa: dhInicio.toISOString()
                     },
                     fotoAntesB64: dadosLocal?.foto_antes || null,
-                    fotoDepoisB64: dadosFotoDepois.base64
+                    fotoDepoisB64: ultimaFoto.base64
                 });
                 localStorage.setItem('novaera_fila_offline', JSON.stringify(filaOffline));
             }
 
-            hashesConhecidos.add(dadosFotoDepois.hash);
+            listaFotosDepois.forEach(f => hashesConhecidos.add(f.hash));
             localStorage.setItem('novaera_hashes_fotos', JSON.stringify(Array.from(hashesConhecidos)));
             delete tarefasEmAndamentoLocal[chaveTarefaAtiva];
             localStorage.setItem('novaera_tarefas_andamento', JSON.stringify(tarefasEmAndamentoLocal));
@@ -1652,6 +2034,100 @@ function popularMenusIniciais() {
             btn.disabled = false; btn.textContent = "Salvar e Sincronizar";
             closeConclusionModal();
             carregarDadosSupabase();
+        }
+
+        // =========================================================================
+        // 8.5. CORRIGIR ENTREGA CONCLUÍDA HOJE (ATÉ O ENCERRAMENTO DO DIA)
+        // =========================================================================
+        let idExecucaoEditandoHoje = null;
+        let fotosEdicaoConcluida = [];
+
+        function abrirModalEdicaoConcluida(execId) {
+            if (window.presencaHojeDB?.status_validacao === 'TURNO_ENCERRADO') {
+                alert("🔒 O expediente de hoje já foi encerrado. Solicite ajustes à Supervisão.");
+                return;
+            }
+            const reg = window.execucoesMesDB.find(e => e.id === execId);
+            if (!reg) return;
+
+            idExecucaoEditandoHoje = execId;
+            document.getElementById('edit-conc-title').textContent = `${reg.setor} • ${reg.atividade}`;
+            document.getElementById('edit-conc-obs').value = reg.observacao || '';
+
+            const atuaisExec = (reg.equipe_executora || '').split(',').map(s => s.trim());
+            const colabsPosto = window.colaboradoresTodosDB.filter(c => c.ativo !== false && (!c.cliente_padrao || c.cliente_padrao === clienteAtivo) && ['OPERADOR', 'ENCARREGADO'].includes(c.perfil));
+
+            document.getElementById('edit-conc-executors').innerHTML = colabsPosto.map(c => {
+                const checked = atuaisExec.includes(c.nome) ? 'checked' : '';
+                return `<label class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl cursor-pointer">
+                    <input type="checkbox" value="${c.nome}" ${checked} class="w-3.5 h-3.5 text-orange-500 rounded">
+                    <span class="text-xs font-bold text-slate-700">${c.nome}</span>
+                </label>`;
+            }).join('');
+
+            fotosEdicaoConcluida = extrairListaFotos(reg.foto_depois_url).map(u => ({ tipo: 'URL', valor: u }));
+            renderizarGridFotosEdicaoConcluida();
+
+            document.getElementById('edit-concluded-modal').classList.remove('hidden');
+            initIcons();
+        }
+
+        function fecharModalEdicaoConcluida() {
+            idExecucaoEditandoHoje = null;
+            document.getElementById('edit-concluded-modal').classList.add('hidden');
+        }
+
+        function renderizarGridFotosEdicaoConcluida() {
+            const grid = document.getElementById('edit-conc-fotos-grid');
+            const botoes = document.getElementById('edit-conc-botoes-foto');
+            grid.innerHTML = fotosEdicaoConcluida.map((f, i) => `
+                <div class="relative h-24 rounded-xl overflow-hidden border border-slate-200">
+                    <img src="${f.valor}" class="w-full h-full object-cover">
+                    ${fotosEdicaoConcluida.length > 1 ? `<button type="button" onclick="removerFotoEdicaoConcluida(${i})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1"><i data-lucide="x" class="w-3 h-3"></i></button>` : ''}
+                </div>
+            `).join('');
+            botoes.classList.toggle('hidden', fotosEdicaoConcluida.length >= 3);
+            initIcons();
+        }
+
+        function removerFotoEdicaoConcluida(idx) {
+            if (fotosEdicaoConcluida.length <= 1) return;
+            fotosEdicaoConcluida.splice(idx, 1);
+            renderizarGridFotosEdicaoConcluida();
+        }
+
+        async function salvarCorrecaoConcluida() {
+            if (!idExecucaoEditandoHoje) return;
+            const execs = Array.from(document.querySelectorAll('#edit-conc-executors input:checked')).map(c => c.value);
+            if (execs.length === 0) { alert("Selecione ao menos um executor."); return; }
+            const obs = document.getElementById('edit-conc-obs').value.trim();
+            if (obs.length < 5) { alert("Preencha a observação técnica."); return; }
+
+            const btn = document.getElementById('btn-salvar-correcao');
+            btn.disabled = true; btn.textContent = "Salvando...";
+
+            try {
+                const urlsFinais = [];
+                for (const item of fotosEdicaoConcluida) {
+                    if (item.tipo === 'URL') urlsFinais.push(item.valor);
+                    else {
+                        const u = await uploadBase64Storage(item.valor, 'DEPOIS_EDIT');
+                        urlsFinais.push(u);
+                    }
+                }
+                await sb.from('execucoes_auditoria').update({
+                    equipe_executora: execs.join(', '),
+                    observacao: obs,
+                    foto_depois_url: urlsFinais.join('|')
+                }).eq('id', idExecucaoEditandoHoje);
+
+                fecharModalEdicaoConcluida();
+                carregarDadosSupabase();
+            } catch (e) {
+                alert("Erro ao salvar alterações.");
+            } finally {
+                btn.disabled = false; btn.textContent = "Salvar Alterações";
+            }
         }
 
         async function sincronizarFilaOffline() {
@@ -1683,7 +2159,7 @@ function popularMenusIniciais() {
         }
 
         // =========================================================================
-        // 8. COMUNICADOR INSTANTÂNEO (3 CANAIS)
+        // 9. COMUNICADOR INSTANTÂNEO (EQUIPE, SUPERVISÃO E CLIENTE)
         // =========================================================================
         async function carregarMensagensChat() {
             const { data } = await sb.from('mensagens_chat')
@@ -1697,17 +2173,15 @@ function popularMenusIniciais() {
 
         function selecionarCanalChat(canal) {
             canalChatAtivo = canal;
+            mensagensNaoLidas[canal] = 0;
+            atualizarBadgesNaoLidas();
+
             ['EQUIPE', 'SUPERVISAO', 'CLIENTE'].forEach(c => {
                 const b = document.getElementById(`btn-canal-${c}`);
-                if (c === canal) b.className = "py-2 px-2 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-sm transition-all";
-                else b.className = "py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600 hover:text-slate-900 transition-all";
+                if (c === canal) b.className = "py-2 px-2 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-sm transition-all flex items-center justify-center";
+                else b.className = "py-2 px-2 rounded-xl text-[11px] font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center";
             });
-            const desc = {
-                'EQUIPE': 'Conversa rápida da equipe local (limpeza automática após 7 dias)',
-                'SUPERVISAO': 'Linha direta Operadores ↔ Supervisão • Permanente',
-                'CLIENTE': 'Canal Oficial do Condomínio • Auditável'
-            };
-            document.getElementById('chat-canal-info').innerHTML = `<span>${desc[canal]}</span>`;
+            atualizarBadgesNaoLidas();
             carregarMensagensChat();
         }
 
@@ -1757,21 +2231,37 @@ function popularMenusIniciais() {
             carregarMensagensChat();
         }
 
+        let canalRealtimeIniciado = false;
         function iniciarRealtimeSupabase() {
-            sb.channel('novaera-operador-v9')
+            if (canalRealtimeIniciado) return;
+            canalRealtimeIniciado = true;
+
+            sb.channel('novaera-operador-v91')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarDadosSupabase())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarDadosSupabase())
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
-                    if (payload.new.cliente === clienteAtivo) {
-                        document.getElementById('chat-unread-dot').classList.remove('hidden');
-                        carregarMensagensChat();
+                    const msg = payload.new;
+                    if (msg.cliente !== clienteAtivo) return;
+
+                    const meuNome = equipeLogada[0] || '';
+                    const foiEnviadoPorMim = msg.autor_nome === meuNome;
+
+                    if (!foiEnviadoPorMim) {
+                        tocarChimeNotificacao();
+                        const estaVendoEsteCanal = (tabAtual === 'chat' && canalChatAtivo === msg.canal);
+                        if (!estaVendoEsteCanal) {
+                            mensagensNaoLidas[msg.canal] = (mensagensNaoLidas[msg.canal] || 0) + 1;
+                            atualizarBadgesNaoLidas();
+                            dispararNotificacaoVisual(msg.autor_nome, msg.canal, msg.mensagem, msg.urgente);
+                        }
                     }
+                    carregarMensagensChat();
                 })
                 .subscribe();
         }
 
         // =========================================================================
-        // 9. CALENDÁRIO MENSAL, TAREFA EXTRA E IDENTIFICAÇÃO DA EQUIPE
+        // 10. CALENDÁRIO MENSAL, TAREFA EXTRA E IDENTIFICAÇÃO DA EQUIPE
         // =========================================================================
         function renderFullMonthCalendar() {
             const container = document.getElementById('month-days-container');
@@ -1870,7 +2360,8 @@ function popularMenusIniciais() {
             const titulos = { hoje: 'Cronograma de Hoje', calendario: 'Planejamento Mensal', chat: 'Comunicador Interno' };
             document.getElementById('view-title').textContent = titulos[tab];
             if (tab === 'chat') {
-                document.getElementById('chat-unread-dot').classList.add('hidden');
+                mensagensNaoLidas[canalChatAtivo] = 0;
+                atualizarBadgesNaoLidas();
                 carregarMensagensChat();
             }
         }
