@@ -144,7 +144,6 @@
         <!-- VISÃO 1: TAREFAS DE HOJE + FILTRO RÁPIDO   -->
         <!-- ========================================== -->
         <div id="tasks-view">
-            <!-- BARRA DE FILTRO RÁPIDO (PENDENTES / TODAS / RESOLVIDAS) -->
             <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl mb-3 border border-slate-300/60">
                 <button onclick="setFiltroTarefas('PENDENTES')" id="btn-filtro-PENDENTES" class="py-2 px-2 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white shadow-sm transition-all flex items-center justify-center gap-1">
                     ⏳ Pendentes <span id="count-filtro-PENDENTES" class="bg-orange-500 text-white text-[9px] px-1.5 py-0.2 rounded-full">0</span>
@@ -173,32 +172,39 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- VISÃO 2: CALENDÁRIO MENSAL ("FOLHINHA")    -->
+        <!-- VISÃO 2: CALENDÁRIO E HISTÓRICO DE DIAS    -->
         <!-- ========================================== -->
         <div id="calendar-view" class="hidden">
-            <div class="flex justify-between items-center mb-3 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm">
-                <span class="text-xs font-bold text-slate-500 px-2">Planejamento Mensal</span>
-                <div class="text-right px-2">
-                    <h3 class="font-extrabold text-sm text-slate-800 capitalize" id="mes-titulo">Novembro 2026</h3>
+            <div class="flex justify-between items-center mb-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
+                <button onclick="mudarMesCalendario(-1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Ant.
+                </button>
+                <div class="text-center">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase block leading-none">Histórico & Planejamento</span>
+                    <h3 class="font-extrabold text-sm text-slate-900 capitalize mt-0.5" id="mes-titulo">Novembro 2026</h3>
                 </div>
+                <button onclick="mudarMesCalendario(1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                    Próx. <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
             </div>
 
-            <div class="month-grid mb-4 shadow-sm" id="month-days-container"></div>
+            <div class="month-grid mb-3 shadow-sm" id="month-days-container"></div>
 
-            <div class="flex justify-center gap-4 mb-4 text-[10px] font-bold text-slate-600">
+            <div class="flex justify-center flex-wrap gap-3 mb-4 text-[10px] font-bold text-slate-600">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Executado c/ Foto</span>
                 <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-orange-500"></span> Prioridade Manhã</span>
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Rotina / Fatiada</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Programado</span>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
-                <div class="bg-slate-50 p-3 border-b border-slate-200 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
-                        <i data-lucide="calendar-search" class="w-4 h-4 text-orange-500"></i>
+                <div class="bg-slate-900 text-white p-3 flex justify-between items-center">
+                    <h3 class="font-bold text-xs flex items-center gap-1.5">
+                        <i data-lucide="calendar-search" class="w-4 h-4 text-orange-400"></i>
                         <span id="selected-day-title">Dia Selecionado</span>
                     </h3>
-                    <span class="bg-white border border-slate-200 text-slate-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full" id="selected-day-count">0h</span>
+                    <span class="bg-slate-800 border border-slate-700 text-orange-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full" id="selected-day-count">0h</span>
                 </div>
-                <div class="p-3 space-y-2" id="selected-day-list"></div>
+                <div class="p-3 space-y-2.5" id="selected-day-list"></div>
             </div>
         </div>
 
@@ -240,6 +246,13 @@
 
     </main>
 
+    <!-- MODAL DE ZOOM DAS FOTOS (LIGHTBOX OPERADOR) -->
+    <div id="lightbox-op-modal" onclick="fecharZoomFotoOp()" class="fixed inset-0 bg-slate-950/90 z-50 hidden flex flex-col items-center justify-center p-4">
+        <img id="lightbox-op-img" class="max-w-full max-h-[82vh] rounded-xl shadow-2xl border border-slate-700 object-contain">
+        <p id="lightbox-op-caption" class="text-xs font-bold text-white mt-3 bg-slate-900/80 px-3 py-1.5 rounded-full text-center"></p>
+        <p class="text-[10px] text-slate-400 mt-1">Toque em qualquer lugar para fechar</p>
+    </div>
+
     <!-- BOTÃO FLUTUANTE (+) NOVA TAREFA EXTRA -->
     <button id="fab-add" onclick="openExtraModal()" class="fixed bottom-20 right-4 w-13 h-13 p-3.5 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center text-white hover:scale-105 transition-transform z-30">
         <i data-lucide="plus" class="w-6 h-6"></i>
@@ -254,7 +267,7 @@
             </button>
             <button onclick="switchTab('calendario')" id="tab-calendario" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-orange-500 transition-colors relative">
                 <i data-lucide="calendar-days" class="w-5 h-5 mb-0.5"></i>
-                <span class="text-[10px] font-bold">Calendário</span>
+                <span class="text-[10px] font-bold">Histórico & Mês</span>
             </button>
             <button onclick="switchTab('chat')" id="tab-chat" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-orange-500 transition-colors relative">
                 <i data-lucide="message-square-text" class="w-5 h-5 mb-0.5"></i>
@@ -311,7 +324,7 @@
         </div>
     </div>
 
-    <!-- MODAL 1.7: ATUALIZAÇÃO DE PROGRESSO / +FOTO NO MEIO DO CAMINHO (SEM PAUSAR) -->
+    <!-- MODAL 1.7: ATUALIZAÇÃO DE PROGRESSO / +FOTO NO MEIO DO CAMINHO -->
     <div id="progresso-modal" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-3.5">
         <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start">
@@ -465,7 +478,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2.5: CORRIGIR ENTREGA CONCLUÍDA HOJE (ATÉ O ENCERRAMENTO DO DIA) -->
+    <!-- MODAL 2.5: CORRIGIR ENTREGA CONCLUÍDA HOJE -->
     <div id="edit-concluded-modal" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-3.5">
         <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-3.5">
             <div class="flex justify-between items-start">
@@ -538,7 +551,7 @@
 
     <script>
         // =========================================================================
-        // 1. CONFIGURAÇÃO SUPABASE (NOVA ERA v9.1 - OPERADOR TURBINADO)
+        // 1. CONFIGURAÇÃO SUPABASE (NOVA ERA v9.2 - HISTÓRICO & MULTI-FOTOS)
         // =========================================================================
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
@@ -559,12 +572,17 @@
         let filaOffline = JSON.parse(localStorage.getItem('novaera_fila_offline') || '[]');
         let hashesConhecidos = new Set(JSON.parse(localStorage.getItem('novaera_hashes_fotos') || '[]'));
 
-        let filtroTarefasHoje = 'PENDENTES'; // 'PENDENTES' | 'TODAS' | 'RESOLVIDAS'
+        let filtroTarefasHoje = 'PENDENTES';
         let modoChuvaAtivo = false;
         let canalChatAtivo = 'EQUIPE';
         let tabAtual = 'hoje';
         let checkinPendenteAposConfirmarEquipe = false;
         let gpsAtual = { lat: null, lng: null, acc: null, distCliente: null, suspeitoFake: false };
+
+        // Estado do Calendário e Histórico
+        let calAnoAtivo = new Date().getFullYear();
+        let calMesAtivo = new Date().getMonth();
+        let execucoesCalendarioCache = [];
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -578,6 +596,16 @@
         function extrairListaFotos(campoUrl) {
             if (!campoUrl) return [];
             return String(campoUrl).split('|').map(s => s.trim()).filter(Boolean);
+        }
+
+        function abrirZoomFotoOp(url, legenda) {
+            if (!url) return;
+            document.getElementById('lightbox-op-img').src = url;
+            document.getElementById('lightbox-op-caption').textContent = legenda || '';
+            document.getElementById('lightbox-op-modal').classList.remove('hidden');
+        }
+        function fecharZoomFotoOp() {
+            document.getElementById('lightbox-op-modal').classList.add('hidden');
         }
 
         function ehFeriado(d) { return window.feriadosDB.includes(dataISO(d)); }
@@ -1023,7 +1051,10 @@
                 if (resCli.data) window.clientesDB = resCli.data;
                 if (resColab.data) window.colaboradoresTodosDB = resColab.data;
                 if (resCrono.data) window.cronogramaTodosDB = resCrono.data;
-                if (resExec.data) window.execucoesMesDB = resExec.data;
+                if (resExec.data) {
+                    window.execucoesMesDB = resExec.data;
+                    execucoesCalendarioCache = resExec.data;
+                }
                 if (resFer.data) window.feriadosDB = resFer.data.map(f => f.data_feriado);
                 if (resObs.data) window.obsRapidasDB = resObs.data;
 
@@ -1051,7 +1082,6 @@
                 selPosto.innerHTML = window.clientesDB.map(c => `<option value="${c.nome}" ${c.nome === clienteAtivo ? 'selected' : ''}>${c.nome}</option>`).join('');
             }
 
-            // TRAVA: Puxa APENAS OPERADOR e ENCARREGADO (exclui Supervisores da execução física)
             const colabsPosto = window.colaboradoresTodosDB.filter(c => c.ativo !== false && (!c.cliente_padrao || c.cliente_padrao === clienteAtivo) && ['OPERADOR', 'ENCARREGADO'].includes(c.perfil));
             const nomesValidos = colabsPosto.map(c => c.nome);
             equipeLogada = equipeLogada.filter(n => nomesValidos.includes(n));
@@ -1095,16 +1125,14 @@
             return false;
         }
 
-        function projetarMatrizMensal() {
+        function projetarMatrizMensal(anoRef = calAnoAtivo, mesRef = calMesAtivo) {
             window.agendaProjetada = {};
-            const agora = new Date();
-            const hojeStr = dataISO(agora);
-            const ano = agora.getFullYear(), mes = agora.getMonth();
-            const totalDiasMes = new Date(ano, mes + 1, 0).getDate();
+            const hojeStr = dataISO(new Date());
+            const totalDiasMes = new Date(anoRef, mesRef + 1, 0).getDate();
             const diasUteisMes = [];
 
             for (let dia = 1; dia <= totalDiasMes; dia++) {
-                const d = new Date(ano, mes, dia);
+                const d = new Date(anoRef, mesRef, dia);
                 const dStr = dataISO(d);
                 const util = diaUtil(d);
                 window.agendaProjetada[dStr] = { data: d, util: util, tarefas: [], minutos: 0 };
@@ -1130,7 +1158,7 @@
                 const isFlutuante = f.includes('mês') || f.includes('mensal') || f.includes('quinzenal') || f.includes('quadrimestral');
                 const minT = Number(t.duracao_minutos) || 30;
 
-                if (t.data_alvo && t.data_alvo >= hojeStr && window.agendaProjetada[t.data_alvo]) {
+                if (t.data_alvo && window.agendaProjetada[t.data_alvo]) {
                     window.agendaProjetada[t.data_alvo].tarefas.push({ ...t });
                     window.agendaProjetada[t.data_alvo].minutos += minT;
                 } else if (!t.data_alvo && !isFlutuante) {
@@ -1144,7 +1172,9 @@
                 }
             });
 
-            const diasUteisFuturosOuHoje = diasUteisMes.filter(dStr => dStr >= hojeStr);
+            const diasUteisAlvo = diasUteisMes.filter(dStr => dStr >= hojeStr);
+            const baseDiasFlutuantes = diasUteisAlvo.length > 0 ? diasUteisAlvo : diasUteisMes;
+
             tarefasCliente.forEach(t => {
                 if (t.data_alvo) return;
                 const f = (t.frequencia || '').toLowerCase();
@@ -1152,16 +1182,16 @@
                 if (!isFlutuante) return;
 
                 const minTotalMes = Number(t.duracao_minutos) || 60;
-                const execsDestaTarefa = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && e.status_execucao === 'CONCLUIDO' && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade.startsWith(t.atividade))));
+                const execsDestaTarefa = execucoesCalendarioCache.filter(e => e.cliente === clienteAtivo && e.status_execucao === 'CONCLUIDO' && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade.startsWith(t.atividade))));
                 const minJaRealizados = execsDestaTarefa.reduce((acc, cur) => acc + (Number(cur.duracao_real_min) || 0), 0);
                 let minRestantes = Math.max(0, minTotalMes - minJaRealizados);
                 if (minRestantes === 0) return;
 
                 const fatiaIdeal = minTotalMes > 240 ? 120 : minRestantes;
                 let guard = 0;
-                while (minRestantes > 0 && diasUteisFuturosOuHoje.length > 0 && guard < 45) {
+                while (minRestantes > 0 && baseDiasFlutuantes.length > 0 && guard < 45) {
                     guard++;
-                    const candidatos = diasUteisFuturosOuHoje.filter(dStr => (LIMITE_DIARIO - window.agendaProjetada[dStr].minutos) >= 15);
+                    const candidatos = baseDiasFlutuantes.filter(dStr => (LIMITE_DIARIO - window.agendaProjetada[dStr].minutos) >= 15);
                     if (candidatos.length === 0) break;
 
                     let melhorDia = candidatos[0];
@@ -1217,7 +1247,7 @@
 
         function recalcularTudo() {
             atualizarBannerCheckin();
-            projetarMatrizMensal();
+            projetarMatrizMensal(new Date().getFullYear(), new Date().getMonth());
             renderizarTarefasHoje();
             renderFullMonthCalendar();
             atualizarBotaoFilaOffline();
@@ -1237,7 +1267,7 @@
         }
 
         // =========================================================================
-        // 6. RENDERIZAÇÃO DOS CARTÕES (FILTRO + EDIÇÃO + FOTO PROGRESSO)
+        // 6. RENDERIZAÇÃO DOS CARTÕES DE HOJE
         // =========================================================================
         function renderizarTarefasHoje() {
             const container = document.getElementById('task-container');
@@ -1269,7 +1299,6 @@
                 if (regFinalizadoHoje) resolvidasCount++;
                 else pendentesCount++;
 
-                // Aplica o filtro selecionado pelo operador
                 if (filtroTarefasHoje === 'PENDENTES' && regFinalizadoHoje) return;
                 if (filtroTarefasHoje === 'RESOLVIDAS' && !regFinalizadoHoje) return;
                 exibidasNoFiltro++;
@@ -1293,7 +1322,6 @@
                         </div>`;
                 }
 
-                // ESTADO 1: CONCLUÍDA OU DISPENSADA HOJE (COM BOTÃO DE CORRIGIR ATÉ O FIM DO DIA)
                 if (regFinalizadoHoje) {
                     const foiDispensada = regFinalizadoHoje.status_execucao === 'DISPENSADO';
                     const fotosDepoisArr = extrairListaFotos(regFinalizadoHoje.foto_depois_url);
@@ -1336,7 +1364,6 @@
                         </div>`;
                     }
                 }
-                // ESTADO 2: PAUSADA
                 else if (regAtivoBanco && regAtivoBanco.status_execucao === 'PAUSADO') {
                     const horaPausa = regAtivoBanco.dh_inicio_pausa ? new Date(regAtivoBanco.dh_inicio_pausa).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
                     const fotosAntesArr = extrairListaFotos(regAtivoBanco.foto_antes_url);
@@ -1349,7 +1376,7 @@
                         <h3 class="text-sm font-extrabold text-slate-900">${t.atividade}</h3>
                         <p class="text-[11px] font-semibold text-amber-800 mt-1">Motivo: ${regAtivoBanco.motivo_pausa || 'Intervalo'}</p>
                         <div class="flex items-center gap-2 mt-3">
-                            ${fotosAntesArr[0] ? `<img src="${fotosAntesArr[0]}" class="w-12 h-12 rounded-xl object-cover border border-amber-300 flex-shrink-0">` : ''}
+                            ${fotosAntesArr[0] ? `<img onclick="abrirZoomFotoOp('${fotosAntesArr[0]}', '${t.setor}')" src="${fotosAntesArr[0]}" class="w-12 h-12 rounded-xl object-cover border border-amber-300 flex-shrink-0 cursor-pointer">` : ''}
                             <button onclick="retomarTarefaPausada(${regAtivoBanco.id})" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm">
                                 <i data-lucide="play" class="w-4 h-4 text-emerald-400"></i> Retomar
                             </button>
@@ -1359,7 +1386,6 @@
                         </div>
                     </div>`;
                 }
-                // ESTADO 3: EM EXECUÇÃO (COM BOTÃO DE +FOTO / PROGRESSO NO MEIO DO CAMINHO)
                 else if (regAtivoBanco || emAndamentoLocal) {
                     const dhIni = regAtivoBanco ? regAtivoBanco.dh_inicio_tarefa : emAndamentoLocal.dh_inicio;
                     const fotosAntesArr = regAtivoBanco ? extrairListaFotos(regAtivoBanco.foto_antes_url) : [emAndamentoLocal.foto_antes];
@@ -1367,7 +1393,7 @@
                     const minPausaAcum = regAtivoBanco ? (Number(regAtivoBanco.minutos_pausa_descontados) || 0) : 0;
                     const horaIni = new Date(dhIni).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-                    const miniaturasHtml = fotosAntesArr.map(u => `<img src="${u}" class="w-11 h-11 rounded-xl object-cover border border-orange-300 flex-shrink-0">`).join('');
+                    const miniaturasHtml = fotosAntesArr.map((u, i) => `<img onclick="abrirZoomFotoOp('${u}', '${t.setor} • Foto ${i+1}')" src="${u}" class="w-11 h-11 rounded-xl object-cover border border-orange-300 flex-shrink-0 cursor-pointer">`).join('');
 
                     html += `
                     <div class="bg-orange-50/90 rounded-2xl p-4 border-2 border-orange-300 shadow-sm">
@@ -1385,7 +1411,7 @@
                         <div class="flex items-center gap-1.5 mt-2.5">${miniaturasHtml}</div>
                         <div class="flex items-center gap-1.5 mt-3">
                             ${regAtivoBanco ? `
-                            <button onclick="abrirModalProgresso(${regAtivoBanco.id})" class="bg-white hover:bg-orange-100 text-orange-800 border border-orange-300 font-extrabold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1" title="Adicionar foto ou nota de progresso sem pausar">
+                            <button onclick="abrirModalProgresso(${regAtivoBanco.id})" class="bg-white hover:bg-orange-100 text-orange-800 border border-orange-300 font-extrabold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1">
                                 <i data-lucide="camera" class="w-3.5 h-3.5 text-orange-600"></i> +Foto
                             </button>
                             <button onclick="abrirModalPausa(${regAtivoBanco.id})" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-extrabold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1">
@@ -1397,7 +1423,6 @@
                         </div>
                     </div>`;
                 }
-                // ESTADO 4: PENDENTE
                 else {
                     const bordaPrio = t.prioridade === 1 ? 'border-l-4 border-l-orange-500' : '';
                     html += `
@@ -1419,7 +1444,7 @@
                             <button onclick='iniciarTarefa(${JSON.stringify(t).replace(/'/g, "&apos;")}, "${chaveUnica}", "GALERIA_EXIF")' class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-2.5 rounded-xl text-xs border border-slate-200" title="Galeria com validação EXIF">
                                 <i data-lucide="image" class="w-4 h-4"></i>
                             </button>
-                            <button onclick='abrirModalSkip(${JSON.stringify(t).replace(/'/g, "&apos;")})' class="bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1" title="Dispensar por não necessidade hoje">
+                            <button onclick='abrirModalSkip(${JSON.stringify(t).replace(/'/g, "&apos;")})' class="bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold py-2.5 px-2.5 rounded-xl text-[11px] flex items-center gap-1">
                                 <i data-lucide="skip-forward" class="w-3.5 h-3.5"></i> Dispensar
                             </button>
                         </div>
@@ -1427,7 +1452,6 @@
                 }
             });
 
-            // Atualiza contadores dos botões de filtro rápido
             document.getElementById('count-filtro-PENDENTES').textContent = pendentesCount;
             document.getElementById('count-filtro-TODAS').textContent = totalDia;
             document.getElementById('count-filtro-RESOLVIDAS').textContent = resolvidasCount;
@@ -1502,9 +1526,8 @@
             carregarDadosSupabase();
         }
 
-        // MODAL DE PROGRESSO NO MEIO DO CAMINHO (+FOTO SEM PAUSAR)
         let idExecucaoProgresso = null;
-        let fotosAtuaisProgresso = []; // URLs já salvas ou novas base64
+        let fotosAtuaisProgresso = [];
         function abrirModalProgresso(execId) {
             const reg = window.execucoesMesDB.find(e => e.id === execId);
             if (!reg) return;
@@ -1565,7 +1588,6 @@
             }
         }
 
-        // DISPENSA TÉCNICA ("SKIP")
         let dadosFotoSkip = null;
         function abrirModalSkip(tarefaObj) {
             if (postoBloqueadoHoje()) { alert("🔒 Posto fechado hoje."); return; }
@@ -1637,7 +1659,7 @@
         let idExecucaoBancoAtiva = null;
         let etapaCaptura = 'antes';
         let origemCaptura = 'CAMERA_APP';
-        let listaFotosDepois = []; // Array de objetos { base64, hash, dh_exif, modelo, origem }
+        let listaFotosDepois = [];
 
         function iniciarTarefa(tarefaObj, chave, origem) {
             if (postoBloqueadoHoje()) { alert("🔒 Posto fechado hoje."); return; }
@@ -1818,7 +1840,6 @@
                 localStorage.setItem('novaera_tarefas_andamento', JSON.stringify(tarefasEmAndamentoLocal));
                 renderizarTarefasHoje();
             } else {
-                // Etapa 'depois' (Múltiplas fotos de 1 a 3)
                 if (listaFotosDepois.length < 3) {
                     listaFotosDepois.push({
                         base64: base64Carimbado,
@@ -2037,7 +2058,7 @@
         }
 
         // =========================================================================
-        // 8.5. CORRIGIR ENTREGA CONCLUÍDA HOJE (ATÉ O ENCERRAMENTO DO DIA)
+        // 8.5. CORRIGIR ENTREGA CONCLUÍDA HOJE
         // =========================================================================
         let idExecucaoEditandoHoje = null;
         let fotosEdicaoConcluida = [];
@@ -2159,7 +2180,7 @@
         }
 
         // =========================================================================
-        // 9. COMUNICADOR INSTANTÂNEO (EQUIPE, SUPERVISÃO E CLIENTE)
+        // 9. COMUNICADOR INSTANTÂNEO
         // =========================================================================
         async function carregarMensagensChat() {
             const { data } = await sb.from('mensagens_chat')
@@ -2236,7 +2257,7 @@
             if (canalRealtimeIniciado) return;
             canalRealtimeIniciado = true;
 
-            sb.channel('novaera-operador-v91')
+            sb.channel('novaera-operador-v92')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarDadosSupabase())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarDadosSupabase())
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
@@ -2261,29 +2282,58 @@
         }
 
         // =========================================================================
-        // 10. CALENDÁRIO MENSAL, TAREFA EXTRA E IDENTIFICAÇÃO DA EQUIPE
+        // 10. CALENDÁRIO COM HISTÓRICO REAL DE DIAS ANTERIORES E NAVEGAÇÃO
         // =========================================================================
+        async function mudarMesCalendario(delta) {
+            calMesAtivo += delta;
+            if (calMesAtivo < 0) { calMesAtivo = 11; calAnoAtivo--; }
+            else if (calMesAtivo > 11) { calMesAtivo = 0; calAnoAtivo++; }
+
+            const inicioMesISO = dataISO(new Date(calAnoAtivo, calMesAtivo, 1));
+            const fimMesISO = dataISO(new Date(calAnoAtivo, calMesAtivo + 1, 0));
+
+            const { data } = await sb.from('execucoes_auditoria')
+                .select('*')
+                .eq('cliente', clienteAtivo)
+                .gte('data_referencia', inicioMesISO)
+                .lte('data_referencia', fimMesISO)
+                .order('dh_envio_servidor', { ascending: false });
+
+            execucoesCalendarioCache = data || [];
+            projetarMatrizMensal(calAnoAtivo, calMesAtivo);
+            renderFullMonthCalendar();
+        }
+
         function renderFullMonthCalendar() {
             const container = document.getElementById('month-days-container');
-            const hoje = new Date();
-            const ano = hoje.getFullYear(), mes = hoje.getMonth(), diaAtual = hoje.getDate();
-            document.getElementById('mes-titulo').textContent = hoje.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+            const hojeReal = new Date();
+            const dataRefTitulo = new Date(calAnoAtivo, calMesAtivo, 1);
+            document.getElementById('mes-titulo').textContent = dataRefTitulo.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
             let html = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(d => `<div class="month-header">${d}</div>`).join('');
-            const primeiroDia = new Date(ano, mes, 1).getDay();
-            const totalDias = new Date(ano, mes + 1, 0).getDate();
+            const primeiroDia = new Date(calAnoAtivo, calMesAtivo, 1).getDay();
+            const totalDias = new Date(calAnoAtivo, calMesAtivo + 1, 0).getDate();
 
             for (let i = 0; i < primeiroDia; i++) html += `<div class="month-cell empty"></div>`;
 
+            const ehMesAtual = (calAnoAtivo === hojeReal.getFullYear() && calMesAtivo === hojeReal.getMonth());
+            const diaSelecionarPadrao = ehMesAtual ? hojeReal.getDate() : 1;
+
             for (let day = 1; day <= totalDias; day++) {
-                const d = new Date(ano, mes, day);
+                const d = new Date(calAnoAtivo, calMesAtivo, day);
                 const dStr = dataISO(d);
                 const ag = window.agendaProjetada[dStr];
+                const execsNoDia = execucoesCalendarioCache.filter(e => e.cliente === clienteAtivo && e.data_referencia === dStr);
+
                 let classes = "month-cell";
-                if (day === diaAtual) classes += " today selected";
-                if (!ag || !ag.util) classes += " bg-slate-50 opacity-60";
+                if (ehMesAtual && day === hojeReal.getDate()) classes += " today";
+                if (day === diaSelecionarPadrao) classes += " selected";
+                if ((!ag || !ag.util) && execsNoDia.length === 0) classes += " bg-slate-50 opacity-60";
 
                 let dots = '';
+                if (execsNoDia.length > 0) {
+                    dots += `<div class="dot bg-emerald-500"></div>`;
+                }
                 if (ag && ag.tarefas.length > 0) {
                     const temPrio = ag.tarefas.some(t => t.prioridade === 1);
                     if (temPrio) dots += `<div class="dot bg-orange-500"></div>`;
@@ -2292,7 +2342,7 @@
                 html += `<div class="${classes}" onclick="selecionarDiaCalendario('${dStr}', ${day}, this)"><span class="day-num">${day}</span><div class="task-dots">${dots}</div></div>`;
             }
             container.innerHTML = html;
-            selecionarDiaCalendario(dataISO(hoje), diaAtual, null);
+            selecionarDiaCalendario(dataISO(new Date(calAnoAtivo, calMesAtivo, diaSelecionarPadrao)), diaSelecionarPadrao, null);
         }
 
         function selecionarDiaCalendario(dStr, day, el) {
@@ -2300,24 +2350,69 @@
                 document.querySelectorAll('.month-cell.selected').forEach(c => c.classList.remove('selected'));
                 el.classList.add('selected');
             }
-            document.getElementById('selected-day-title').textContent = `Dia ${day}`;
+            const dataFormatada = new Date(dStr + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+            document.getElementById('selected-day-title').textContent = `Histórico & Grade • ${dataFormatada}`;
+
             const ag = window.agendaProjetada[dStr];
+            const execsDia = execucoesCalendarioCache.filter(e => e.cliente === clienteAtivo && e.data_referencia === dStr);
             const list = document.getElementById('selected-day-list');
-            if (!ag || (!ag.util && ag.tarefas.length === 0) || ag.tarefas.length === 0) {
-                document.getElementById('selected-day-count').textContent = 'Livre';
-                list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Sem rotinas programadas.</p>`;
-                return;
+
+            let html = '';
+
+            // 1. BLOCO DE HISTÓRICO REAL EXECUTADO NA DATA (COM FOTOS CLICÁVEIS)
+            if (execsDia.length > 0) {
+                const minRealTotal = execsDia.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
+                document.getElementById('selected-day-count').textContent = `${execsDia.length} entregues • ${formatarMinutosStr(minRealTotal)}`;
+
+                html += `<p class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider px-1">✅ Realizado neste dia (${execsDia.length})</p>`;
+                html += execsDia.map(e => {
+                    const isDisp = e.status_execucao === 'DISPENSADO';
+                    const fotosAntes = extrairListaFotos(e.foto_antes_url);
+                    const fotosDepois = extrairListaFotos(e.foto_depois_url);
+                    const todasFotos = [...fotosAntes, ...fotosDepois];
+                    const thumbs = todasFotos.map((u, idx) => `<img onclick="abrirZoomFotoOp('${u}', '${e.setor} • ${e.atividade}')" src="${u}" class="w-11 h-11 rounded-lg object-cover border border-slate-300 cursor-pointer flex-shrink-0">`).join('');
+
+                    return `
+                    <div class="p-3 rounded-xl border ${isDisp ? 'bg-sky-50/70 border-sky-200' : 'bg-emerald-50/60 border-emerald-200'} space-y-1.5">
+                        <div class="flex justify-between items-start gap-2">
+                            <span class="text-[10px] font-extrabold ${isDisp ? 'bg-sky-200 text-sky-900' : 'bg-emerald-200 text-emerald-900'} px-2 py-0.5 rounded">${e.setor}</span>
+                            <span class="text-[10px] font-extrabold ${isDisp ? 'text-sky-800' : 'text-emerald-800'}">${isDisp ? '☑️ Vistoriado' : `✓ ${e.duracao_real_min || 0}m`}</span>
+                        </div>
+                        <p class="text-xs font-extrabold text-slate-900">${e.atividade}</p>
+                        <p class="text-[11px] text-slate-600 italic">"${e.observacao || ''}"</p>
+                        <p class="text-[10px] font-bold text-slate-500">👷 Equipe: ${e.equipe_executora}</p>
+                        ${thumbs ? `<div class="flex gap-1.5 pt-1 overflow-x-auto">${thumbs}</div>` : ''}
+                    </div>`;
+                }).join('');
             }
-            const hDia = (ag.minutos / 60).toFixed(1).replace('.0', '');
-            document.getElementById('selected-day-count').textContent = `${ag.tarefas.length} ativ • ${hDia}h`;
-            list.innerHTML = ag.tarefas.map(t => `
-                <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-                    <div>
-                        <p class="text-xs font-bold text-slate-800">${t.atividade}</p>
-                        <p class="text-[10px] text-slate-500">${t.setor} • ${t.duracao_str}</p>
-                    </div>
-                    <span class="w-2 h-2 rounded-full ${t.prioridade === 1 ? 'bg-orange-500' : 'bg-blue-500'}"></span>
-                </div>`).join('');
+
+            // 2. BLOCO DE GRADE PROGRAMADA PARA O DIA
+            if (ag && ag.tarefas.length > 0) {
+                if (execsDia.length === 0) {
+                    const hDia = (ag.minutos / 60).toFixed(1).replace('.0', '');
+                    document.getElementById('selected-day-count').textContent = `${ag.tarefas.length} prev. • ${hDia}h`;
+                }
+                html += `<p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-1 pt-2">📋 Cronograma Previsto (${ag.tarefas.length})</p>`;
+                html += ag.tarefas.map(t => {
+                    const jaFeitaNoDia = execsDia.some(e => e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade));
+                    return `
+                    <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100 ${jaFeitaNoDia ? 'opacity-60' : ''}">
+                        <div>
+                            <p class="text-xs font-bold ${jaFeitaNoDia ? 'line-through text-slate-500' : 'text-slate-800'}">${t.atividade}</p>
+                            <p class="text-[10px] text-slate-500">${t.setor} • ${t.duracao_str}</p>
+                        </div>
+                        <span class="text-[10px] font-extrabold ${jaFeitaNoDia ? 'text-emerald-600' : 'text-slate-400'}">${jaFeitaNoDia ? '✓ Feito' : 'Previsto'}</span>
+                    </div>`;
+                }).join('');
+            }
+
+            if (!html) {
+                document.getElementById('selected-day-count').textContent = 'Livre';
+                list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Sem registros ou rotinas programadas para esta data.</p>`;
+            } else {
+                list.innerHTML = html;
+            }
+            initIcons();
         }
 
         async function adicionarTarefaExtra() {
@@ -2357,8 +2452,12 @@
             document.getElementById('chat-view').classList.toggle('hidden', tab !== 'chat');
             document.getElementById('fab-add').classList.toggle('hidden', tab !== 'hoje' || postoBloqueadoHoje());
 
-            const titulos = { hoje: 'Cronograma de Hoje', calendario: 'Planejamento Mensal', chat: 'Comunicador Interno' };
+            const titulos = { hoje: 'Cronograma de Hoje', calendario: 'Histórico & Planejamento', chat: 'Comunicador Interno' };
             document.getElementById('view-title').textContent = titulos[tab];
+            if (tab === 'calendario') {
+                projetarMatrizMensal(calAnoAtivo, calMesAtivo);
+                renderFullMonthCalendar();
+            }
             if (tab === 'chat') {
                 mensagensNaoLidas[canalChatAtivo] = 0;
                 atualizarBadgesNaoLidas();
