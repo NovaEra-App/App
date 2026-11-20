@@ -28,16 +28,7 @@
     <div id="login-screen" class="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl text-white">
             <div class="flex items-center gap-3 mb-6">
-                <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 20 L20 80 L35 80 L35 45 L70 70 L80 60 L45 35 Z" fill="url(#grad1)"/>
-                    <path d="M55 25 L85 45 L95 35 L65 15 Z" fill="url(#grad1)"/>
-                    <defs>
-                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FF9A44;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#FC6076;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                </svg>
+                <img src="Logo.jpg" onerror="this.style.display='none'" alt="Nova Era" class="w-11 h-11 rounded-2xl object-cover border border-slate-700 bg-white flex-shrink-0">
                 <div>
                     <h1 class="font-extrabold text-lg leading-tight">Nova Era Serviços</h1>
                     <p class="text-xs text-slate-400 font-medium">Central de Governança & Supervisão</p>
@@ -71,9 +62,7 @@
         <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
             <div class="max-w-xl mx-auto px-4 h-16 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
-                        <i data-lucide="shield-check" class="w-5 h-5"></i>
-                    </div>
+                    <img src="Logo.jpg" onerror="this.style.display='none'" alt="Nova Era" class="w-9 h-9 rounded-xl object-cover border border-slate-700 bg-white flex-shrink-0">
                     <div>
                         <div class="flex items-center gap-1.5">
                             <h1 class="font-extrabold text-sm tracking-tight text-white">Central de Governança</h1>
@@ -96,47 +85,69 @@
 
         <main class="max-w-xl mx-auto pb-safe pt-3.5 px-3.5 space-y-3.5">
 
-            <!-- SELETOR GLOBAL DE CONTRATO / CLIENTE -->
-            <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 flex items-center justify-between">
-                <div>
-                    <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Contrato em Inspeção</p>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                        <i data-lucide="building-2" class="w-4 h-4 text-orange-500"></i>
-                        <select id="admin-select-cliente" onchange="trocarClienteAdmin(this.value)" class="text-base font-extrabold text-slate-900 bg-transparent border-none p-0 focus:ring-0 cursor-pointer outline-none">
-                            <option value="Miss Silvia">Miss Silvia</option>
-                        </select>
+            <!-- SELETOR GLOBAL DE CONTRATO / CLIENTE (CAMADA 1 RESUMIDA) -->
+            <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Contrato em Inspeção</p>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <i data-lucide="building-2" class="w-4 h-4 text-orange-500 flex-shrink-0"></i>
+                            <select id="admin-select-cliente" onchange="trocarClienteAdmin(this.value)" class="text-base font-extrabold text-slate-900 bg-transparent border-none p-0 focus:ring-0 cursor-pointer outline-none truncate">
+                                <option value="Miss Silvia">Miss Silvia</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                        <span id="admin-teto-badge" class="text-[10px] font-extrabold bg-slate-100 text-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-200">Teto: 6h/dia</span>
+                        <span id="admin-quadro-badge" class="text-[10px] font-bold bg-orange-50 text-orange-800 px-2 py-0.5 rounded-lg border border-orange-200">Quadro: 2</span>
                     </div>
                 </div>
-                <div class="text-right">
-                    <span id="admin-teto-badge" class="text-xs font-extrabold bg-slate-100 text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200">Teto: 6h/dia</span>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 text-[11px]">
+                    <p id="admin-contato-info" class="text-slate-600 font-medium truncate">👤 Contato: Carregando...</p>
+                    <a id="admin-contato-whats" href="#" target="_blank" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1 flex-shrink-0 shadow-sm">
+                        <i data-lucide="phone" class="w-3 h-3"></i> WhatsApp
+                    </a>
                 </div>
             </div>
 
-            <!-- MENU DE ABAS DE GESTÃO -->
-            <div class="grid grid-cols-5 gap-1 bg-slate-200/90 p-1 rounded-2xl border border-slate-300/60" id="menu-abas-grid">
-                <button onclick="selecionarAbaAdmin('auditoria')" id="btn-tab-auditoria" class="py-2 px-1 rounded-xl text-[10px] font-extrabold bg-slate-900 text-white shadow-sm transition-all">
+            <!-- MENU DE ABAS DE GESTÃO (LAYOUT RESPONSIVO) -->
+            <div class="flex flex-wrap gap-1 bg-slate-200/90 p-1 rounded-2xl border border-slate-300/60" id="menu-abas-grid">
+                <button onclick="selecionarAbaAdmin('auditoria')" id="btn-tab-auditoria" class="flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold bg-slate-900 text-white shadow-sm transition-all">
                     📊 Dashboard
                 </button>
-                <button onclick="selecionarAbaAdmin('tarefas')" id="btn-tab-tarefas" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
+                <button onclick="selecionarAbaAdmin('suprimentos')" id="btn-tab-suprimentos" class="flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative">
+                    📦 Suprimentos
+                    <span id="admin-sup-dot" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-amber-600 rounded-full flex items-center justify-center absolute -top-1 right-1 shadow-sm">0</span>
+                </button>
+                <button onclick="selecionarAbaAdmin('inventario')" id="btn-tab-inventario" class="flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
+                    🌿 Áreas/Plantas
+                </button>
+                <button onclick="selecionarAbaAdmin('tarefas')" id="btn-tab-tarefas" class="flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
                     📋 Tarefas
                 </button>
-                <button onclick="selecionarAbaAdmin('equipe')" id="btn-tab-equipe" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
+                <button onclick="selecionarAbaAdmin('equipe')" id="btn-tab-equipe" class="flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
                     👷 Equipe
                 </button>
-                <button onclick="selecionarAbaAdmin('contratos')" id="btn-tab-contratos" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
+                <button onclick="selecionarAbaAdmin('contratos')" id="btn-tab-contratos" class="flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all">
                     🏢 Contratos
                 </button>
-                <button onclick="selecionarAbaAdmin('chat')" id="btn-tab-chat" class="py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative">
+                <button onclick="selecionarAbaAdmin('chat')" id="btn-tab-chat" class="flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative">
                     💬 Canais
                     <span id="admin-chat-dot" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-red-600 rounded-full flex items-center justify-center absolute -top-1 right-1 shadow-sm">0</span>
                 </button>
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 1: DASHBOARD AUTOEXPLICATIVO, HISTÓRICO E AUDITORIA   -->
+            <!-- ABA 1: DASHBOARD, DISPONIBILIDADE, HISTÓRICO E AUDITORIA  -->
             <!-- ========================================================= -->
             <div id="view-auditoria" class="space-y-3.5">
-                
+
+                <!-- ALERTA DE QUADRO INCOMPLETO OU IMPEDIMENTO DE EPI -->
+                <div id="alerta-critico-topo" class="hidden bg-red-50 border-2 border-red-300 rounded-2xl p-3.5 shadow-sm flex items-start gap-2.5">
+                    <i data-lucide="alert-octagon" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"></i>
+                    <div class="text-xs text-red-900 space-y-1" id="alerta-critico-texto"></div>
+                </div>
+
                 <!-- DASHBOARD 1: PROGRESSO DO CONTRATO NO MÊS -->
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
                     <div class="flex justify-between items-end">
@@ -161,7 +172,7 @@
                         <p class="text-2xl font-extrabold text-slate-900" id="dash-pct-qualidade">100%</p>
                         <p class="text-[10px] font-bold text-emerald-600 mt-0.5 leading-tight" id="dash-txt-qualidade">✓ Nenhuma tarefa com problema.</p>
                     </div>
-                    
+
                     <div class="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 shadow-sm flex flex-col justify-between">
                         <div>
                             <p class="text-[10px] font-bold text-slate-400 uppercase">Clima no Posto Hoje</p>
@@ -171,6 +182,22 @@
                             </div>
                         </div>
                         <p class="text-[10px] font-bold text-slate-400 mt-2" id="dash-sub-clima">0 minutos de paralisação.</p>
+                    </div>
+                </div>
+
+                <!-- DISPONIBILIDADE INDIVIDUAL NO POSTO (HORAS DISPONÍVEIS / SEM PONTO) -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                                <i data-lucide="clock" class="w-4 h-4 text-orange-500"></i> Horas Disponíveis no Posto (Hoje)
+                            </h4>
+                            <p class="text-[10px] text-slate-500">Capacidade de alocação técnica por operador no contrato</p>
+                        </div>
+                        <span id="badge-capacidade-total-hoje" class="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2.5 py-1 rounded-full">0h disp.</span>
+                    </div>
+                    <div id="lista-disponibilidade-hoje" class="divide-y divide-slate-100 p-2.5 text-xs">
+                        <p class="text-center text-slate-400 py-2">Aguardando ativação do posto hoje.</p>
                     </div>
                 </div>
 
@@ -189,7 +216,7 @@
                             <i data-lucide="unlock" class="w-3.5 h-3.5"></i> Liberar Plantão
                         </button>
                         <button onclick="encerrarOuBloquearPostoHoje()" class="bg-slate-800 hover:bg-red-950 hover:text-red-300 text-slate-300 border border-slate-700 font-bold text-[11px] py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5">
-                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Fechar Turno
+                            <i data-lucide="lock" class="w-3.5 h-3.5"></i> Resetar / Fechar
                         </button>
                     </div>
                 </div>
@@ -209,18 +236,19 @@
                         </button>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button onclick="exportarBaseCSV()" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-extrabold text-[11px] py-2.5 px-2.5 rounded-xl flex items-center justify-center gap-1.5">
-                            <i data-lucide="download" class="w-3.5 h-3.5 text-blue-600"></i> Baixar CSV (Excel/BI)
+                        <button onclick="exportarBaseCSV()" class="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-extrabold text-[11px] py-2.5 px-2 rounded-xl flex items-center justify-center gap-1">
+                            <i data-lucide="download" class="w-3.5 h-3.5 text-blue-600"></i> CSV Tarefas (BI)
                         </button>
-                        <button onclick="importarPlanilhaGoogleCSV()" id="btn-import-csv" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] py-2.5 px-2.5 rounded-xl flex items-center justify-center gap-1.5 border border-slate-300">
-                            <i data-lucide="database-backup" class="w-3.5 h-3.5 text-orange-500"></i> Sincronizar Grade
+                        <button onclick="exportarDisponibilidadeCSV()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-extrabold text-[11px] py-2.5 px-2 rounded-xl flex items-center justify-center gap-1">
+                            <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i> CSV Horas Disp.
                         </button>
                     </div>
+                    <button onclick="importarPlanilhaGoogleCSV()" id="btn-import-csv" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5 border border-slate-300">
+                        <i data-lucide="database-backup" class="w-3.5 h-3.5 text-orange-500"></i> Sincronizar Grade Google Sheets
+                    </button>
                 </div>
 
-                <!-- ========================================================= -->
-                <!-- AUDITORIA DE TAREFAS COM FILTRO DE HISTÓRICO E DATAS      -->
-                <!-- ========================================================= -->
+                <!-- AUDITORIA DE TAREFAS COM FILTRO DE HISTÓRICO E DATAS -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-900 text-white px-3.5 py-3 space-y-2.5">
                         <div class="flex justify-between items-center">
@@ -230,7 +258,6 @@
                             <span class="text-[10px] font-bold text-slate-400">Toque na foto p/ ampliar</span>
                         </div>
 
-                        <!-- Botões Rápidos de Período + Seletor de Data Específica -->
                         <div class="grid grid-cols-4 gap-1 bg-slate-800 p-1 rounded-xl">
                             <button onclick="setFiltroPeriodoAdmin('HOJE')" id="btn-hist-HOJE" class="py-1.5 rounded-lg text-[10px] font-extrabold bg-orange-500 text-white">Hoje</button>
                             <button onclick="setFiltroPeriodoAdmin('ONTEM')" id="btn-hist-ONTEM" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Ontem</button>
@@ -245,7 +272,7 @@
                                 <input type="date" id="input-data-especifica-admin" onchange="filtrarDataEspecificaAdmin(this.value)" class="bg-transparent text-white text-[11px] font-extrabold outline-none flex-1">
                             </div>
                             <span id="resumo-filtro-historico" class="text-[10px] font-extrabold bg-slate-800 text-orange-300 px-2.5 py-2 rounded-xl border border-slate-700 flex-shrink-0">
-                                0 ativ • 0h
+                                0 reg • 0h
                             </span>
                         </div>
                     </div>
@@ -266,7 +293,138 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 2: GESTÃO DE TAREFAS E RECORRÊNCIA DO CONTRATO        -->
+            <!-- ABA 2: CENTRAL DE SUPRIMENTOS, EPI E EQUIPAMENTOS         -->
+            <!-- ========================================================= -->
+            <div id="view-suprimentos" class="hidden space-y-3.5">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-xs font-extrabold flex items-center gap-1.5">
+                                <i data-lucide="package" class="w-4 h-4 text-orange-400"></i> Requisições de Campo (Insumos / EPI)
+                            </h4>
+                            <p class="text-[10px] text-slate-400">Quantidades de insumos já calculadas pela metragem das áreas</p>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="setFiltroSupAdmin('PENDENTES')" id="btn-sup-f-PENDENTES" class="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-orange-500 text-white">Abertos</button>
+                            <button onclick="setFiltroSupAdmin('TODOS')" id="btn-sup-f-TODOS" class="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300">Todos</button>
+                        </div>
+                    </div>
+                    <div id="admin-lista-suprimentos" class="divide-y divide-slate-100"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ABA 3: CAMADAS 2 & 3 — ÁREAS, EPI, INVENTÁRIO & MUDAS     -->
+            <!-- ========================================================= -->
+            <div id="view-inventario" class="hidden space-y-4">
+
+                <!-- CAMADA 2: ÁREAS DO CLIENTE (CLIMA + EPI DO LOCAL) -->
+                <div id="card-form-area" class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 transition-all">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[9px] font-extrabold bg-slate-100 text-slate-600 px-2 py-0.5 rounded uppercase">Camada 2</span>
+                            <h4 class="text-xs font-extrabold text-slate-900 uppercase mt-0.5" id="form-area-titulo">➕ Cadastrar Área / Setor do Posto</h4>
+                        </div>
+                        <button onclick="limparFormArea()" class="text-[10px] font-extrabold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200">+ Nova Área</button>
+                    </div>
+                    <input type="hidden" id="edit-area-id">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Nome da Área / Setor</label>
+                            <input type="text" id="edit-area-nome" placeholder="Ex: Entrada de Carros / Valet" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">EPI Obrigatório do Local</label>
+                            <input type="text" id="edit-area-epi" placeholder="Ex: 🦺 Colete Refletivo + Cones" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer">
+                            <input type="checkbox" id="edit-area-chuva" class="rounded text-blue-600 w-4 h-4"> Área coberta / permite trabalhar c/ chuva
+                        </label>
+                        <button onclick="salvarAreaCliente()" id="btn-salvar-area" class="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-sm">
+                            Salvar Área
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="text-xs font-extrabold text-slate-800">Áreas Cadastradas no Contrato</h4>
+                        <span class="text-[10px] text-slate-500">Clima & EPI fixo</span>
+                    </div>
+                    <div id="lista-areas-crud" class="divide-y divide-slate-100"></div>
+                </div>
+
+                <!-- CAMADA 3: INVENTÁRIO BOTÂNICO + CALCULADORA EXCLUSIVA DO SUPERVISOR -->
+                <div id="card-form-especie" class="bg-white p-4 rounded-2xl border-2 border-emerald-200 shadow-sm space-y-3 transition-all">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[9px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded uppercase">Camada 3 • Visão Exclusiva Supervisão</span>
+                            <h4 class="text-xs font-extrabold text-slate-900 uppercase mt-0.5" id="form-esp-titulo">🌿 Cadastrar Espécie Botânica na Área</h4>
+                        </div>
+                        <button onclick="limparFormEspecie()" class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">+ Nova Espécie</button>
+                    </div>
+                    <input type="hidden" id="edit-esp-id">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Pertence à Área</label>
+                            <select id="edit-esp-area" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2 py-2 text-xs font-bold"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Nome da Espécie / Planta</label>
+                            <input type="text" id="edit-esp-nome" placeholder="Ex: Lambari (Tradescantia)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Medida (Opcional)</label>
+                            <input type="number" step="0.5" id="edit-esp-medida" value="10" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Unidade</label>
+                            <select id="edit-esp-unidade" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2 py-2 text-xs font-bold">
+                                <option value="m²">m² (Área)</option>
+                                <option value="m linear">m linear</option>
+                                <option value="un">Unidades</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Densid. (Mudas/un)</label>
+                            <input type="number" step="1" id="edit-esp-densidade" value="15" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Rendimento Inicial (m² ou m / hora)</label>
+                            <input type="number" step="0.5" id="edit-esp-rendimento" value="8" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Meses Poda Drástica (Ex: 7,8)</label>
+                            <input type="text" id="edit-esp-poda" placeholder="Ex: 7,8 (Jul/Ago)" value="7,8" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-1">
+                        <button onclick="salvarEspecieCliente()" id="btn-salvar-esp" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
+                            Salvar Espécie no Inventário
+                        </button>
+                    </div>
+                </div>
+
+                <!-- LISTA DO INVENTÁRIO COM CALCULADORA DE MUDAS, TERRA E ADUBO -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-emerald-950 text-white px-3.5 py-2.5 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-xs font-extrabold">📐 Inventário Botânico & Calculadora de Reposição</h4>
+                            <p class="text-[10px] text-emerald-300">Mudas (+10% perda), Substrato (5cm) e NPK (100g/m²) calculados automaticamente</p>
+                        </div>
+                    </div>
+                    <div id="lista-especies-crud" class="divide-y divide-slate-100"></div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- ABA 4: GESTÃO DE TAREFAS, EPI ESPECÍFICO E SLA HÍBRIDO    -->
             <!-- ========================================================= -->
             <div id="view-tarefas" class="hidden space-y-3.5">
                 <div id="card-form-tarefa" class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 transition-all">
@@ -277,17 +435,23 @@
                     <input type="hidden" id="edit-tarefa-id">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Setor / Local</label>
-                            <input type="text" id="edit-tarefa-setor" placeholder="Ex: Fumódromo" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Área / Setor</label>
+                            <input list="admin-areas-datalist" id="edit-tarefa-setor" placeholder="Selecione ou digite" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                            <datalist id="admin-areas-datalist"></datalist>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Espécie / Alvo</label>
-                            <input type="text" id="edit-tarefa-especie" placeholder="Ex: Grama Amendoim" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                            <input list="admin-especies-datalist" id="edit-tarefa-especie" placeholder="Ex: Lambari" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                            <datalist id="admin-especies-datalist"></datalist>
                         </div>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Descrição da Atividade</label>
-                        <input type="text" id="edit-tarefa-nome" placeholder="Ex: Poda de contenção" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                        <input type="text" id="edit-tarefa-nome" placeholder="Ex: Retirada de pragas / Roçada" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">EPI Específico desta Atividade (Soma ao EPI da Área)</label>
+                        <input type="text" id="edit-tarefa-epi" placeholder="Ex: Perneira + Viseira + Abafador (deixe vazio se só padrão)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
                     </div>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
@@ -307,7 +471,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Tempo Previsto (Min)</label>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Tempo Inicial (Min)</label>
                             <input type="number" id="edit-tarefa-min" value="45" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
                         </div>
                         <div>
@@ -319,10 +483,15 @@
                             </select>
                         </div>
                     </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer">
-                            <input type="checkbox" id="edit-tarefa-chuva" checked class="rounded text-orange-500 w-4 h-4"> Permite fazer c/ chuva
-                        </label>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+                        <div class="space-y-1">
+                            <label class="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="edit-tarefa-chuva" checked class="rounded text-orange-500 w-4 h-4"> Permite fazer c/ chuva
+                            </label>
+                            <label class="flex items-center gap-1.5 text-[11px] font-bold text-blue-800 cursor-pointer">
+                                <input type="checkbox" id="edit-tarefa-travar-sla" class="rounded text-blue-600 w-4 h-4"> 🔒 Fixar tempo manual (não recalibrar pela média)
+                            </label>
+                        </div>
                         <button onclick="salvarTarefaGestao()" id="btn-salvar-tarefa" class="bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm">
                             Salvar Tarefa
                         </button>
@@ -331,15 +500,15 @@
 
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
-                        <h4 class="text-xs font-extrabold text-slate-800">Grade de Atividades do Contrato</h4>
-                        <span class="text-[10px] text-slate-500">Clique em Configurar</span>
+                        <h4 class="text-xs font-extrabold text-slate-800">Grade de Atividades (SLA Calibrado +20%)</h4>
+                        <span class="text-[10px] text-slate-500">Auto-ajuste após 2 exec.</span>
                     </div>
                     <div id="gestao-lista-tarefas-crud" class="divide-y divide-slate-100"></div>
                 </div>
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 3: GESTÃO DE EFETIVO E LOGINS DO PAINEL (RBAC)        -->
+            <!-- ABA 5: GESTÃO DE EFETIVO E LOGINS DO PAINEL (RBAC)        -->
             <!-- ========================================================= -->
             <div id="view-equipe" class="hidden space-y-3.5">
                 <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
@@ -377,7 +546,7 @@
                     <div id="gestao-lista-equipe-crud" class="divide-y divide-slate-100"></div>
                 </div>
 
-                <!-- BLOCO 2: LOGINS DE ACESSO AO ADMIN (SÓ PARA PERFIL 'ADMIN') -->
+                <!-- LOGINS DE ACESSO AO ADMIN (SÓ PARA PERFIL 'ADMIN') -->
                 <div id="bloco-gestao-logins" class="hidden">
                     <div class="mt-6 mb-2 flex items-center gap-2 px-1">
                         <i data-lucide="key" class="w-4 h-4 text-orange-500"></i>
@@ -409,12 +578,15 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 4: GESTÃO DE CONTRATOS E TETOS (EXCLUSIVA ADMIN)      -->
+            <!-- ABA 6: CAMADA 1 — CONTRATOS, CONTATOS E QUADRO CONTRATADO -->
             <!-- ========================================================= -->
             <div id="view-contratos" class="hidden space-y-3.5">
                 <div id="card-form-contrato" class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 transition-all">
                     <div class="flex justify-between items-center">
-                        <h4 class="text-xs font-extrabold text-slate-900 uppercase" id="form-contrato-titulo">➕ Cadastrar Novo Contrato</h4>
+                        <div>
+                            <span class="text-[9px] font-extrabold bg-orange-100 text-orange-800 px-2 py-0.5 rounded uppercase">Camada 1 • Governança</span>
+                            <h4 class="text-xs font-extrabold text-slate-900 uppercase mt-0.5" id="form-contrato-titulo">➕ Cadastrar Novo Contrato</h4>
+                        </div>
                         <button onclick="limparFormContratoGestao()" class="text-[10px] font-extrabold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200">+ Limpar / Novo</button>
                     </div>
                     <input type="hidden" id="edit-cli-id">
@@ -424,8 +596,32 @@
                             <input type="text" id="edit-cli-nome" placeholder="Ex: Miss Silvia" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Endereço</label>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Endereço Completo</label>
                             <input type="text" id="edit-cli-end" placeholder="Av. Faria Lima, 4100" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Contato Direto</label>
+                            <input type="text" id="edit-cli-contato-nome" placeholder="Ex: Joelma" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Telefone/Whats</label>
+                            <input type="text" id="edit-cli-contato-tel" placeholder="11 99999-9999" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">E-mail</label>
+                            <input type="email" id="edit-cli-contato-email" placeholder="gerencia@..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Vagas Contratadas</label>
+                            <input type="number" id="edit-cli-quadro-qtd" value="2" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Cargos do Quadro</label>
+                            <input type="text" id="edit-cli-quadro-cargos" value="1 Encarregado + 1 Operador" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -473,7 +669,7 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 5: CENTRAL DE COMUNICAÇÃO (OPERADORES E CLIENTE)      -->
+            <!-- ABA 7: CENTRAL DE COMUNICAÇÃO (OPERADORES E CLIENTE)      -->
             <!-- ========================================================= -->
             <div id="view-chat" class="hidden">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[68vh]">
@@ -572,31 +768,39 @@
             </button>
         </div>
     </div>
-
     <script>
+        // =========================================================================
+        // 1. CONFIGURAÇÃO SUPABASE (ADMIN v9.3.1 - 3 CAMADAS, EPI & SUPRIMENTOS)
+        // =========================================================================
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const CSV_ATIVIDADES_LEGADO = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQRN1yS8KhREsbwrhSO8WVWfAZR4dpiiqsi_7POztsYEQ7v1UNxY-LCjO4l-HDr1Yk-cbLfyOAerTsK/pub?gid=1700868305&single=true&output=csv";
+        const NOMES_MESES = ['', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
         let adminLogado = JSON.parse(sessionStorage.getItem('novaera_admin_session') || 'null');
         let clienteAtivo = localStorage.getItem('novaera_admin_cliente') || 'Miss Silvia';
         let abaAdminAtiva = 'auditoria';
         let canalChatAdmin = 'SUPERVISAO';
 
-        // Estado do Filtro de Histórico na Auditoria
-        let filtroPeriodoAdmin = 'HOJE'; // 'HOJE' | 'ONTEM' | '7DIAS' | 'MES' | 'DATA_ESPECIFICA'
+        let filtroPeriodoAdmin = 'HOJE';
         let dataEspecificaAdmin = '';
         let execucoesDataEspecificaDB = [];
+        let filtroSupAdmin = 'PENDENTES';
 
         window.clientesDB = [];
         window.colaboradoresTodosDB = [];
         window.cronogramaTodosDB = [];
         window.execucoesMesDB = [];
+        window.execucoes60dDB = [];
+        window.areasClienteDB = [];
+        window.especiesClienteDB = [];
+        window.pedidosSuprimentosDB = [];
         window.feriadosDB = [];
         window.presencaHojeDB = null;
         window.loginsAdminDB = [];
+        window.fotosZoomAdminCache = [];
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -612,21 +816,63 @@
             if (!campoUrl) return [];
             return String(campoUrl).split('|').map(s => s.trim()).filter(Boolean);
         }
-        function abrirZoomAdmin(url, legenda) {
-            if (!url) return;
-            document.getElementById('lightbox-admin-img').src = url;
-            document.getElementById('lightbox-admin-caption').textContent = legenda || '';
+        function registrarFotoZoomAdmin(url, legenda) {
+            const idx = window.fotosZoomAdminCache.length;
+            window.fotosZoomAdminCache.push({ url, legenda });
+            return idx;
+        }
+        function abrirZoomAdminByIdx(idx) {
+            const item = window.fotosZoomAdminCache[idx];
+            if (!item || !item.url) return;
+            document.getElementById('lightbox-admin-img').src = item.url;
+            document.getElementById('lightbox-admin-caption').textContent = item.legenda || '';
             document.getElementById('lightbox-admin-modal').classList.remove('hidden');
         }
-        function fecharZoomAdmin() {
-            document.getElementById('lightbox-admin-modal').classList.add('hidden');
-        }
+        function fecharZoomAdmin() { document.getElementById('lightbox-admin-modal').classList.add('hidden'); }
 
         function ehFeriado(d) { return window.feriadosDB.includes(dataISO(d)); }
         function diaUtil(d) { return d.getDay() !== 0 && d.getDay() !== 6 && !ehFeriado(d); }
 
         // =========================================================================
-        // MOTOR DE SOM (WEB AUDIO API), NOTIFICAÇÕES POP-UP E MARQUINHAS
+        // 2. MOTOR HÍBRIDO DE SLA (OPÇÃO A: MÉDIA LIMPA + 20% + ARRED. 5 MIN)
+        // =========================================================================
+        function calcularSlaCalibradoAdmin(t) {
+            const baseMin = Number(t.duracao_minutos) || 30;
+            if (t.travar_sla_manual) return { min: baseMin, calibrado: false, qtdAmostras: 0 };
+
+            const historicoValido = window.execucoes60dDB.filter(e =>
+                e.cliente === clienteAtivo &&
+                e.status_execucao === 'CONCLUIDO' &&
+                !e.entrega_parcial &&
+                e.setor === t.setor &&
+                e.atividade === t.atividade &&
+                Number(e.duracao_real_min) >= 5 &&
+                Number(e.duracao_real_min) <= (baseMin * 3)
+            );
+
+            if (historicoValido.length >= 2) {
+                const soma = historicoValido.reduce((acc, cur) => acc + Number(cur.duracao_real_min), 0);
+                const mediaLimpa = soma / historicoValido.length;
+                const minCalib = Math.max(5, Math.ceil((mediaLimpa * 1.20) / 5) * 5);
+                return { min: minCalib, calibrado: true, qtdAmostras: historicoValido.length, mediaBruta: Math.round(mediaLimpa) };
+            }
+
+            const espObj = window.especiesClienteDB.find(sp =>
+                sp.cliente === clienteAtivo &&
+                sp.nome_area === t.setor &&
+                t.especie && sp.especie.toLowerCase().includes(t.especie.toLowerCase())
+            );
+            if (espObj && Number(espObj.medida_valor) > 0 && Number(espObj.rendimento_hora) > 0 && (t.atividade.toLowerCase().includes('praga') || t.atividade.toLowerCase().includes('poda') || t.atividade.toLowerCase().includes('limpeza'))) {
+                const horasPrev = Number(espObj.medida_valor) / Number(espObj.rendimento_hora);
+                const minCalculado = Math.ceil((horasPrev * 60) / 5) * 5;
+                if (minCalculado >= 10 && minCalculado <= 480) return { min: minCalculado, calibrado: false, qtdAmostras: historicoValido.length };
+            }
+
+            return { min: baseMin, calibrado: false, qtdAmostras: historicoValido.length };
+        }
+
+        // =========================================================================
+        // 3. MOTOR DE SOM (WEB AUDIO API), NOTIFICAÇÕES POP-UP E MARQUINHAS
         // =========================================================================
         let audioCtxGlobal = null;
         let mensagensNaoLidasAdmin = { SUPERVISAO: 0, CLIENTE: 0 };
@@ -649,16 +895,12 @@
 
                 const osc = audioCtxGlobal.createOscillator();
                 const gain = audioCtxGlobal.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtxGlobal.destination);
-
+                osc.connect(gain); gain.connect(audioCtxGlobal.destination);
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(587.33, audioCtxGlobal.currentTime);
                 osc.frequency.setValueAtTime(880.00, audioCtxGlobal.currentTime + 0.12);
-
                 gain.gain.setValueAtTime(0.22, audioCtxGlobal.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtxGlobal.currentTime + 0.55);
-
                 osc.start(audioCtxGlobal.currentTime);
                 osc.stop(audioCtxGlobal.currentTime + 0.55);
             } catch (e) {}
@@ -676,17 +918,17 @@
             }
         }
 
-        function dispararNotificacaoAdmin(autor, canal, texto, urgente) {
-            const canalNomes = { SUPERVISAO: 'Operadores', CLIENTE: 'Cliente' };
+        function dispararNotificacaoAdmin(autor, canal, texto, urgente, destinoAba = 'chat') {
+            const canalNomes = { SUPERVISAO: 'Operadores', CLIENTE: 'Cliente', SUPRIMENTOS: 'Suprimentos' };
             const titulo = urgente ? `🚨 URGENTE • ${autor}` : `💬 ${autor} (${canalNomes[canal] || canal})`;
 
             if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
                 try { new Notification(titulo, { body: texto }); } catch (e) {}
             }
-            mostrarToastAdmin(titulo, texto, canal);
+            mostrarToastAdmin(titulo, texto, canal, destinoAba);
         }
 
-        function mostrarToastAdmin(titulo, texto, canal) {
+        function mostrarToastAdmin(titulo, texto, canal, destinoAba = 'chat') {
             let toast = document.getElementById('toast-chat-admin');
             if (!toast) {
                 toast = document.createElement('div');
@@ -696,8 +938,8 @@
             }
             toast.onclick = () => {
                 toast.classList.add('-translate-y-24', 'opacity-0');
-                selecionarAbaAdmin('chat');
-                selecionarCanalChatAdmin(canal);
+                selecionarAbaAdmin(destinoAba);
+                if (destinoAba === 'chat' && canal) selecionarCanalChatAdmin(canal);
             };
             toast.innerHTML = `
                 <div class="flex items-center gap-2.5 min-w-0">
@@ -709,7 +951,7 @@
                         <p class="text-xs text-slate-100 truncate">${texto}</p>
                     </div>
                 </div>
-                <span class="text-[10px] font-extrabold bg-orange-500 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Responder</span>
+                <span class="text-[10px] font-extrabold bg-orange-500 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Abrir</span>
             `;
             initIcons();
             toast.classList.remove('-translate-y-24', 'opacity-0');
@@ -724,14 +966,9 @@
             const total = mensagensNaoLidasAdmin.SUPERVISAO + mensagensNaoLidasAdmin.CLIENTE;
             const dot = document.getElementById('admin-chat-dot');
             if (dot) {
-                if (total > 0) {
-                    dot.classList.remove('hidden');
-                    dot.textContent = total > 9 ? '9+' : total;
-                } else {
-                    dot.classList.add('hidden');
-                }
+                if (total > 0) { dot.classList.remove('hidden'); dot.textContent = total > 9 ? '9+' : total; }
+                else dot.classList.add('hidden');
             }
-
             ['SUPERVISAO', 'CLIENTE'].forEach(canal => {
                 const btn = document.getElementById(`btn-adm-canal-${canal}`);
                 if (btn) {
@@ -743,15 +980,13 @@
                             btn.appendChild(badge);
                         }
                         badge.textContent = mensagensNaoLidasAdmin[canal];
-                    } else if (badge) {
-                        badge.remove();
-                    }
+                    } else if (badge) badge.remove();
                 }
             });
         }
 
         // =========================================================================
-        // LOGIN E CONTROLE DE ACESSO (RBAC)
+        // 4. LOGIN E CONTROLE DE ACESSO (RBAC)
         // =========================================================================
         async function realizarLoginAdmin() {
             const login = document.getElementById('login-user').value.trim().toLowerCase();
@@ -768,9 +1003,7 @@
 
             btn.disabled = false; btn.textContent = "Acessar Painel de Controle";
 
-            if (error || !data || data.length === 0) {
-                erroEl.classList.remove('hidden'); return;
-            }
+            if (error || !data || data.length === 0) { erroEl.classList.remove('hidden'); return; }
 
             adminLogado = { login: data[0].login, nome: data[0].nome_exibicao, perfil: data[0].perfil };
             sessionStorage.setItem('novaera_admin_session', JSON.stringify(adminLogado));
@@ -791,16 +1024,9 @@
             document.getElementById('admin-user-name').textContent = adminLogado.nome;
             document.getElementById('admin-perfil-badge').textContent = adminLogado.perfil;
 
-            const menuGrid = document.getElementById('menu-abas-grid');
-            if (adminLogado.perfil !== 'ADMIN') {
-                document.getElementById('btn-tab-contratos').classList.add('hidden');
-                document.getElementById('bloco-gestao-logins').classList.add('hidden');
-                menuGrid.className = "grid grid-cols-4 gap-1 bg-slate-200/90 p-1 rounded-2xl border border-slate-300/60";
-            } else {
-                document.getElementById('btn-tab-contratos').classList.remove('hidden');
-                document.getElementById('bloco-gestao-logins').classList.remove('hidden');
-                menuGrid.className = "grid grid-cols-5 gap-1 bg-slate-200/90 p-1 rounded-2xl border border-slate-300/60";
-            }
+            const isAdmin = adminLogado.perfil === 'ADMIN';
+            document.getElementById('btn-tab-contratos').classList.toggle('hidden', !isAdmin);
+            document.getElementById('bloco-gestao-logins').classList.toggle('hidden', !isAdmin);
 
             initIcons();
             carregarDadosAdmin();
@@ -810,24 +1036,34 @@
         async function carregarDadosAdmin() {
             const hojeStr = dataISO();
             const inicioMes = dataISO(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+            const d60 = new Date(); d60.setDate(d60.getDate() - 60);
 
-            const [resCli, resColab, resCrono, resExec, resFer, resPres] = await Promise.all([
+            const [resCli, resColab, resCrono, resExec60d, resFer, resPres, resAreas, resEsp, resSup] = await Promise.all([
                 sb.from('clientes').select('*').order('nome', { ascending: true }),
                 sb.from('colaboradores').select('*').order('nome', { ascending: true }),
                 sb.from('cronograma_mestre').select('*').order('prioridade', { ascending: true }),
-                sb.from('execucoes_auditoria').select('*').gte('data_referencia', inicioMes).order('dh_envio_servidor', { ascending: false }),
+                sb.from('execucoes_auditoria').select('*').gte('data_referencia', dataISO(d60)).order('dh_envio_servidor', { ascending: false }),
                 sb.from('feriados_config').select('*'),
-                sb.from('presenca_posto').select('*').eq('data_turno', hojeStr).eq('cliente', clienteAtivo).order('dh_checkin_aparelho', { ascending: false }).limit(1)
+                sb.from('presenca_posto').select('*').eq('data_turno', hojeStr).eq('cliente', clienteAtivo).order('dh_checkin_aparelho', { ascending: false }).limit(1),
+                sb.from('cliente_areas').select('*').eq('cliente', clienteAtivo).order('nome_area', { ascending: true }),
+                sb.from('cliente_especies').select('*').eq('cliente', clienteAtivo).order('nome_area', { ascending: true }),
+                sb.from('pedidos_suprimentos').select('*').eq('cliente', clienteAtivo).order('criado_em', { ascending: false }).limit(50)
             ]);
 
             if (resCli.data) window.clientesDB = resCli.data;
             if (resColab.data) window.colaboradoresTodosDB = resColab.data;
             if (resCrono.data) window.cronogramaTodosDB = resCrono.data;
-            if (resExec.data) window.execucoesMesDB = resExec.data;
+            if (resExec60d.data) {
+                window.execucoes60dDB = resExec60d.data;
+                window.execucoesMesDB = resExec60d.data.filter(e => e.data_referencia >= inicioMes);
+            }
             if (resFer.data) window.feriadosDB = resFer.data.map(f => f.data_feriado);
             window.presencaHojeDB = resPres.data?.[0] || null;
+            window.areasClienteDB = resAreas.data || [];
+            window.especiesClienteDB = resEsp.data || [];
+            window.pedidosSuprimentosDB = resSup.data || [];
 
-            if (adminLogado.perfil === 'ADMIN') {
+            if (adminLogado && adminLogado.perfil === 'ADMIN') {
                 const resUsr = await sb.from('usuarios_admin').select('*').order('nome_exibicao');
                 window.loginsAdminDB = resUsr.data || [];
             }
@@ -844,9 +1080,37 @@
                 sel.innerHTML = html;
                 if (selColab) selColab.innerHTML = html;
             }
+
             const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
             if (cliObj) {
                 document.getElementById('admin-teto-badge').textContent = `Teto: ${cliObj.teto_diario_horas}h/dia`;
+                document.getElementById('admin-quadro-badge').textContent = `Quadro: ${cliObj.quadro_contratado_qtd || 2} (${cliObj.quadro_cargos || 'Equipe'})`;
+                document.getElementById('admin-contato-info').textContent = `👤 Contato: ${cliObj.contato_nome || 'Não cadastrado'}${cliObj.endereco ? ' • ' + cliObj.endereco : ''}`;
+
+                const whatsBtn = document.getElementById('admin-contato-whats');
+                const telLimpo = (cliObj.contato_telefone || '').replace(/\D/g, '');
+                if (telLimpo.length >= 10) {
+                    whatsBtn.href = `https://wa.me/55${telLimpo}`;
+                    whatsBtn.classList.remove('hidden');
+                } else {
+                    whatsBtn.classList.add('hidden');
+                }
+            }
+
+            const areasAtivas = window.areasClienteDB.filter(a => a.ativo !== false);
+            const selEspArea = document.getElementById('edit-esp-area');
+            if (selEspArea) {
+                selEspArea.innerHTML = areasAtivas.length > 0
+                    ? areasAtivas.map(a => `<option value="${a.nome_area}">${a.nome_area}</option>`).join('')
+                    : `<option value="Geral">Geral (Cadastre uma área acima)</option>`;
+            }
+            const dlAreas = document.getElementById('admin-areas-datalist');
+            if (dlAreas) dlAreas.innerHTML = areasAtivas.map(a => `<option value="${a.nome_area}">`).join('');
+
+            const dlEsp = document.getElementById('admin-especies-datalist');
+            if (dlEsp) {
+                const nomesUnicos = [...new Set(window.especiesClienteDB.map(s => s.especie))];
+                dlEsp.innerHTML = nomesUnicos.map(n => `<option value="${n}">`).join('');
             }
         }
 
@@ -858,13 +1122,14 @@
 
         function selecionarAbaAdmin(aba) {
             abaAdminAtiva = aba;
-            ['auditoria', 'tarefas', 'equipe', 'contratos', 'chat'].forEach(a => {
-                document.getElementById(`view-${a}`).classList.toggle('hidden', a !== aba);
+            ['auditoria', 'suprimentos', 'inventario', 'tarefas', 'equipe', 'contratos', 'chat'].forEach(a => {
+                const v = document.getElementById(`view-${a}`);
+                if (v) v.classList.toggle('hidden', a !== aba);
                 const btn = document.getElementById(`btn-tab-${a}`);
                 if (btn && !btn.classList.contains('hidden')) {
                     btn.className = (a === aba)
-                        ? "py-2 px-1 rounded-xl text-[10px] font-extrabold bg-slate-900 text-white shadow-sm transition-all relative"
-                        : "py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative";
+                        ? "flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold bg-slate-900 text-white shadow-sm transition-all relative"
+                        : "flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative";
                 }
             });
             if (aba === 'chat') {
@@ -884,7 +1149,58 @@
         }
 
         // =========================================================================
-        // FILTROS DE HISTÓRICO E PERÍODO NA AUDITORIA DO ADMIN
+        // 5. DISPONIBILIDADE INDIVIDUAL POR OPERADOR (HORAS DISPONÍVEIS NO POSTO)
+        // =========================================================================
+        function renderizarDisponibilidadeOperadoresHoje() {
+            const box = document.getElementById('lista-disponibilidade-hoje');
+            const badgeTotal = document.getElementById('badge-capacidade-total-hoje');
+            const reg = window.presencaHojeDB;
+
+            if (!reg || reg.status_validacao === 'AUTORIZADO_GESTAO') {
+                badgeTotal.textContent = '0h disp.';
+                box.innerHTML = `<p class="text-center text-slate-400 py-2">Aguardando ativação da equipe no posto.</p>`;
+                return { ativosCount: 0, totalMinDisponiveis: 0 };
+            }
+
+            let listaDisp = Array.isArray(reg.disponibilidade_operadores) && reg.disponibilidade_operadores.length > 0
+                ? reg.disponibilidade_operadores
+                : (reg.equipe_presente || '').split(',').map(s => s.trim()).filter(Boolean).map(n => ({
+                    nome: n, inicio: reg.dh_checkin_aparelho, fim: reg.dh_checkout_posto || null, motivo_saida: null
+                }));
+
+            let totalMinDisp = 0, ativosCount = 0;
+
+            box.innerHTML = listaDisp.map(op => {
+                const tIni = new Date(op.inicio).getTime();
+                const tFim = op.fim ? new Date(op.fim).getTime() : Date.now();
+                const minOp = Math.max(1, Math.round((tFim - tIni) / 60000));
+                totalMinDisp += minOp;
+                if (!op.fim) ativosCount++;
+
+                const hIni = new Date(op.inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const hFim = op.fim ? new Date(op.fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Agora';
+
+                return `
+                <div class="py-2 flex justify-between items-center gap-2">
+                    <div>
+                        <p class="font-extrabold text-slate-900 flex items-center gap-1.5">
+                            <span>${op.fim ? '⚪' : '🟢'} ${op.nome}</span>
+                            <span class="text-[10px] font-bold text-slate-500">(${hIni} – ${hFim})</span>
+                        </p>
+                        ${op.motivo_saida ? `<p class="text-[10px] text-amber-700 font-semibold">↳ ${op.motivo_saida}</p>` : ''}
+                    </div>
+                    <span class="text-[11px] font-extrabold ${op.fim ? 'bg-slate-100 text-slate-700' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'} px-2.5 py-1 rounded-lg">
+                        ${formatarMinutosStr(minOp)} disp.
+                    </span>
+                </div>`;
+            }).join('');
+
+            badgeTotal.textContent = `${formatarMinutosStr(totalMinDisp)} disp.`;
+            return { ativosCount, totalMinDisponiveis: totalMinDisp };
+        }
+
+        // =========================================================================
+        // 6. FILTROS DE HISTÓRICO E AUDITORIA (COM LIGHTBOX PROTEGIDO POR ÍNDICE)
         // =========================================================================
         function setFiltroPeriodoAdmin(periodo) {
             filtroPeriodoAdmin = periodo;
@@ -892,21 +1208,15 @@
             document.getElementById('input-data-especifica-admin').value = '';
 
             ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
-                const btn = document.getElementById(`btn-hist-${p}`);
-                if (p === periodo) {
-                    btn.className = "py-1.5 rounded-lg text-[10px] font-extrabold bg-orange-500 text-white shadow-sm";
-                } else {
-                    btn.className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
-                }
+                document.getElementById(`btn-hist-${p}`).className = (p === periodo)
+                    ? "py-1.5 rounded-lg text-[10px] font-extrabold bg-orange-500 text-white shadow-sm"
+                    : "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
             });
             renderizarListaAuditoriaAdmin();
         }
 
         async function filtrarDataEspecificaAdmin(dataVal) {
-            if (!dataVal) {
-                setFiltroPeriodoAdmin('HOJE');
-                return;
-            }
+            if (!dataVal) { setFiltroPeriodoAdmin('HOJE'); return; }
             filtroPeriodoAdmin = 'DATA_ESPECIFICA';
             dataEspecificaAdmin = dataVal;
 
@@ -914,12 +1224,8 @@
                 document.getElementById(`btn-hist-${p}`).className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
             });
 
-            // Consulta no banco diretamente para funcionar mesmo em meses passados
             const { data } = await sb.from('execucoes_auditoria')
-                .select('*')
-                .eq('cliente', clienteAtivo)
-                .eq('data_referencia', dataVal)
-                .order('dh_envio_servidor', { ascending: false });
+                .select('*').eq('cliente', clienteAtivo).eq('data_referencia', dataVal).order('dh_envio_servidor', { ascending: false });
 
             execucoesDataEspecificaDB = data || [];
             renderizarListaAuditoriaAdmin();
@@ -929,28 +1235,21 @@
             const hojeStr = dataISO();
             const execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
 
-            if (filtroPeriodoAdmin === 'DATA_ESPECIFICA' && dataEspecificaAdmin) {
-                return execucoesDataEspecificaDB;
-            }
-            if (filtroPeriodoAdmin === 'HOJE') {
-                return execsCli.filter(e => e.data_referencia === hojeStr);
-            }
+            if (filtroPeriodoAdmin === 'DATA_ESPECIFICA' && dataEspecificaAdmin) return execucoesDataEspecificaDB;
+            if (filtroPeriodoAdmin === 'HOJE') return execsCli.filter(e => e.data_referencia === hojeStr);
             if (filtroPeriodoAdmin === 'ONTEM') {
-                const ontem = new Date();
-                ontem.setDate(ontem.getDate() - 1);
-                const ontemStr = dataISO(ontem);
-                return execsCli.filter(e => e.data_referencia === ontemStr);
+                const ontem = new Date(); ontem.setDate(ontem.getDate() - 1);
+                return execsCli.filter(e => e.data_referencia === dataISO(ontem));
             }
             if (filtroPeriodoAdmin === '7DIAS') {
-                const sete = new Date();
-                sete.setDate(sete.getDate() - 7);
-                const seteStr = dataISO(sete);
-                return execsCli.filter(e => e.data_referencia >= seteStr);
+                const sete = new Date(); sete.setDate(sete.getDate() - 7);
+                return execsCli.filter(e => e.data_referencia >= dataISO(sete));
             }
-            return execsCli; // 'MES'
+            return execsCli;
         }
 
         function renderizarListaAuditoriaAdmin() {
+            window.fotosZoomAdminCache = [];
             const listaFiltrada = obterExecucoesFiltradasAdmin();
             const concluidasPeriodo = listaFiltrada.filter(e => e.status_execucao === 'CONCLUIDO');
             const minPeriodo = concluidasPeriodo.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
@@ -959,7 +1258,7 @@
 
             const labelsFlag = {
                 'CONFORME': '✓ OK',
-                'DIVERGENCIA_SLA': '⚠️ Tempo Curto',
+                'DIVERGENCIA_SLA': '⚠️ Alerta SLA',
                 'FORA_PERIMETRO': '📍 GPS Distante',
                 'ENVIO_DEFASADO': '⏱️ Galeria/Atraso',
                 'SINAL_GPS_ATIPICO': '🛰️ GPS Suspeito'
@@ -967,35 +1266,34 @@
 
             document.getElementById('gestao-execucoes-list').innerHTML = listaFiltrada.map(e => {
                 let badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded ${e.flag_auditoria === 'CONFORME' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${labelsFlag[e.flag_auditoria] || e.flag_auditoria}</span>`;
-                if (e.status_execucao === 'PAUSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-amber-200 text-amber-900">⏸️ PAUSADO</span>`;
+                if (e.status_execucao === 'IMPEDIMENTO_EPI') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-red-600 text-white">🚨 FALTA EPI</span>`;
+                else if (e.status_execucao === 'PAUSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-amber-200 text-amber-900">⏸️ PAUSADO</span>`;
                 else if (e.status_execucao === 'EM_ANDAMENTO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-orange-500 text-white">🟠 EM CURSO</span>`;
                 else if (e.status_execucao === 'DISPENSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-sky-100 text-sky-800">⏭️ DISPENSADO</span>`;
 
-                const fotosAntes = extrairListaFotos(e.foto_antes_url);
-                const fotosDepois = extrairListaFotos(e.foto_depois_url);
-
-                const thumbsAntes = fotosAntes.map((u, idx) => `
-                    <div onclick="abrirZoomAdmin('${u}', 'ANTES ${idx+1} • ${e.setor} (${e.atividade})')" class="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-300 cursor-pointer flex-shrink-0">
+                const thumbsAntes = extrairListaFotos(e.foto_antes_url).map((u, idx) => {
+                    const zIdx = registrarFotoZoomAdmin(u, `REGISTRO INICIAL / ANDAMENTO (${idx + 1}) • ${e.setor}`);
+                    return `<div onclick="abrirZoomAdminByIdx(${zIdx})" class="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-300 cursor-pointer flex-shrink-0">
                         <img src="${u}" class="w-full h-full object-cover">
-                        <span class="absolute bottom-0 inset-x-0 bg-slate-900/80 text-white text-[7px] font-bold text-center">ANTES</span>
-                    </div>`).join('');
+                        <span class="absolute bottom-0 inset-x-0 bg-slate-900/80 text-white text-[6px] font-bold text-center">INICIAL</span>
+                    </div>`;
+                }).join('');
 
-                const thumbsDepois = fotosDepois.map((u, idx) => `
-                    <div onclick="abrirZoomAdmin('${u}', 'DEPOIS ${idx+1} • ${e.setor} (${e.atividade})')" class="relative w-12 h-12 rounded-lg overflow-hidden border border-emerald-400 cursor-pointer flex-shrink-0">
+                const thumbsDepois = extrairListaFotos(e.foto_depois_url).map((u, idx) => {
+                    const zIdx = registrarFotoZoomAdmin(u, `DEPOIS (${idx + 1}) • ${e.setor} (${e.atividade})`);
+                    return `<div onclick="abrirZoomAdminByIdx(${zIdx})" class="relative w-12 h-12 rounded-lg overflow-hidden border border-emerald-400 cursor-pointer flex-shrink-0">
                         <img src="${u}" class="w-full h-full object-cover">
-                        <span class="absolute bottom-0 inset-x-0 bg-emerald-800/90 text-white text-[7px] font-bold text-center">DEPOIS</span>
-                    </div>`).join('');
+                        <span class="absolute bottom-0 inset-x-0 bg-emerald-800/90 text-white text-[6px] font-bold text-center">DEPOIS</span>
+                    </div>`;
+                }).join('');
 
-                const galeriaMiniaturas = (thumbsAntes || thumbsDepois)
-                    ? `<div class="flex gap-1.5 pt-1.5 overflow-x-auto">${thumbsAntes}${thumbsDepois}</div>`
-                    : '';
-
+                const galeriaMiniaturas = (thumbsAntes || thumbsDepois) ? `<div class="flex gap-1.5 pt-1.5 overflow-x-auto">${thumbsAntes}${thumbsDepois}</div>` : '';
                 const pausaTxt = e.minutos_pausa_descontados > 0 ? ` (Pausa: -${e.minutos_pausa_descontados}m)` : '';
                 const dataFmt = new Date((e.data_referencia || dataISO()) + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
                 const horaFmt = new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
                 return `
-                <div class="p-3.5 text-xs flex justify-between items-start gap-2 hover:bg-slate-50">
+                <div class="p-3.5 text-xs flex justify-between items-start gap-2 ${e.status_execucao === 'IMPEDIMENTO_EPI' ? 'bg-red-50/70' : 'hover:bg-slate-50'}">
                     <div class="space-y-0.5 min-w-0 flex-1">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-[10px] font-extrabold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded border border-slate-200">${dataFmt} • ${horaFmt}</span>
@@ -1018,8 +1316,27 @@
         async function renderizarTudoAdmin() {
             const stPlantao = document.getElementById('gestao-status-plantao');
             const subPlantao = document.getElementById('gestao-sub-plantao');
-            const hoje = new Date();
-            const isFdsFeriado = !diaUtil(hoje);
+            const isFdsFeriado = !diaUtil(new Date());
+
+            const { ativosCount } = renderizarDisponibilidadeOperadoresHoje();
+
+            const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
+            const quadroContratado = Number(cliObj?.quadro_contratado_qtd) || 2;
+            const pedidosUrgentesAbertos = window.pedidosSuprimentosDB.filter(p => p.urgente && p.status_pedido !== 'ENTREGUE');
+            const alertasCriticos = [];
+
+            if (window.presencaHojeDB && !['TURNO_ENCERRADO', 'AUTORIZADO_GESTAO'].includes(window.presencaHojeDB.status_validacao) && ativosCount < quadroContratado) {
+                alertasCriticos.push(`⚠️ <b>Quadro Incompleto Hoje:</b> Contrato prevê ${quadroContratado} posições, mas há apenas ${ativosCount} operador(es) ativo(s) no local.`);
+            }
+            if (pedidosUrgentesAbertos.length > 0) {
+                alertasCriticos.push(`🚨 <b>${pedidosUrgentesAbertos.length} Pedido(s) Urgente(s) em Suprimentos:</b> ${pedidosUrgentesAbertos.map(p => p.item).join(', ')}. <button onclick="selecionarAbaAdmin('suprimentos')" class="underline font-extrabold">Ver agora →</button>`);
+            }
+
+            const boxCritico = document.getElementById('alerta-critico-topo');
+            if (alertasCriticos.length > 0) {
+                boxCritico.classList.remove('hidden');
+                document.getElementById('alerta-critico-texto').innerHTML = alertasCriticos.map(a => `<p>${a}</p>`).join('');
+            } else boxCritico.classList.add('hidden');
 
             if (window.presencaHojeDB) {
                 const h = new Date(window.presencaHojeDB.dh_checkin_aparelho).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -1031,7 +1348,7 @@
                     subPlantao.textContent = `Aguardando chegada da equipe no local`;
                 } else {
                     stPlantao.textContent = `🟢 Posto Ativo desde ${h} (${window.presencaHojeDB.status_validacao})`;
-                    subPlantao.textContent = `Equipe: ${window.presencaHojeDB.equipe_presente} • Dist. GPS: ${window.presencaHojeDB.distancia_metros ?? 'Subsolo'}m`;
+                    subPlantao.textContent = `Disponíveis agora: ${window.presencaHojeDB.equipe_presente} • GPS: ${window.presencaHojeDB.distancia_metros ?? 'Subsolo'}m`;
                 }
             } else if (isFdsFeriado) {
                 stPlantao.textContent = "🔒 Posto Fechado (Fim de Semana / Feriado)";
@@ -1045,7 +1362,7 @@
             let minEstimadosMes = 0;
             tarefasAtivasCli.forEach(t => {
                 const f = (t.frequencia || '').toLowerCase();
-                const min = Number(t.duracao_minutos) || 30;
+                const min = calcularSlaCalibradoAdmin(t).min;
                 if (f.includes('seg a sex') || f.includes('diári') || f.includes('5x')) minEstimadosMes += min * 22;
                 else if (f.includes('seg, qua, sex') || f.includes('3x')) minEstimadosMes += min * 13;
                 else if (f.includes('ter, qui') || f.includes('2x')) minEstimadosMes += min * 9;
@@ -1106,225 +1423,350 @@
             const subClima = document.getElementById('dash-sub-clima');
 
             if (window.presencaHojeDB?.modo_chuva_ativo) {
-                iconeClima.textContent = "🌧️";
-                txtClima.textContent = "Chovendo Agora";
+                iconeClima.textContent = "🌧️"; txtClima.textContent = "Chovendo Agora";
                 txtClima.className = "text-base font-extrabold text-blue-400 animate-pulse";
                 subClima.textContent = `Serviço externo pausado (${formatarMinutosStr(minChuva)})`;
             } else if (minChuva > 0) {
-                iconeClima.textContent = "🌦️";
-                txtClima.textContent = "Instável Hoje";
+                iconeClima.textContent = "🌦️"; txtClima.textContent = "Instável Hoje";
                 txtClima.className = "text-base font-extrabold text-white";
                 subClima.textContent = `Já choveu ${formatarMinutosStr(minChuva)} no turno.`;
             } else {
-                iconeClima.textContent = "☀️";
-                txtClima.textContent = "Tempo Seco";
+                iconeClima.textContent = "☀️"; txtClima.textContent = "Tempo Seco";
                 txtClima.className = "text-base font-extrabold text-white";
                 subClima.textContent = "Condições normais de operação.";
             }
 
             renderizarListaAuditoriaAdmin();
+            renderizarSuprimentosAdmin();
+            renderizarCrudAreas();
+            renderizarCrudEspecies();
+            renderizarCrudTarefas();
+            renderizarCrudEquipe();
+            renderizarCrudLogins();
+            renderizarCrudContratos();
 
             const { data: logsRej } = await sb.from('logs_rejeicao').select('*').eq('cliente', clienteAtivo).order('dh_tentativa', { ascending: false }).limit(20);
             document.getElementById('badge-rejeicoes').textContent = (logsRej || []).length;
             document.getElementById('gestao-rejeicoes-list').innerHTML = (logsRej || []).map(l => {
                 const dh = new Date(l.dh_tentativa).toLocaleString('pt-BR');
-                return `
-                <div class="p-3 text-xs">
-                    <div class="flex justify-between font-bold text-red-800">
-                        <span>${l.operador} • ${l.motivo_tecnico}</span>
-                        <span class="text-[10px] text-slate-400">${dh}</span>
-                    </div>
-                    <p class="text-[10px] text-slate-600 mt-0.5">${l.setor} (${l.atividade})</p>
-                </div>`;
+                return `<div class="p-3 text-xs"><div class="flex justify-between font-bold text-red-800"><span>${l.operador} • ${l.motivo_tecnico}</span><span class="text-[10px] text-slate-400">${dh}</span></div><p class="text-[10px] text-slate-600 mt-0.5">${l.setor} (${l.atividade})</p></div>`;
             }).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma foto rejeitada neste contrato.</p>`;
 
-            renderizarCrudTarefas();
-            renderizarCrudEquipe();
-            renderizarCrudLogins();
-            renderizarCrudContratos();
             initIcons();
         }
 
         // =========================================================================
-        // EDIÇÃO DE ATIVIDADE PELO RAMOS / ADMIN (INCLUSIVE REGISTROS PASSADOS)
+        // 7. GESTÃO DE SUPRIMENTOS (ADMIN / RAMOS)
+        // =========================================================================
+        function setFiltroSupAdmin(filtro) {
+            filtroSupAdmin = filtro;
+            document.getElementById('btn-sup-f-PENDENTES').className = filtro === 'PENDENTES'
+                ? "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-orange-500 text-white"
+                : "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300";
+            document.getElementById('btn-sup-f-TODOS').className = filtro === 'TODOS'
+                ? "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-orange-500 text-white"
+                : "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300";
+            renderizarSuprimentosAdmin();
+        }
+
+        function renderizarSuprimentosAdmin() {
+            const todos = window.pedidosSuprimentosDB || [];
+            const abertosCount = todos.filter(p => p.status_pedido !== 'ENTREGUE').length;
+            const dot = document.getElementById('admin-sup-dot');
+            if (dot) {
+                if (abertosCount > 0) { dot.classList.remove('hidden'); dot.textContent = abertosCount > 9 ? '9+' : abertosCount; }
+                else dot.classList.add('hidden');
+            }
+
+            const lista = filtroSupAdmin === 'PENDENTES' ? todos.filter(p => p.status_pedido !== 'ENTREGUE') : todos;
+            const el = document.getElementById('admin-lista-suprimentos');
+            if (lista.length === 0) { el.innerHTML = `<p class="p-6 text-xs text-slate-400 text-center">Nenhum pedido de suprimento/EPI neste filtro.</p>`; return; }
+
+            const badgesStatus = {
+                'SOLICITADO': `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏳ Solicitado</span>`,
+                'EM_COMPRA': `<span class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">🚚 Em Separação</span>`,
+                'ENTREGUE': `<span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">✅ Entregue</span>`
+            };
+
+            el.innerHTML = lista.map(p => {
+                const dt = new Date(p.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                return `
+                <div class="p-3.5 text-xs space-y-2 ${p.urgente && p.status_pedido !== 'ENTREGUE' ? 'bg-red-50/50' : ''}">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                ${p.origem_impedimento ? `<span class="text-[9px] font-extrabold bg-red-600 text-white px-1.5 py-0.5 rounded">🚨 IMPEDIU TAREFA</span>` : ''}
+                                ${p.urgente && !p.origem_impedimento ? `<span class="text-[9px] font-extrabold bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded">URGENTE</span>` : ''}
+                                <span class="text-[9px] font-bold bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">${p.categoria}</span>
+                                <span class="font-extrabold text-slate-900">${p.item}</span>
+                                <span class="font-extrabold text-orange-600">(${p.quantidade_calculada})</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-1">📍 Área: <b>${p.area_destino}</b> • Solicitado por <b>${p.solicitante}</b> em ${dt}</p>
+                            ${p.observacao ? `<p class="text-[11px] text-slate-700 italic mt-0.5">"${p.observacao}"</p>` : ''}
+                        </div>
+                        <div class="flex-shrink-0">${badgesStatus[p.status_pedido] || p.status_pedido}</div>
+                    </div>
+                    ${p.status_pedido !== 'ENTREGUE' ? `
+                    <div class="flex gap-1.5 pt-1">
+                        ${p.status_pedido === 'SOLICITADO' ? `<button onclick="atualizarStatusSuprimento(${p.id}, 'EM_COMPRA')" class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold py-1.5 px-2 rounded-xl text-[11px]">🚚 Em Separação / Compra</button>` : ''}
+                        <button onclick="atualizarStatusSuprimento(${p.id}, 'ENTREGUE')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-2 rounded-xl text-[11px] shadow-sm">✅ Confirmar Entrega</button>
+                    </div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        async function atualizarStatusSuprimento(id, novoStatus) {
+            await sb.from('pedidos_suprimentos').update({ status_pedido: novoStatus, atualizado_em: new Date().toISOString() }).eq('id', id);
+            carregarDadosAdmin();
+        }
+
+        // =========================================================================
+        // 8. CAMADAS 2 (ÁREAS/EPI) & 3 (ESPÉCIES + CALCULADORA EXCLUSIVA SUPERVISOR)
+        // =========================================================================
+        function renderizarCrudAreas() {
+            const el = document.getElementById('lista-areas-crud');
+            if (window.areasClienteDB.length === 0) { el.innerHTML = `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma área cadastrada ainda.</p>`; return; }
+            el.innerHTML = window.areasClienteDB.map(a => `
+                <div class="p-3.5 flex justify-between items-center gap-2 ${a.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
+                    <div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <p class="text-xs font-extrabold text-slate-900">${a.nome_area}</p>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${a.permite_chuva ? 'bg-blue-100 text-blue-800' : 'bg-sky-50 text-sky-700 border border-sky-200'}">
+                                ${a.permite_chuva ? '☔ Permite Chuva' : '☀️ Só Tempo Seco'}
+                            </span>
+                        </div>
+                        <p class="text-[10px] font-semibold ${a.epi_obrigatorio ? 'text-amber-800' : 'text-slate-400'} mt-0.5">
+                            ${a.epi_obrigatorio ? `EPI Local: ${a.epi_obrigatorio}` : 'Sem EPI especial de localização'}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button onclick="carregarAreaNoForm(${a.id})" class="text-[10px] font-extrabold bg-orange-50 text-orange-700 px-2.5 py-1.5 rounded-xl border border-orange-200">✏️ Editar</button>
+                        <button onclick="alternarAtivoArea(${a.id}, ${a.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2 py-1.5 rounded-xl bg-slate-100 text-slate-600">${a.ativo === false ? 'Ativar' : 'Inativar'}</button>
+                    </div>
+                </div>`).join('');
+        }
+
+        function carregarAreaNoForm(id) {
+            const a = window.areasClienteDB.find(x => x.id === id);
+            if (!a) return;
+            document.getElementById('edit-area-id').value = a.id;
+            document.getElementById('edit-area-nome').value = a.nome_area;
+            document.getElementById('edit-area-epi').value = a.epi_obrigatorio || '';
+            document.getElementById('edit-area-chuva').checked = Boolean(a.permite_chuva);
+            document.getElementById('form-area-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando Área: ${a.nome_area}</span>`;
+            document.getElementById('btn-salvar-area').textContent = "Atualizar Área";
+            document.getElementById('card-form-area').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function limparFormArea() {
+            document.getElementById('edit-area-id').value = '';
+            document.getElementById('edit-area-nome').value = '';
+            document.getElementById('edit-area-epi').value = '';
+            document.getElementById('edit-area-chuva').checked = false;
+            document.getElementById('form-area-titulo').textContent = '➕ Cadastrar Área / Setor do Posto';
+            document.getElementById('btn-salvar-area').textContent = "Salvar Área";
+        }
+
+        async function salvarAreaCliente() {
+            const id = document.getElementById('edit-area-id').value;
+            const nome = document.getElementById('edit-area-nome').value.trim();
+            if (!nome) { alert("Informe o nome da área."); return; }
+            const payload = { cliente: clienteAtivo, nome_area: nome, epi_obrigatorio: document.getElementById('edit-area-epi').value.trim(), permite_chuva: document.getElementById('edit-area-chuva').checked, ativo: true };
+            if (id) await sb.from('cliente_areas').update(payload).eq('id', id);
+            else await sb.from('cliente_areas').insert([payload]);
+            limparFormArea(); carregarDadosAdmin();
+        }
+        async function alternarAtivoArea(id, ativo) { await sb.from('cliente_areas').update({ ativo }).eq('id', id); carregarDadosAdmin(); }
+
+        function renderizarCrudEspecies() {
+            const el = document.getElementById('lista-especies-crud');
+            if (window.especiesClienteDB.length === 0) { el.innerHTML = `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma espécie cadastrada no inventário deste contrato.</p>`; return; }
+            el.innerHTML = window.especiesClienteDB.map(sp => {
+                const val = Number(sp.medida_valor) || 0, dens = Number(sp.densidade_mudas_m2) || 15;
+                const areaEquivM2 = sp.medida_unidade === 'm linear' ? val * 0.5 : (sp.medida_unidade === 'un' ? val * 0.25 : val);
+                const mudasReposicao = sp.medida_unidade === 'un' ? Math.ceil(val * 1.10) : Math.ceil(val * dens * 1.10);
+                const sacosTerra5cm = Math.max(1, Math.ceil((areaEquivM2 * 50) / 25));
+                const aduboNpkKg = Math.max(0.5, areaEquivM2 * 0.10).toFixed(1);
+                const mesesFmt = (sp.meses_poda_drastica || '').split(',').map(m => NOMES_MESES[parseInt(m.trim(), 10)] || '').filter(Boolean).join(', ');
+
+                return `
+                <div class="p-3.5 space-y-2 ${sp.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">${sp.nome_area}</span>
+                                <span class="text-xs font-extrabold text-slate-900">${sp.especie}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 mt-0.5">
+                                Medida: <b>${val} ${sp.medida_unidade}</b> • Rendimento base: <b>${sp.rendimento_hora} ${sp.medida_unidade}/h</b>
+                                ${mesesFmt ? ` • <span class="text-purple-700 font-bold">✂️ Poda Drástica: ${mesesFmt}</span>` : ''}
+                            </p>
+                        </div>
+                        <div class="flex gap-1 flex-shrink-0">
+                            <button onclick="carregarEspecieNoForm(${sp.id})" class="text-[10px] font-extrabold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200">✏️ Editar</button>
+                            <button onclick="excluirEspecie(${sp.id})" class="text-[10px] font-extrabold bg-red-50 text-red-700 px-2 py-1 rounded-lg">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5 bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-2 text-center">
+                        <div><p class="text-[9px] font-bold text-emerald-800 uppercase">Mudas (+10%)</p><p class="text-xs font-extrabold text-slate-900">${mudasReposicao} mudas</p></div>
+                        <div class="border-x border-emerald-200"><p class="text-[9px] font-bold text-emerald-800 uppercase">Terra (5cm)</p><p class="text-xs font-extrabold text-slate-900">${sacosTerra5cm} sc 25kg</p></div>
+                        <div><p class="text-[9px] font-bold text-emerald-800 uppercase">Adubo NPK</p><p class="text-xs font-extrabold text-slate-900">${aduboNpkKg} kg</p></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function carregarEspecieNoForm(id) {
+            const sp = window.especiesClienteDB.find(x => x.id === id);
+            if (!sp) return;
+            document.getElementById('edit-esp-id').value = sp.id;
+            document.getElementById('edit-esp-area').value = sp.nome_area;
+            document.getElementById('edit-esp-nome').value = sp.especie;
+            document.getElementById('edit-esp-medida').value = sp.medida_valor;
+            document.getElementById('edit-esp-unidade').value = sp.medida_unidade;
+            document.getElementById('edit-esp-densidade').value = sp.densidade_mudas_m2;
+            document.getElementById('edit-esp-rendimento').value = sp.rendimento_hora;
+            document.getElementById('edit-esp-poda').value = sp.meses_poda_drastica || '';
+            document.getElementById('form-esp-titulo').innerHTML = `<span class="text-emerald-700">✏️ Editando: ${sp.especie}</span>`;
+            document.getElementById('btn-salvar-esp').textContent = "Atualizar Espécie";
+            document.getElementById('card-form-especie').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function limparFormEspecie() {
+            document.getElementById('edit-esp-id').value = '';
+            document.getElementById('edit-esp-nome').value = '';
+            document.getElementById('edit-esp-medida').value = 10;
+            document.getElementById('edit-esp-densidade').value = 15;
+            document.getElementById('edit-esp-rendimento').value = 8;
+            document.getElementById('edit-esp-poda').value = '7,8';
+            document.getElementById('form-esp-titulo').textContent = '🌿 Cadastrar Espécie Botânica na Área';
+            document.getElementById('btn-salvar-esp').textContent = "Salvar Espécie no Inventário";
+        }
+
+        async function salvarEspecieCliente() {
+            const id = document.getElementById('edit-esp-id').value;
+            const especie = document.getElementById('edit-esp-nome').value.trim();
+            if (!especie) { alert("Digite o nome da espécie."); return; }
+            const payload = {
+                cliente: clienteAtivo, nome_area: document.getElementById('edit-esp-area').value, especie,
+                medida_valor: parseFloat(document.getElementById('edit-esp-medida').value) || 0,
+                medida_unidade: document.getElementById('edit-esp-unidade').value,
+                densidade_mudas_m2: parseFloat(document.getElementById('edit-esp-densidade').value) || 15,
+                rendimento_hora: parseFloat(document.getElementById('edit-esp-rendimento').value) || 8,
+                meses_poda_drastica: document.getElementById('edit-esp-poda').value.trim(), ativo: true
+            };
+            if (id) await sb.from('cliente_especies').update(payload).eq('id', id);
+            else await sb.from('cliente_especies').insert([payload]);
+            limparFormEspecie(); carregarDadosAdmin();
+        }
+        async function excluirEspecie(id) { if (!confirm("Remover esta espécie do inventário?")) return; await sb.from('cliente_especies').delete().eq('id', id); carregarDadosAdmin(); }
+
+        // =========================================================================
+        // 9. EDIÇÃO DE EXECUÇÃO AUDITADA, FECHAMENTOS & EXPORTAÇÃO CSV
         // =========================================================================
         let idExecEditandoAdmin = null;
         function abrirModalEditExecAdmin(execId) {
             const reg = window.execucoesMesDB.find(e => e.id === execId) || execucoesDataEspecificaDB.find(e => e.id === execId);
             if (!reg) return;
             idExecEditandoAdmin = execId;
-
             document.getElementById('adm-edit-exec-title').textContent = `${reg.setor} • ${reg.atividade}`;
             document.getElementById('adm-edit-exec-min').value = reg.duracao_real_min || 30;
             document.getElementById('adm-edit-exec-flag').value = reg.flag_auditoria || 'CONFORME';
             document.getElementById('adm-edit-exec-obs').value = reg.observacao || '';
-
             const atuais = (reg.equipe_executora || '').split(',').map(s => s.trim());
             const colabsOp = window.colaboradoresTodosDB.filter(c => c.ativo !== false && ['OPERADOR', 'ENCARREGADO'].includes(c.perfil));
-
-            document.getElementById('adm-edit-exec-equipe').innerHTML = colabsOp.map(c => {
-                const chk = atuais.includes(c.nome) ? 'checked' : '';
-                return `<label class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl cursor-pointer">
-                    <input type="checkbox" value="${c.nome}" ${chk} class="w-3.5 h-3.5 text-orange-500 rounded">
-                    <span class="text-xs font-bold text-slate-700">${c.nome}</span>
-                </label>`;
-            }).join('');
-
+            document.getElementById('adm-edit-exec-equipe').innerHTML = colabsOp.map(c => `<label class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl cursor-pointer"><input type="checkbox" value="${c.nome}" ${atuais.includes(c.nome) ? 'checked' : ''} class="w-3.5 h-3.5 text-orange-500 rounded"><span class="text-xs font-bold text-slate-700">${c.nome}</span></label>`).join('');
             document.getElementById('modal-edit-exec-admin').classList.remove('hidden');
             initIcons();
         }
-
-        function fecharModalEditExecAdmin() {
-            idExecEditandoAdmin = null;
-            document.getElementById('modal-edit-exec-admin').classList.add('hidden');
-        }
+        function fecharModalEditExecAdmin() { idExecEditandoAdmin = null; document.getElementById('modal-edit-exec-admin').classList.add('hidden'); }
 
         async function salvarEdicaoExecAdmin() {
             if (!idExecEditandoAdmin) return;
             const selecionados = Array.from(document.querySelectorAll('#adm-edit-exec-equipe input:checked')).map(c => c.value);
             if (selecionados.length === 0) { alert("Selecione ao menos um operador."); return; }
-
-            const minReal = parseInt(document.getElementById('adm-edit-exec-min').value, 10) || 1;
-            const flag = document.getElementById('adm-edit-exec-flag').value;
-            const obs = document.getElementById('adm-edit-exec-obs').value.trim();
-
-            const btn = document.getElementById('btn-adm-salvar-exec');
-            btn.disabled = true; btn.textContent = "Salvando...";
-
+            const btn = document.getElementById('btn-adm-salvar-exec'); btn.disabled = true; btn.textContent = "Salvando...";
             await sb.from('execucoes_auditoria').update({
                 equipe_executora: selecionados.join(', '),
-                duracao_real_min: minReal,
-                flag_auditoria: flag,
-                observacao: obs
+                duracao_real_min: parseInt(document.getElementById('adm-edit-exec-min').value, 10) || 1,
+                flag_auditoria: document.getElementById('adm-edit-exec-flag').value,
+                observacao: document.getElementById('adm-edit-exec-obs').value.trim()
             }).eq('id', idExecEditandoAdmin);
-
             btn.disabled = false; btn.textContent = "Salvar Ajuste da Supervisão";
             fecharModalEditExecAdmin();
-
-            if (filtroPeriodoAdmin === 'DATA_ESPECIFICA' && dataEspecificaAdmin) {
-                await filtrarDataEspecificaAdmin(dataEspecificaAdmin);
-            }
+            if (filtroPeriodoAdmin === 'DATA_ESPECIFICA' && dataEspecificaAdmin) await filtrarDataEspecificaAdmin(dataEspecificaAdmin);
             carregarDadosAdmin();
         }
 
-        // =========================================================================
-        // FECHAMENTOS (SEMANAL E MENSAL) + EXPORTAR CSV (POWER BI / EXCEL)
-        // =========================================================================
         function abrirModalFechamento(tipo) {
-            const hoje = new Date();
-            const execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
-
+            const hoje = new Date(), execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
             let dataCorteISO = dataISO(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
             let tituloPeriodo = `FECHAMENTO MENSAL (${hoje.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()})`;
-
             if (tipo === 'SEMANAL') {
-                const seteDiasAtras = new Date();
-                seteDiasAtras.setDate(hoje.getDate() - 7);
-                dataCorteISO = dataISO(seteDiasAtras);
-                tituloPeriodo = `FECHAMENTO SEMANAL (ÚLTIMOS 7 DIAS — ${seteDiasAtras.toLocaleDateString('pt-BR')} A ${hoje.toLocaleDateString('pt-BR')})`;
+                const sete = new Date(); sete.setDate(hoje.getDate() - 7); dataCorteISO = dataISO(sete);
+                tituloPeriodo = `FECHAMENTO SEMANAL (ÚLTIMOS 7 DIAS — ${sete.toLocaleDateString('pt-BR')} A ${hoje.toLocaleDateString('pt-BR')})`;
             }
-
             const filtradas = execsCli.filter(e => e.data_referencia >= dataCorteISO);
             const concluidas = filtradas.filter(e => e.status_execucao === 'CONCLUIDO');
             const dispensadas = filtradas.filter(e => e.status_execucao === 'DISPENSADO');
+            const impedimentosEpi = filtradas.filter(e => e.status_execucao === 'IMPEDIMENTO_EPI');
             const emCurso = filtradas.filter(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
             const minTrabalhados = concluidas.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
             const conformes = concluidas.filter(e => e.flag_auditoria === 'CONFORME').length;
             const pctQualidade = concluidas.length > 0 ? Math.round((conformes / concluidas.length) * 100) : 100;
-
             const contagemSetores = {};
             concluidas.forEach(e => { contagemSetores[e.setor] = (contagemSetores[e.setor] || 0) + 1; });
-            const resumoSetores = Object.entries(contagemSetores)
-                .map(([setor, qtd]) => `  • ${setor}: ${qtd} entrega(s)`)
-                .join('\n') || '  • Sem entregas concluídas no período';
+            const resumoSetores = Object.entries(contagemSetores).map(([s, q]) => `  • ${s}: ${q} entrega(s)`).join('\n') || '  • Sem entregas concluídas no período';
 
-            const relatorio = `📊 *${tituloPeriodo}*\n🏢 *Contrato:* ${clienteAtivo}\n━━━━━━━━━━━━━━━━━━━━\n✅ *Atividades Concluídas:* ${concluidas.length}\n☑️ *Vistorias Técnicas (Dispensadas):* ${dispensadas.length}\n🔄 *Em Andamento / Transbordo:* ${emCurso.length}\n⏱️ *Carga Líquida Auditada:* ${formatarMinutosStr(minTrabalhados)} (${(minTrabalhados / 60).toFixed(1)}h)\n🛡️ *Índice de Qualidade:* ${pctQualidade}%\n━━━━━━━━━━━━━━━━━━━━\n📍 *Entregas por Setor:*\n${resumoSetores}`;
-
+            const relatorio = `📊 *${tituloPeriodo}*\n🏢 *Contrato:* ${clienteAtivo}\n━━━━━━━━━━━━━━━━━━━━\n✅ *Atividades Concluídas:* ${concluidas.length}\n☑️ *Vistorias Técnicas (Dispensadas):* ${dispensadas.length}\n🔄 *Em Andamento / Transbordo:* ${emCurso.length}\n${impedimentosEpi.length > 0 ? `🚨 *Impedimentos por Falta de EPI:* ${impedimentosEpi.length}\n` : ''}⏱️ *Carga Líquida Auditada:* ${formatarMinutosStr(minTrabalhados)} (${(minTrabalhados / 60).toFixed(1)}h)\n🛡️ *Índice de Qualidade:* ${pctQualidade}%\n━━━━━━━━━━━━━━━━━━━━\n📍 *Entregas por Setor:*\n${resumoSetores}`;
             document.getElementById('fechamento-modal-titulo').textContent = tipo === 'SEMANAL' ? '📅 Fechamento Semanal' : '📊 Fechamento Mensal';
             document.getElementById('fechamento-texto-preview').textContent = relatorio;
             document.getElementById('modal-fechamento-periodo').classList.remove('hidden');
             initIcons();
         }
-
-        function copiarTextoFechamentoModal() {
-            const txt = document.getElementById('fechamento-texto-preview').textContent;
-            navigator.clipboard.writeText(txt);
-            alert("Fechamento copiado! Pronto para colar no WhatsApp ou e-mail.");
-        }
+        function copiarTextoFechamentoModal() { navigator.clipboard.writeText(document.getElementById('fechamento-texto-preview').textContent); alert("Fechamento copiado!"); }
 
         async function exportarBaseCSV() {
-            const { data, error } = await sb.from('execucoes_auditoria')
-                .select('*')
-                .eq('cliente', clienteAtivo)
-                .order('dh_envio_servidor', { ascending: false });
+            const { data, error } = await sb.from('execucoes_auditoria').select('*').eq('cliente', clienteAtivo).order('dh_envio_servidor', { ascending: false });
+            if (error || !data || data.length === 0) { alert("Nenhum registro para exportar."); return; }
+            const cab = ["ID", "Data_Referencia", "Contrato", "Setor", "Atividade", "Equipe_Executora", "Registrado_Por", "Status_Execucao", "Avaliacao_Auditoria", "Tempo_Previsto_Min", "Tempo_Real_Liquido_Min", "Minutos_Pausa_Descontados", "Distancia_GPS_Metros", "Origem_Foto", "Observacao_Tecnica", "Inicio_Tarefa", "Fim_Captura_Foto", "Links_Inicial_Andamento", "Links_Fotos_Depois"];
+            const limpar = v => v === null || v === undefined ? '""' : `"${String(v).replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
+            const linhas = data.map(r => [r.id, r.data_referencia, r.cliente, r.setor, r.atividade, r.equipe_executora, r.registrado_por, r.status_execucao, r.flag_auditoria, r.duracao_estimada_min, r.duracao_real_min, r.minutos_pausa_descontados || 0, r.distancia_cliente_m ?? '', r.origem_midia, r.observacao, r.dh_inicio_tarefa, r.dh_captura_exif, r.foto_antes_url, r.foto_depois_url].map(limpar).join(';'));
+            baixarArquivoCSV([cab.join(';'), ...linhas].join('\r\n'), `Auditoria_NovaEra_${clienteAtivo.replace(/\s+/g, '_')}_${dataISO()}.csv`);
+        }
 
-            if (error || !data || data.length === 0) {
-                alert("Nenhum registro encontrado para exportar.");
-                return;
-            }
+        async function exportarDisponibilidadeCSV() {
+            const { data, error } = await sb.from('presenca_posto').select('*').eq('cliente', clienteAtivo).order('data_turno', { ascending: false }).limit(90);
+            if (error || !data || data.length === 0) { alert("Sem registros de disponibilidade."); return; }
+            const cab = ["Data_Turno", "Contrato", "Operador", "Inicio_Disponibilidade", "Fim_Disponibilidade", "Minutos_Disponiveis", "Motivo_Saida", "Minutos_Chuva_Dia"];
+            const limpar = v => v === null || v === undefined ? '""' : `"${String(v).replace(/"/g, '""')}"`;
+            const linhas = [];
+            data.forEach(reg => {
+                const ops = Array.isArray(reg.disponibilidade_operadores) && reg.disponibilidade_operadores.length > 0
+                    ? reg.disponibilidade_operadores
+                    : (reg.equipe_presente || '').split(',').map(s => s.trim()).filter(Boolean).map(n => ({ nome: n, inicio: reg.dh_checkin_aparelho, fim: reg.dh_checkout_posto, motivo_saida: '' }));
+                ops.forEach(op => {
+                    const tIni = op.inicio ? new Date(op.inicio).getTime() : 0;
+                    const tFim = op.fim ? new Date(op.fim).getTime() : (reg.dh_checkout_posto ? new Date(reg.dh_checkout_posto).getTime() : Date.now());
+                    const mins = tIni > 0 ? Math.max(0, Math.round((tFim - tIni) / 60000)) : 0;
+                    linhas.push([reg.data_turno, reg.cliente, op.nome, op.inicio || '', op.fim || '', mins, op.motivo_saida || '', reg.minutos_chuva_acumulados || 0].map(limpar).join(';'));
+                });
+            });
+            baixarArquivoCSV([cab.join(';'), ...linhas].join('\r\n'), `Disponibilidade_Operadores_${clienteAtivo.replace(/\s+/g, '_')}_${dataISO()}.csv`);
+        }
 
-            const cabecalho = [
-                "ID", "Data_Referencia", "Contrato", "Setor", "Atividade",
-                "Equipe_Executora", "Registrado_Por", "Status_Execucao", "Avaliacao_Auditoria",
-                "Tempo_Previsto_Min", "Tempo_Real_Liquido_Min", "Minutos_Pausa_Descontados",
-                "Distancia_GPS_Metros", "Origem_Foto", "Observacao_Tecnica",
-                "Inicio_Tarefa", "Fim_Captura_Foto", "Links_Fotos_Antes", "Links_Fotos_Depois"
-            ];
-
-            const limparCelula = (val) => {
-                if (val === null || val === undefined) return '""';
-                return `"${String(val).replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
-            };
-
-            const linhas = data.map(r => [
-                r.id,
-                r.data_referencia,
-                r.cliente,
-                r.setor,
-                r.atividade,
-                r.equipe_executora,
-                r.registrado_por,
-                r.status_execucao,
-                r.flag_auditoria,
-                r.duracao_estimada_min,
-                r.duracao_real_min,
-                r.minutos_pausa_descontados || 0,
-                r.distancia_cliente_m ?? '',
-                r.origem_midia,
-                r.observacao,
-                r.dh_inicio_tarefa,
-                r.dh_captura_exif,
-                r.foto_antes_url,
-                r.foto_depois_url
-            ].map(limparCelula).join(';'));
-
-            const conteudoCSV = "\uFEFF" + [cabecalho.join(';'), ...linhas].join('\r\n');
-            const blob = new Blob([conteudoCSV], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Auditoria_NovaEra_${clienteAtivo.replace(/\s+/g, '_')}_${dataISO()}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+        function baixarArquivoCSV(conteudo, nomeArquivo) {
+            const blob = new Blob(["\uFEFF" + conteudo], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob), a = document.createElement('a');
+            a.href = url; a.download = nomeArquivo; document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
         }
 
         async function autorizarPlantaoExcepcional() {
             const hojeStr = dataISO();
-            const reg = {
-                data_turno: hojeStr,
-                cliente: clienteAtivo,
-                equipe_presente: `Liberado por ${adminLogado?.nome || 'Supervisão'}`,
-                qtd_operadores: 1,
-                modo_checkin: 'PLANTAO_AUTORIZADO',
-                status_validacao: 'AUTORIZADO_GESTAO',
-                dh_checkin_aparelho: new Date().toISOString()
-            };
             await sb.from('presenca_posto').delete().eq('data_turno', hojeStr).eq('cliente', clienteAtivo);
-            await sb.from('presenca_posto').insert([reg]);
-            await carregarDadosAdmin();
-            alert(`🔓 Plantão autorizado hoje para ${clienteAtivo}!`);
+            await sb.from('presenca_posto').insert([{ data_turno: hojeStr, cliente: clienteAtivo, equipe_presente: `Liberado por ${adminLogado?.nome || 'Supervisão'}`, qtd_operadores: 1, modo_checkin: 'PLANTAO_AUTORIZADO', status_validacao: 'AUTORIZADO_GESTAO', dh_checkin_aparelho: new Date().toISOString() }]);
+            await carregarDadosAdmin(); alert(`🔓 Plantão autorizado hoje para ${clienteAtivo}!`);
         }
 
         async function encerrarOuBloquearPostoHoje() {
@@ -1336,100 +1778,80 @@
         function copiarResumoWhatsApp() {
             const hojeStr = dataISO();
             const execsHoje = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && e.data_referencia === hojeStr && e.status_execucao === 'CONCLUIDO');
-            const dispensadasHoje = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && e.data_referencia === hojeStr && e.status_execucao === 'DISPENSADO');
+            const dispHoje = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && e.data_referencia === hojeStr && e.status_execucao === 'DISPENSADO');
             const emCurso = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
             const minHoje = execsHoje.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
-            const minChuva = calcularMinutosChuvaHoje();
-
-            const texto = `📋 *RELATÓRIO DO DIA — NOVA ERA*\n📍 *Contrato:* ${clienteAtivo}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n👷 *Equipe no Posto:* ${window.presencaHojeDB?.equipe_presente || 'Sem check-in'}\n✅ *Concluídas hoje:* ${execsHoje.length} atividades\n☑️ *Vistoriadas/Dispensadas:* ${dispensadasHoje.length}\n🔄 *Em Andamento:* ${emCurso.length}\n⏱️ *Tempo Trabalhado Hoje:* ${formatarMinutosStr(minHoje)}\n🌦️ *Chuva Acumulada:* ${formatarMinutosStr(minChuva)}`;
-            navigator.clipboard.writeText(texto);
-            alert("Resumo de hoje copiado! Basta colar no WhatsApp.");
+            const texto = `📋 *RELATÓRIO DO DIA — NOVA ERA*\n📍 *Contrato:* ${clienteAtivo}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n👷 *Equipe no Posto:* ${window.presencaHojeDB?.equipe_presente || 'Sem check-in'}\n✅ *Concluídas hoje:* ${execsHoje.length} atividades\n☑️ *Vistoriadas/Dispensadas:* ${dispHoje.length}\n🔄 *Em Andamento:* ${emCurso.length}\n⏱️ *Tempo Trabalhado Hoje:* ${formatarMinutosStr(minHoje)}\n🌦️ *Chuva Acumulada:* ${formatarMinutosStr(calcularMinutosChuvaHoje())}`;
+            navigator.clipboard.writeText(texto); alert("Resumo de hoje copiado!");
         }
 
         async function importarPlanilhaGoogleCSV() {
             if (!confirm(`Importar e substituir a grade do contrato ${clienteAtivo} a partir da planilha Google Sheets?`)) return;
-            const btn = document.getElementById('btn-import-csv');
-            btn.disabled = true; btn.textContent = "Importando...";
+            const btn = document.getElementById('btn-import-csv'); btn.disabled = true; btn.textContent = "Importando...";
             try {
-                const res = await fetch(CSV_ATIVIDADES_LEGADO);
-                const csv = await res.text();
-                const linhas = csv.split(/\r?\n/).map(l => l.split(','));
-                const novos = [];
+                const csv = await (await fetch(CSV_ATIVIDADES_LEGADO)).text();
+                const linhas = csv.split(/\r?\n/).map(l => l.split(',')), novos = [];
                 for (let i = 1; i < linhas.length; i++) {
-                    const col = linhas[i];
-                    if (!col || col.length < 3 || !col[2]) continue;
+                    const col = linhas[i]; if (!col || col.length < 3 || !col[2]) continue;
                     const durStr = (col[4] || '30m').trim();
-                    let min = 30;
-                    const hM = durStr.match(/(\d+)\s*h/i); const mM = durStr.match(/(\d+)\s*m/i);
+                    let min = 30; const hM = durStr.match(/(\d+)\s*h/i), mM = durStr.match(/(\d+)\s*m/i);
                     if (hM || mM) min = (hM ? parseInt(hM[1]) * 60 : 0) + (mM ? parseInt(mM[1]) : 0);
-                    novos.push({
-                        cliente: clienteAtivo,
-                        setor: (col[0] || 'Geral').replace(/"/g, '').trim(),
-                        ambiente: (col[1] || '').replace(/"/g, '').trim(),
-                        atividade: (col[2] || '').replace(/"/g, '').trim(),
-                        frequencia: (col[3] || 'Semanal').replace(/"/g, '').trim(),
-                        duracao_str: durStr,
-                        duracao_minutos: min,
-                        especie: (col[5] || 'Diversas').replace(/"/g, '').trim(),
-                        permite_chuva: !(col[7] || '').toLowerCase().includes('n'),
-                        prioridade: parseInt(col[8]) === 1 ? 1 : 2
-                    });
+                    novos.push({ cliente: clienteAtivo, setor: (col[0] || 'Geral').replace(/"/g, '').trim(), ambiente: (col[1] || '').replace(/"/g, '').trim(), atividade: (col[2] || '').replace(/"/g, '').trim(), frequencia: (col[3] || 'Semanal').replace(/"/g, '').trim(), duracao_str: durStr, duracao_minutos: min, especie: (col[5] || 'Diversas').replace(/"/g, '').trim(), permite_chuva: !(col[7] || '').toLowerCase().includes('n'), prioridade: parseInt(col[8]) === 1 ? 1 : 2 });
                 }
-                if (novos.length > 0) {
-                    await sb.from('cronograma_mestre').delete().eq('cliente', clienteAtivo);
-                    await sb.from('cronograma_mestre').insert(novos);
-                    alert(`${novos.length} atividades sincronizadas com sucesso!`);
-                    carregarDadosAdmin();
-                }
+                if (novos.length > 0) { await sb.from('cronograma_mestre').delete().eq('cliente', clienteAtivo); await sb.from('cronograma_mestre').insert(novos); alert(`${novos.length} atividades sincronizadas!`); carregarDadosAdmin(); }
             } catch (e) { alert("Erro ao importar: " + e.message); }
-            finally { btn.disabled = false; btn.textContent = "Sincronizar Grade"; }
+            finally { btn.disabled = false; btn.textContent = "Sincronizar Grade Google Sheets"; }
         }
 
         // =========================================================================
-        // CRUD TAREFAS, EQUIPE, LOGINS E CONTRATOS
+        // 10. CRUD TAREFAS, EQUIPE, LOGINS E CONTRATOS (CAMADA 1 COMPLETA)
         // =========================================================================
         function renderizarCrudTarefas() {
             const lista = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo);
-            const el = document.getElementById('gestao-lista-tarefas-crud');
-            el.innerHTML = lista.map(t => `
+            document.getElementById('gestao-lista-tarefas-crud').innerHTML = lista.map(t => {
+                const slaInfo = calcularSlaCalibradoAdmin(t);
+                const badgeSla = t.travar_sla_manual
+                    ? `<span class="text-[9px] font-bold bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">🔒 Fixo: ${t.duracao_str}</span>`
+                    : (slaInfo.calibrado
+                        ? `<span class="text-[9px] font-extrabold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">📊 Calibrado: ${formatarMinutosStr(slaInfo.min)} (${slaInfo.qtdAmostras}x)</span>`
+                        : `<span class="text-[9px] font-bold text-orange-600">${formatarMinutosStr(slaInfo.min)}</span>`);
+                return `
                 <div class="p-3.5 flex justify-between items-center gap-2 ${t.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
                     <div>
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">${t.setor}</span>
-                            <span class="text-[10px] font-bold text-orange-600">${t.frequencia} • ${t.duracao_str}</span>
+                            <span class="text-[10px] font-bold text-slate-500">${t.frequencia}</span>
+                            ${badgeSla}
+                            ${t.epi_especifico ? `<span class="text-[9px] font-extrabold bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded">🦺 ${t.epi_especifico}</span>` : ''}
                         </div>
                         <p class="text-xs font-bold text-slate-900 mt-1">${t.atividade}</p>
                     </div>
                     <div class="flex items-center gap-1.5 flex-shrink-0">
-                        <button onclick='carregarTarefaNoForm(${JSON.stringify(t).replace(/'/g, "&apos;")})' class="text-[10px] font-extrabold bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-1.5 rounded-xl border border-orange-200 shadow-sm">
-                            ✏️ Configurar
-                        </button>
-                        <button onclick="alternarAtivoTarefa(${t.id}, ${t.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-xl ${t.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600 hover:bg-red-50'}">
-                            ${t.ativo === false ? 'Ativar' : 'Pausar'}
-                        </button>
+                        <button onclick="carregarTarefaNoForm(${t.id})" class="text-[10px] font-extrabold bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-1.5 rounded-xl border border-orange-200 shadow-sm">✏️ Editar</button>
+                        <button onclick="alternarAtivoTarefa(${t.id}, ${t.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-xl ${t.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600 hover:bg-red-50'}">${t.ativo === false ? 'Ativar' : 'Pausar'}</button>
                     </div>
-                </div>
-            `).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma tarefa neste contrato.</p>`;
+                </div>`;
+            }).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma tarefa neste contrato.</p>`;
         }
 
-        function carregarTarefaNoForm(t) {
+        function carregarTarefaNoForm(id) {
+            const t = window.cronogramaTodosDB.find(x => x.id === id);
+            if (!t) return;
             document.getElementById('edit-tarefa-id').value = t.id;
             document.getElementById('edit-tarefa-setor').value = t.setor;
             document.getElementById('edit-tarefa-especie').value = t.especie || '';
             document.getElementById('edit-tarefa-nome').value = t.atividade;
+            document.getElementById('edit-tarefa-epi').value = t.epi_especifico || '';
             document.getElementById('edit-tarefa-freq').value = t.frequencia;
             document.getElementById('edit-tarefa-min').value = t.duracao_minutos || 30;
             document.getElementById('edit-tarefa-prio').value = t.prioridade || 2;
             document.getElementById('edit-tarefa-chuva').checked = t.permite_chuva !== false;
-            
+            document.getElementById('edit-tarefa-travar-sla').checked = Boolean(t.travar_sla_manual);
             document.getElementById('form-tarefa-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando: ${t.atividade.substring(0,22)}...</span>`;
             document.getElementById('btn-salvar-tarefa').textContent = "Atualizar Tarefa";
-
             const card = document.getElementById('card-form-tarefa');
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            card.classList.remove('highlight-edit');
-            void card.offsetWidth;
-            card.classList.add('highlight-edit');
+            card.classList.remove('highlight-edit'); void card.offsetWidth; card.classList.add('highlight-edit');
         }
 
         function limparFormTarefaGestao() {
@@ -1437,7 +1859,9 @@
             document.getElementById('edit-tarefa-setor').value = '';
             document.getElementById('edit-tarefa-especie').value = '';
             document.getElementById('edit-tarefa-nome').value = '';
+            document.getElementById('edit-tarefa-epi').value = '';
             document.getElementById('edit-tarefa-min').value = 45;
+            document.getElementById('edit-tarefa-travar-sla').checked = false;
             document.getElementById('form-tarefa-titulo').textContent = '➕ Cadastrar Nova Tarefa';
             document.getElementById('btn-salvar-tarefa').textContent = "Salvar Tarefa";
             document.getElementById('card-form-tarefa').classList.remove('highlight-edit');
@@ -1445,164 +1869,110 @@
 
         async function salvarTarefaGestao() {
             const id = document.getElementById('edit-tarefa-id').value;
-            const setor = document.getElementById('edit-tarefa-setor').value.trim();
-            const nome = document.getElementById('edit-tarefa-nome').value.trim();
-            const freq = document.getElementById('edit-tarefa-freq').value;
-            const min = parseInt(document.getElementById('edit-tarefa-min').value, 10) || 30;
-            const prio = parseInt(document.getElementById('edit-tarefa-prio').value, 10) || 2;
-            const chuva = document.getElementById('edit-tarefa-chuva').checked;
+            const setor = document.getElementById('edit-tarefa-setor').value.trim(), nome = document.getElementById('edit-tarefa-nome').value.trim();
             if (!setor || !nome) { alert("Preencha Setor e Atividade."); return; }
-
-            const payload = { cliente: clienteAtivo, setor, atividade: nome, frequencia: freq, duracao_minutos: min, duracao_str: formatarMinutosStr(min), especie: document.getElementById('edit-tarefa-especie').value.trim() || 'Diversas', prioridade: prio, permite_chuva: chuva, ativo: true };
+            const min = parseInt(document.getElementById('edit-tarefa-min').value, 10) || 30;
+            const payload = {
+                cliente: clienteAtivo, setor, atividade: nome, epi_especifico: document.getElementById('edit-tarefa-epi').value.trim(),
+                frequencia: document.getElementById('edit-tarefa-freq').value, duracao_minutos: min, duracao_str: formatarMinutosStr(min),
+                especie: document.getElementById('edit-tarefa-especie').value.trim() || 'Diversas',
+                prioridade: parseInt(document.getElementById('edit-tarefa-prio').value, 10) || 2,
+                permite_chuva: document.getElementById('edit-tarefa-chuva').checked,
+                travar_sla_manual: document.getElementById('edit-tarefa-travar-sla').checked, ativo: true
+            };
             if (id) await sb.from('cronograma_mestre').update(payload).eq('id', id);
             else await sb.from('cronograma_mestre').insert([payload]);
             limparFormTarefaGestao(); carregarDadosAdmin();
         }
-
-        async function alternarAtivoTarefa(id, novoAtivo) {
-            await sb.from('cronograma_mestre').update({ ativo: novoAtivo }).eq('id', id); carregarDadosAdmin();
-        }
+        async function alternarAtivoTarefa(id, ativo) { await sb.from('cronograma_mestre').update({ ativo }).eq('id', id); carregarDadosAdmin(); }
 
         function renderizarCrudEquipe() {
-            const el = document.getElementById('gestao-lista-equipe-crud');
-            const opcoesClientes = window.clientesDB.map(c => c.nome);
-            const perfis = ['OPERADOR', 'ENCARREGADO', 'SUPERVISOR', 'GESTOR'];
-
-            el.innerHTML = window.colaboradoresTodosDB.map(c => {
-                const selectPosto = `
-                    <select onchange="realocarColaboradorGestao(${c.id}, this.value)" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-800">
-                        ${opcoesClientes.map(n => `<option value="${n}" ${c.cliente_padrao === n ? 'selected' : ''}>${n}</option>`).join('')}
-                        <option value="" ${!c.cliente_padrao ? 'selected' : ''}>[ Sem Posto Fixo ]</option>
-                    </select>`;
-                const selectPerfil = `
-                    <select onchange="alterarPerfilColaboradorGestao(${c.id}, this.value)" class="bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-extrabold text-emerald-800">
-                        ${perfis.map(p => `<option value="${p}" ${c.perfil === p ? 'selected' : ''}>${p}</option>`).join('')}
-                    </select>`;
-                return `
+            const opcoesClientes = window.clientesDB.map(c => c.nome), perfis = ['OPERADOR', 'ENCARREGADO', 'SUPERVISOR', 'GESTOR'];
+            document.getElementById('gestao-lista-equipe-crud').innerHTML = window.colaboradoresTodosDB.map(c => `
                 <div class="p-3.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-55' : ''}">
-                    <div>
-                        <p class="text-xs font-extrabold text-slate-900">${c.nome}</p>
-                        <p class="text-[10px] font-bold ${c.ativo === false ? 'text-red-600' : 'text-emerald-600'}">${c.ativo === false ? '🔴 Inativo' : '🟢 Ativo'}</p>
-                    </div>
+                    <div><p class="text-xs font-extrabold text-slate-900">${c.nome}</p><p class="text-[10px] font-bold ${c.ativo === false ? 'text-red-600' : 'text-emerald-600'}">${c.ativo === false ? '🔴 Inativo' : '🟢 Ativo'}</p></div>
                     <div class="flex items-center gap-1.5 flex-wrap">
-                        ${c.ativo !== false ? selectPerfil : ''}
-                        ${c.ativo !== false ? selectPosto : ''}
-                        <button onclick="alternarStatusColaboradorGestao(${c.id}, ${c.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg ${c.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
-                            ${c.ativo === false ? 'Reativar' : 'Inativar'}
-                        </button>
+                        ${c.ativo !== false ? `<select onchange="alterarPerfilColaboradorGestao(${c.id}, this.value)" class="bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-extrabold text-emerald-800">${perfis.map(p => `<option value="${p}" ${c.perfil === p ? 'selected' : ''}>${p}</option>`).join('')}</select>` : ''}
+                        ${c.ativo !== false ? `<select onchange="realocarColaboradorGestao(${c.id}, this.value)" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-800">${opcoesClientes.map(n => `<option value="${n}" ${c.cliente_padrao === n ? 'selected' : ''}>${n}</option>`).join('')}<option value="" ${!c.cliente_padrao ? 'selected' : ''}>[ Sem Posto Fixo ]</option></select>` : ''}
+                        <button onclick="alternarStatusColaboradorGestao(${c.id}, ${c.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg ${c.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${c.ativo === false ? 'Reativar' : 'Inativar'}</button>
                     </div>
-                </div>`;
-            }).join('');
+                </div>`).join('');
         }
-
         async function adicionarColaboradorGestao() {
-            const nome = document.getElementById('novo-colab-nome').value.trim();
-            const posto = document.getElementById('novo-colab-posto').value || clienteAtivo;
-            const perfil = document.getElementById('novo-colab-perfil').value;
-            if (!nome) { alert("Digite o nome do colaborador."); return; }
-            await sb.from('colaboradores').insert([{ nome, cliente_padrao: posto, perfil, ativo: true }]);
-            document.getElementById('novo-colab-nome').value = '';
-            carregarDadosAdmin();
+            const nome = document.getElementById('novo-colab-nome').value.trim(); if (!nome) { alert("Digite o nome."); return; }
+            await sb.from('colaboradores').insert([{ nome, cliente_padrao: document.getElementById('novo-colab-posto').value || clienteAtivo, perfil: document.getElementById('novo-colab-perfil').value, ativo: true }]);
+            document.getElementById('novo-colab-nome').value = ''; carregarDadosAdmin();
         }
-
-        async function realocarColaboradorGestao(id, novoPosto) {
-            await sb.from('colaboradores').update({ cliente_padrao: novoPosto || null }).eq('id', id); carregarDadosAdmin();
-        }
-        async function alterarPerfilColaboradorGestao(id, novoPerfil) {
-            await sb.from('colaboradores').update({ perfil: novoPerfil }).eq('id', id); carregarDadosAdmin();
-        }
-        async function alternarStatusColaboradorGestao(id, novoStatus) {
-            await sb.from('colaboradores').update({ ativo: novoStatus }).eq('id', id); carregarDadosAdmin();
-        }
+        async function realocarColaboradorGestao(id, p) { await sb.from('colaboradores').update({ cliente_padrao: p || null }).eq('id', id); carregarDadosAdmin(); }
+        async function alterarPerfilColaboradorGestao(id, p) { await sb.from('colaboradores').update({ perfil: p }).eq('id', id); carregarDadosAdmin(); }
+        async function alternarStatusColaboradorGestao(id, s) { await sb.from('colaboradores').update({ ativo: s }).eq('id', id); carregarDadosAdmin(); }
 
         function renderizarCrudLogins() {
-            const el = document.getElementById('lista-logins-crud');
-            el.innerHTML = window.loginsAdminDB.map(u => `
+            document.getElementById('lista-logins-crud').innerHTML = window.loginsAdminDB.map(u => `
                 <div class="py-2.5 flex justify-between items-center ${u.ativo === false ? 'opacity-50' : ''}">
-                    <div>
-                        <p class="text-[11px] font-extrabold text-slate-800">${u.nome_exibicao} <span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">${u.perfil}</span></p>
-                        <p class="text-[10px] font-bold text-slate-500">Usuário: <span class="text-orange-600">${u.login}</span></p>
-                    </div>
-                    <button onclick="alternarStatusLogin(${u.id}, ${u.ativo === false ? 'true' : 'false'})" class="text-[9px] font-extrabold px-2 py-1 rounded-lg ${u.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-700'}">
-                        ${u.ativo === false ? 'Ativar Acesso' : 'Bloquear Acesso'}
-                    </button>
-                </div>
-            `).join('');
+                    <div><p class="text-[11px] font-extrabold text-slate-800">${u.nome_exibicao} <span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">${u.perfil}</span></p><p class="text-[10px] font-bold text-slate-500">Usuário: <span class="text-orange-600">${u.login}</span></p></div>
+                    <button onclick="alternarStatusLogin(${u.id}, ${u.ativo === false ? 'true' : 'false'})" class="text-[9px] font-extrabold px-2 py-1 rounded-lg ${u.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-700'}">${u.ativo === false ? 'Ativar Acesso' : 'Bloquear Acesso'}</button>
+                </div>`).join('');
         }
-
         async function adicionarOuAtualizarLoginAdmin() {
-            const login = document.getElementById('novo-login-user').value.trim().toLowerCase();
-            const senha = document.getElementById('novo-login-pass').value.trim();
-            const nome = document.getElementById('novo-login-nome').value.trim();
-            if (!login || !senha || !nome) { alert("Preencha Usuário, Senha e Nome para criar o acesso."); return; }
-            
+            const login = document.getElementById('novo-login-user').value.trim().toLowerCase(), senha = document.getElementById('novo-login-pass').value.trim(), nome = document.getElementById('novo-login-nome').value.trim();
+            if (!login || !senha || !nome) { alert("Preencha Usuário, Senha e Nome."); return; }
             const { error } = await sb.from('usuarios_admin').insert([{ login, senha, nome_exibicao: nome, perfil: 'SUPERVISOR', ativo: true }]);
-            if (error) { alert("Usuário já existe! Tente outro login."); return; }
-            
-            document.getElementById('novo-login-user').value = '';
-            document.getElementById('novo-login-pass').value = '';
-            document.getElementById('novo-login-nome').value = '';
-            carregarDadosAdmin();
-            alert(`Acesso criado com sucesso! Login: ${login}`);
+            if (error) { alert("Usuário já existe!"); return; }
+            document.getElementById('novo-login-user').value = ''; document.getElementById('novo-login-pass').value = ''; document.getElementById('novo-login-nome').value = '';
+            carregarDadosAdmin(); alert(`Acesso criado! Login: ${login}`);
         }
-
-        async function alternarStatusLogin(id, novoStatus) {
-            await sb.from('usuarios_admin').update({ ativo: novoStatus }).eq('id', id); carregarDadosAdmin();
-        }
+        async function alternarStatusLogin(id, s) { await sb.from('usuarios_admin').update({ ativo: s }).eq('id', id); carregarDadosAdmin(); }
 
         function renderizarCrudContratos() {
-            const el = document.getElementById('gestao-lista-contratos-crud');
-            el.innerHTML = window.clientesDB.map(c => `
+            document.getElementById('gestao-lista-contratos-crud').innerHTML = window.clientesDB.map(c => `
                 <div class="p-3.5 flex justify-between items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
                     <div>
                         <p class="text-xs font-extrabold text-slate-900">${c.nome}</p>
-                        <p class="text-[10px] text-slate-500">Teto: <b>${c.teto_diario_horas}h/dia</b> • Raio GPS: ${c.raio_metros}m</p>
-                        ${c.ativo === false ? `<p class="text-[10px] font-bold text-red-600 mt-0.5">Contrato Inativo</p>` : ''}
+                        <p class="text-[10px] text-slate-600">👤 ${c.contato_nome || 'Sem contato'} ${c.contato_telefone ? '• ' + c.contato_telefone : ''}</p>
+                        <p class="text-[10px] text-slate-500">Quadro: <b>${c.quadro_contratado_qtd || 2}</b> (${c.quadro_cargos || 'Equipe'}) • Teto: <b>${c.teto_diario_horas}h/dia</b></p>
                     </div>
-                    <button onclick='carregarContratoNoForm(${JSON.stringify(c).replace(/'/g, "&apos;")})' class="text-[10px] font-extrabold bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1 flex-shrink-0">
-                        ⚙️ Configurar
-                    </button>
-                </div>
-            `).join('');
+                    <button onclick="carregarContratoNoForm(${c.id})" class="text-[10px] font-extrabold bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-2 rounded-xl shadow-sm flex-shrink-0">⚙️ Configurar</button>
+                </div>`).join('');
         }
 
-        function carregarContratoNoForm(c) {
+        function carregarContratoNoForm(id) {
+            const c = window.clientesDB.find(x => x.id === id);
+            if (!c) return;
             document.getElementById('edit-cli-id').value = c.id;
             document.getElementById('edit-cli-nome').value = c.nome;
             document.getElementById('edit-cli-end').value = c.endereco || '';
+            document.getElementById('edit-cli-contato-nome').value = c.contato_nome || '';
+            document.getElementById('edit-cli-contato-tel').value = c.contato_telefone || '';
+            document.getElementById('edit-cli-contato-email').value = c.contato_email || '';
+            document.getElementById('edit-cli-quadro-qtd').value = c.quadro_contratado_qtd || 2;
+            document.getElementById('edit-cli-quadro-cargos').value = c.quadro_cargos || '1 Encarregado + 1 Operador';
             document.getElementById('edit-cli-teto').value = c.teto_diario_horas || 6;
             document.getElementById('edit-cli-raio').value = c.raio_metros || 300;
             document.getElementById('edit-cli-lat').value = c.latitude;
             document.getElementById('edit-cli-lng').value = c.longitude;
             document.getElementById('edit-cli-ativo').checked = c.ativo !== false;
-
             document.getElementById('form-contrato-titulo').innerHTML = `<span class="text-orange-600">⚙️ Editando: ${c.nome}</span>`;
             document.getElementById('btn-salvar-contrato').textContent = `Atualizar ${c.nome}`;
-
             const card = document.getElementById('card-form-contrato');
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            card.classList.remove('highlight-edit');
-            void card.offsetWidth;
-            card.classList.add('highlight-edit');
+            card.classList.remove('highlight-edit'); void card.offsetWidth; card.classList.add('highlight-edit');
         }
 
         function limparFormContratoGestao() {
-            document.getElementById('edit-cli-id').value = '';
-            document.getElementById('edit-cli-nome').value = '';
-            document.getElementById('edit-cli-end').value = '';
+            ['edit-cli-id', 'edit-cli-nome', 'edit-cli-end', 'edit-cli-contato-nome', 'edit-cli-contato-tel', 'edit-cli-contato-email', 'edit-cli-lat', 'edit-cli-lng'].forEach(i => document.getElementById(i).value = '');
+            document.getElementById('edit-cli-quadro-qtd').value = 2;
+            document.getElementById('edit-cli-quadro-cargos').value = '1 Encarregado + 1 Operador';
             document.getElementById('edit-cli-teto').value = 6;
             document.getElementById('edit-cli-raio').value = 300;
-            document.getElementById('edit-cli-lat').value = '';
-            document.getElementById('edit-cli-lng').value = '';
             document.getElementById('edit-cli-ativo').checked = true;
-
             document.getElementById('form-contrato-titulo').textContent = '➕ Cadastrar Novo Contrato';
             document.getElementById('btn-salvar-contrato').textContent = "Salvar Contrato";
             document.getElementById('card-form-contrato').classList.remove('highlight-edit');
         }
 
         function usarGpsAtualNoContrato() {
-            if (!navigator.geolocation) { alert("GPS não suportado neste navegador."); return; }
+            if (!navigator.geolocation) { alert("GPS não suportado."); return; }
             navigator.geolocation.getCurrentPosition(pos => {
                 document.getElementById('edit-cli-lat').value = pos.coords.latitude.toFixed(6);
                 document.getElementById('edit-cli-lng').value = pos.coords.longitude.toFixed(6);
@@ -1610,95 +1980,61 @@
         }
 
         async function salvarContratoGestao() {
-            const id = document.getElementById('edit-cli-id').value;
-            const nome = document.getElementById('edit-cli-nome').value.trim();
-            const end = document.getElementById('edit-cli-end').value.trim();
-            const teto = parseFloat(document.getElementById('edit-cli-teto').value) || 6;
-            const raio = parseInt(document.getElementById('edit-cli-raio').value, 10) || 300;
-            const lat = parseFloat(document.getElementById('edit-cli-lat').value) || -23.5888;
-            const lng = parseFloat(document.getElementById('edit-cli-lng').value) || -46.6819;
-            const ativo = document.getElementById('edit-cli-ativo').checked;
-
+            const id = document.getElementById('edit-cli-id').value, nome = document.getElementById('edit-cli-nome').value.trim();
             if (!nome) { alert("Informe o nome do cliente."); return; }
-            const codigo = nome.toUpperCase().replace(/[^A-Z0-9]/g, '_');
-
-            const payload = { codigo, nome, endereco: end, latitude: lat, longitude: lng, raio_metros: raio, teto_diario_horas: teto, pin_gestor: '2026', ativo };
+            const payload = {
+                codigo: nome.toUpperCase().replace(/[^A-Z0-9]/g, '_'), nome,
+                endereco: document.getElementById('edit-cli-end').value.trim(),
+                contato_nome: document.getElementById('edit-cli-contato-nome').value.trim(),
+                contato_telefone: document.getElementById('edit-cli-contato-tel').value.trim(),
+                contato_email: document.getElementById('edit-cli-contato-email').value.trim(),
+                quadro_contratado_qtd: parseInt(document.getElementById('edit-cli-quadro-qtd').value, 10) || 2,
+                quadro_cargos: document.getElementById('edit-cli-quadro-cargos').value.trim(),
+                latitude: parseFloat(document.getElementById('edit-cli-lat').value) || -23.5888,
+                longitude: parseFloat(document.getElementById('edit-cli-lng').value) || -46.6819,
+                raio_metros: parseInt(document.getElementById('edit-cli-raio').value, 10) || 300,
+                teto_diario_horas: parseFloat(document.getElementById('edit-cli-teto').value) || 6,
+                pin_gestor: '2026', ativo: document.getElementById('edit-cli-ativo').checked
+            };
             if (id) await sb.from('clientes').update(payload).eq('id', id);
             else await sb.from('clientes').insert([payload]);
-
-            limparFormContratoGestao();
-            await carregarDadosAdmin();
+            limparFormContratoGestao(); await carregarDadosAdmin();
             alert(`Contrato "${nome}" salvo com sucesso!`);
         }
 
         // =========================================================================
-        // CENTRAL DE COMUNICAÇÃO (SUPERVISÃO <-> OPERADORES | CLIENTE)
+        // 11. CENTRAL DE COMUNICAÇÃO E REALTIME
         // =========================================================================
         function selecionarCanalChatAdmin(canal) {
-            canalChatAdmin = canal;
-            mensagensNaoLidasAdmin[canal] = 0;
-            atualizarBadgesNaoLidasAdmin();
-
+            canalChatAdmin = canal; mensagensNaoLidasAdmin[canal] = 0; atualizarBadgesNaoLidasAdmin();
             ['SUPERVISAO', 'CLIENTE'].forEach(c => {
                 document.getElementById(`btn-adm-canal-${c}`).className = (c === canal)
                     ? "py-2.5 px-2 rounded-xl text-xs font-extrabold bg-white text-slate-900 shadow-sm flex items-center justify-center"
                     : "py-2.5 px-2 rounded-xl text-xs font-extrabold text-slate-600 flex items-center justify-center";
             });
-            document.getElementById('adm-chat-desc').textContent = canal === 'SUPERVISAO'
-                ? 'Linha direta entre Supervisão e Operadores do posto'
-                : 'Canal oficial com a Administração do Condomínio (Joelma)';
-            atualizarBadgesNaoLidasAdmin();
-            carregarChatAdmin();
+            document.getElementById('adm-chat-desc').textContent = canal === 'SUPERVISAO' ? 'Linha direta entre Supervisão e Operadores do posto' : 'Canal oficial com a Administração do Condomínio';
+            atualizarBadgesNaoLidasAdmin(); carregarChatAdmin();
         }
 
         async function carregarChatAdmin() {
-            const { data } = await sb.from('mensagens_chat')
-                .select('*')
-                .eq('cliente', clienteAtivo)
-                .eq('canal', canalChatAdmin)
-                .order('criado_em', { ascending: true })
-                .limit(60);
-
+            const { data } = await sb.from('mensagens_chat').select('*').eq('cliente', clienteAtivo).eq('canal', canalChatAdmin).order('criado_em', { ascending: true }).limit(60);
             const box = document.getElementById('admin-chat-messages');
-            if (!data || data.length === 0) {
-                box.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">Nenhuma mensagem neste canal.</p>`;
-                return;
-            }
+            if (!data || data.length === 0) { box.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">Nenhuma mensagem neste canal.</p>`; return; }
             box.innerHTML = data.map(m => {
                 const souSupervisao = m.autor_perfil === 'SUPERVISOR' || m.autor_perfil === 'ADMIN';
                 const dh = new Date(m.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
                 const badgeUrg = m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded mr-1">Prioridade</span>` : '';
-                return `
-                <div class="flex flex-col ${souSupervisao ? 'items-end' : 'items-start'}">
-                    <div class="max-w-[82%] rounded-2xl px-3.5 py-2.5 ${souSupervisao ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm">
-                        <div class="flex items-center gap-1.5 mb-0.5">
-                            ${badgeUrg}
-                            <span class="text-[10px] font-extrabold ${souSupervisao ? 'text-orange-400' : 'text-emerald-600'}">${m.autor_nome}</span>
-                            <span class="text-[9px] opacity-60">• ${dh}</span>
-                        </div>
-                        <p class="text-xs leading-relaxed">${m.mensagem}</p>
-                    </div>
-                </div>`;
+                return `<div class="flex flex-col ${souSupervisao ? 'items-end' : 'items-start'}"><div class="max-w-[82%] rounded-2xl px-3.5 py-2.5 ${souSupervisao ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm"><div class="flex items-center gap-1.5 mb-0.5">${badgeUrg}<span class="text-[10px] font-extrabold ${souSupervisao ? 'text-orange-400' : 'text-emerald-600'}">${m.autor_nome}</span><span class="text-[9px] opacity-60">• ${dh}</span></div><p class="text-xs leading-relaxed">${m.mensagem}</p></div></div>`;
             }).join('');
             box.scrollTop = box.scrollHeight;
         }
 
         async function enviarMensagemAdmin() {
-            const input = document.getElementById('admin-chat-input');
-            const texto = input.value.trim();
+            const input = document.getElementById('admin-chat-input'), texto = input.value.trim();
             if (!texto) return;
             const urgente = document.getElementById('admin-chat-urgente').checked;
-            input.value = '';
-            document.getElementById('admin-chat-urgente').checked = false;
-
-            await sb.from('mensagens_chat').insert([{
-                cliente: clienteAtivo,
-                canal: canalChatAdmin,
-                autor_nome: adminLogado?.nome || 'Supervisão',
-                autor_perfil: adminLogado?.perfil || 'SUPERVISOR',
-                mensagem: texto,
-                urgente: urgente
-            }]);
+            input.value = ''; document.getElementById('admin-chat-urgente').checked = false;
+            await sb.from('mensagens_chat').insert([{ cliente: clienteAtivo, canal: canalChatAdmin, autor_nome: adminLogado?.nome || 'Supervisão', autor_perfil: adminLogado?.perfil || 'SUPERVISOR', mensagem: texto, urgente }]);
             carregarChatAdmin();
         }
 
@@ -1706,23 +2042,26 @@
         function iniciarRealtimeAdmin() {
             if (canalRealtimeAdminIniciado) return;
             canalRealtimeAdminIniciado = true;
-
-            sb.channel('novaera-admin-v92')
+            sb.channel('novaera-admin-v931')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarDadosAdmin())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarDadosAdmin())
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pedidos_suprimentos' }, payload => {
+                    const p = payload.new;
+                    if (p.cliente !== clienteAtivo) return;
+                    tocarChimeNotificacao();
+                    dispararNotificacaoAdmin(p.solicitante, 'SUPRIMENTOS', `Novo pedido: ${p.item} (${p.quantidade_calculada})`, p.urgente, 'suprimentos');
+                    carregarDadosAdmin();
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pedidos_suprimentos' }, () => carregarDadosAdmin())
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
                     const msg = payload.new;
-                    if (msg.cliente !== clienteAtivo) return;
-                    if (!['SUPERVISAO', 'CLIENTE'].includes(msg.canal)) return;
-
-                    const foiEnviadoPorMim = msg.autor_nome === (adminLogado?.nome || '');
-                    if (!foiEnviadoPorMim) {
+                    if (msg.cliente !== clienteAtivo || !['SUPERVISAO', 'CLIENTE'].includes(msg.canal)) return;
+                    if (msg.autor_nome !== (adminLogado?.nome || '')) {
                         tocarChimeNotificacao();
-                        const estaVendoEsteCanal = (abaAdminAtiva === 'chat' && canalChatAdmin === msg.canal);
-                        if (!estaVendoEsteCanal) {
+                        if (!(abaAdminAtiva === 'chat' && canalChatAdmin === msg.canal)) {
                             mensagensNaoLidasAdmin[msg.canal] = (mensagensNaoLidasAdmin[msg.canal] || 0) + 1;
                             atualizarBadgesNaoLidasAdmin();
-                            dispararNotificacaoAdmin(msg.autor_nome, msg.canal, msg.mensagem, msg.urgente);
+                            dispararNotificacaoAdmin(msg.autor_nome, msg.canal, msg.mensagem, msg.urgente, 'chat');
                         }
                     }
                     carregarChatAdmin();
