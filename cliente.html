@@ -168,7 +168,7 @@
                 <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
                     <div>
                         <h3 class="text-xs font-extrabold">Canal Direto • Equipe Local & Supervisão</h3>
-                        <p class="text-[10px] text-slate-400">Comunicação instantânea com os operadores e o supervisor Ramos</p>
+                        <p class="text-[10px] text-slate-400">Comunicação instantânea com os operadores e a supervisão</p>
                     </div>
                     <button onclick="solicitarPermissaoNotificacoes()" class="text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-orange-400 px-2.5 py-1.5 rounded-xl border border-slate-700 flex-shrink-0">
                         🔔 Ativar Som
@@ -224,14 +224,17 @@
 
     <script>
         // =========================================================================
-        // CONFIGURAÇÃO TRAVADA PARA O CONDOMÍNIO MISS SILVIA (v9.3.1)
+        // PORTAL DO CLIENTE • CONDOMÍNIO MISS SILVIA (v9.4 - LOTES & BLINDAGEM)
         // =========================================================================
         const CLIENTE_FIXO = "Miss Silvia";
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        const STATUS_OCULTOS_CLIENTE = ['NAO_REALIZADA', 'IMPEDIMENTO_EPI'];
+
         let tetoHorasCliente = 6;
+        let quadroContratoCliente = 2;
         let cronogramaDB = [];
         let execucoesDB = [];
         let especiesDB = [];
@@ -277,6 +280,43 @@
         }
         function fecharZoomFoto() { document.getElementById('lightbox-modal').classList.add('hidden'); }
 
+        function ehDiaUtil(d) { return d.getDay() !== 0 && d.getDay() !== 6 && !feriadosDB.includes(dataISO(d)); }
+        function isFreqFlutuante(freqStr) {
+            const f = (freqStr || '').toLowerCase();
+            return f.includes('mês') || f.includes('mensal') || f.includes('quinzenal') || f.includes('quadrimestral');
+        }
+        function isFreqDiaria(freqStr) {
+            const f = (freqStr || '').toLowerCase();
+            return f.includes('diári') || f.includes('diari') || f.includes('seg a sex') || f.includes('5x');
+        }
+        function diaCorrespondeFrequencia(freqStr, diaSemana) {
+            const f = (freqStr || '').toLowerCase();
+            if (isFreqDiaria(f)) return diaSemana >= 1 && diaSemana <= 5;
+            if (f.includes('3x/semana')) return diaSemana === 1 || diaSemana === 3 || diaSemana === 5;
+            if (f.includes('2x/semana')) return diaSemana === 2 || diaSemana === 4;
+            if (f.includes('seg') && diaSemana === 1) return true;
+            if (f.includes('ter') && diaSemana === 2) return true;
+            if (f.includes('qua') && diaSemana === 3) return true;
+            if (f.includes('qui') && diaSemana === 4) return true;
+            if (f.includes('sex') && diaSemana === 5) return true;
+            return false;
+        }
+        function execCorrespondeTarefa(e, t) {
+            if (e.tarefa_id && t.id) return Number(e.tarefa_id) === Number(t.id);
+            const espE = (e.especie || '').trim().toLowerCase();
+            const espT = (t.especie || '').trim().toLowerCase();
+            return e.setor === t.setor && e.atividade === t.atividade && (!espE || !espT || espE === espT);
+        }
+        function agruparExecucoesEmLotes(lista) {
+            const mapa = new Map();
+            lista.forEach(e => {
+                const k = e.grupo_execucao_id || `SINGLE_${e.id}`;
+                if (!mapa.has(k)) mapa.set(k, { chaveLote: k, principal: e, registros: [] });
+                mapa.get(k).registros.push(e);
+            });
+            return Array.from(mapa.values());
+        }
+
         // =========================================================================
         // MOTOR DE SOM (WEB AUDIO API), POP-UP E MARQUINHAS DE NÃO LIDAS
         // =========================================================================
@@ -284,29 +324,27 @@
 
         function desbloquearAudioNotificacao() {
             try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AC();
                 if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
             } catch (e) {}
         }
 
         function tocarChimeNotificacao() {
             try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AC();
                 if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
-                const osc = audioCtxGlobal.createOscillator();
-                const gain = audioCtxGlobal.createGain();
+                const osc = audioCtxGlobal.createOscillator(), gain = audioCtxGlobal.createGain();
                 osc.connect(gain); gain.connect(audioCtxGlobal.destination);
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(587.33, audioCtxGlobal.currentTime);
                 osc.frequency.setValueAtTime(880.00, audioCtxGlobal.currentTime + 0.12);
                 gain.gain.setValueAtTime(0.22, audioCtxGlobal.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtxGlobal.currentTime + 0.55);
-                osc.start(audioCtxGlobal.currentTime);
-                osc.stop(audioCtxGlobal.currentTime + 0.55);
+                osc.start(audioCtxGlobal.currentTime); osc.stop(audioCtxGlobal.currentTime + 0.55);
             } catch (e) {}
         }
 
@@ -314,10 +352,7 @@
             desbloquearAudioNotificacao();
             if ("Notification" in window) {
                 Notification.requestPermission().then(perm => {
-                    if (perm === 'granted') {
-                        tocarChimeNotificacao();
-                        alert("🔔 Alertas sonoros e notificações ativados!");
-                    }
+                    if (perm === 'granted') { tocarChimeNotificacao(); alert("🔔 Alertas sonoros e notificações ativados!"); }
                 });
             }
         }
@@ -338,26 +373,11 @@
                 toast.className = 'fixed top-3 left-3 right-3 max-w-md mx-auto bg-slate-900/95 border border-emerald-500/60 text-white p-3 rounded-2xl shadow-2xl z-50 flex items-center justify-between gap-2.5 transition-all duration-300 transform -translate-y-24 opacity-0 cursor-pointer';
                 document.body.appendChild(toast);
             }
-            toast.onclick = () => {
-                toast.classList.add('-translate-y-24', 'opacity-0');
-                trocarAbaCliente('solicitacoes');
-            };
-            toast.innerHTML = `
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0"><i data-lucide="bell-ring" class="w-4 h-4"></i></div>
-                    <div class="truncate">
-                        <p class="text-[11px] font-extrabold text-emerald-400 truncate">${titulo}</p>
-                        <p class="text-xs text-slate-100 truncate">${texto}</p>
-                    </div>
-                </div>
-                <span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Abrir</span>`;
+            toast.onclick = () => { toast.classList.add('-translate-y-24', 'opacity-0'); trocarAbaCliente('solicitacoes'); };
+            toast.innerHTML = `<div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0"><i data-lucide="bell-ring" class="w-4 h-4"></i></div><div class="truncate"><p class="text-[11px] font-extrabold text-emerald-400 truncate">${titulo}</p><p class="text-xs text-slate-100 truncate">${texto}</p></div></div><span class="text-[10px] font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Abrir</span>`;
             initIcons();
-            toast.classList.remove('-translate-y-24', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                toast.classList.add('-translate-y-24', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 5000);
+            toast.classList.remove('-translate-y-24', 'opacity-0'); toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => { toast.classList.add('-translate-y-24', 'opacity-0'); toast.classList.remove('translate-y-0', 'opacity-100'); }, 5000);
         }
 
         function atualizarBadgeCliente() {
@@ -375,7 +395,7 @@
             const inicioMes = dataISO(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
 
             const [resCli, resCrono, resExec, resFer, resPres, resEsp] = await Promise.all([
-                sb.from('clientes').select('teto_diario_horas').eq('nome', CLIENTE_FIXO).limit(1),
+                sb.from('clientes').select('teto_diario_horas, quadro_contratado_qtd').eq('nome', CLIENTE_FIXO).limit(1),
                 sb.from('cronograma_mestre').select('*').eq('cliente', CLIENTE_FIXO).eq('ativo', true),
                 sb.from('execucoes_auditoria').select('*').eq('cliente', CLIENTE_FIXO).gte('data_referencia', inicioMes).order('dh_envio_servidor', { ascending: false }),
                 sb.from('feriados_config').select('*'),
@@ -383,14 +403,17 @@
                 sb.from('cliente_especies').select('*').eq('cliente', CLIENTE_FIXO).eq('ativo', true)
             ]);
 
-            if (resCli.data?.[0]) tetoHorasCliente = Number(resCli.data[0].teto_diario_horas) || 6;
+            if (resCli.data?.[0]) {
+                tetoHorasCliente = Number(resCli.data[0].teto_diario_horas) || 6;
+                quadroContratoCliente = Number(resCli.data[0].quadro_contratado_qtd) || 2;
+            }
             cronogramaDB = resCrono.data || [];
             execucoesDB = resExec.data || [];
             especiesDB = resEsp.data || [];
             feriadosDB = (resFer.data || []).map(f => f.data_feriado);
 
             if (calAnoCli === hoje.getFullYear() && calMesCli === hoje.getMonth()) {
-                execucoesCalendarioCliCache = execucoesDB;
+                execucoesCalendarioCliCache = execucoesDB.filter(e => !STATUS_OCULTOS_CLIENTE.includes(e.status_execucao));
             }
 
             atualizarStatusPresenca(resPres.data?.[0] || null);
@@ -444,73 +467,72 @@
             }
         }
 
-        function diaCorrespondeFrequencia(freqStr, diaSemana) {
-            const f = (freqStr || '').toLowerCase();
-            if (f.includes('diári') || f.includes('diari') || f.includes('seg a sex') || f.includes('5x')) return diaSemana >= 1 && diaSemana <= 5;
-            if (f.includes('3x/semana')) return diaSemana === 1 || diaSemana === 3 || diaSemana === 5;
-            if (f.includes('2x/semana')) return diaSemana === 2 || diaSemana === 4;
-            if (f.includes('seg') && diaSemana === 1) return true;
-            if (f.includes('ter') && diaSemana === 2) return true;
-            if (f.includes('qua') && diaSemana === 3) return true;
-            if (f.includes('qui') && diaSemana === 4) return true;
-            if (f.includes('sex') && diaSemana === 5) return true;
-            return false;
-        }
-
         function gerarAgendaCliente(anoRef, mesRef, execsBase) {
             const agenda = {};
-            const hojeStr = dataISO(new Date());
+            const hoje = new Date(), hojeStr = dataISO(hoje);
             const totalDias = new Date(anoRef, mesRef + 1, 0).getDate();
             const diasUteis = [];
-            const LIMITE_DIARIO = tetoHorasCliente * 60;
+            const LIMITE_DIARIO = tetoHorasCliente * quadroContratoCliente * 60;
 
             for (let dia = 1; dia <= totalDias; dia++) {
                 const d = new Date(anoRef, mesRef, dia);
                 const dStr = dataISO(d);
-                const util = d.getDay() !== 0 && d.getDay() !== 6 && !feriadosDB.includes(dStr);
+                const util = ehDiaUtil(d);
                 agenda[dStr] = { data: d, util: util, tarefas: [], minutos: 0 };
                 if (util) diasUteis.push(dStr);
             }
 
+            const addTarefaSemDuplicar = (dStr, item) => {
+                if (!agenda[dStr]) return;
+                if (item.id && agenda[dStr].tarefas.some(x => x.id === item.id)) return;
+                agenda[dStr].tarefas.push(item);
+                agenda[dStr].minutos += (Number(item.duracao_minutos) || 30);
+            };
+
+            // 1. Tarefas extras / únicas ainda pendentes
             cronogramaDB.forEach(t => {
                 if (t.data_alvo && t.data_alvo < hojeStr) {
-                    const foiResolvida = execucoesDB.some(e => ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade)));
-                    if (!foiResolvida && agenda[hojeStr]) {
-                        agenda[hojeStr].tarefas.push({ ...t, is_transbordo: true });
-                        agenda[hojeStr].minutos += (Number(t.duracao_minutos) || 30);
-                    }
+                    const foiResolvida = execucoesDB.some(e => ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
+                    if (!foiResolvida) addTarefaSemDuplicar(hojeStr, { ...t, is_transbordo: true });
                 }
             });
 
+            // 2. Fixas e com data_alvo
             cronogramaDB.forEach(t => {
-                const f = (t.frequencia || '').toLowerCase();
-                const isFlutuante = f.includes('mês') || f.includes('mensal') || f.includes('quinzenal') || f.includes('quadrimestral');
-                const minT = Number(t.duracao_minutos) || 30;
+                const flutuante = isFreqFlutuante(t.frequencia);
                 if (t.data_alvo && agenda[t.data_alvo]) {
-                    agenda[t.data_alvo].tarefas.push({ ...t });
-                    agenda[t.data_alvo].minutos += minT;
-                } else if (!t.data_alvo && !isFlutuante) {
+                    addTarefaSemDuplicar(t.data_alvo, { ...t });
+                } else if (!t.data_alvo && !flutuante) {
                     diasUteis.forEach(dStr => {
-                        if (diaCorrespondeFrequencia(f, agenda[dStr].data.getDay())) {
-                            agenda[dStr].tarefas.push({ ...t });
-                            agenda[dStr].minutos += minT;
-                        }
+                        if (diaCorrespondeFrequencia(t.frequencia, agenda[dStr].data.getDay())) addTarefaSemDuplicar(dStr, { ...t });
                     });
                 }
             });
 
+            // 3. Vitais periódicas transbordadas para hoje (exibidas de forma natural na grade de hoje)
+            if (agenda[hojeStr]) {
+                cronogramaDB.forEach(t => {
+                    if (!t.vital || t.data_alvo || isFreqFlutuante(t.frequencia) || isFreqDiaria(t.frequencia)) return;
+                    if (agenda[hojeStr].tarefas.some(x => x.id === t.id)) return;
+                    for (let off = 1; off <= 7; off++) {
+                        const dAnt = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - off);
+                        if (!ehDiaUtil(dAnt) || !diaCorrespondeFrequencia(t.frequencia, dAnt.getDay())) continue;
+                        const dAntISO = dataISO(dAnt);
+                        const atendida = execucoesDB.some(e => e.data_referencia >= dAntISO && e.data_referencia <= hojeStr && ['CONCLUIDO', 'DISPENSADO', 'IMPEDIMENTO_EPI'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
+                        if (!atendida) addTarefaSemDuplicar(hojeStr, { ...t });
+                        break;
+                    }
+                });
+            }
+
+            // 4. Flutuantes (1x/mês, 2x/mês, Quinzenal)
             const diasFuturos = diasUteis.filter(d => d >= hojeStr);
             const baseFlutuantes = diasFuturos.length > 0 ? diasFuturos : diasUteis;
 
             cronogramaDB.forEach(t => {
-                if (t.data_alvo) return;
-                const f = (t.frequencia || '').toLowerCase();
-                const isFlutuante = f.includes('mês') || f.includes('mensal') || f.includes('quinzenal') || f.includes('quadrimestral');
-                if (!isFlutuante) return;
-
+                if (t.data_alvo || !isFreqFlutuante(t.frequencia)) return;
                 const minTotal = Number(t.duracao_minutos) || 60;
-                const jaFeito = execsBase.filter(e => e.status_execucao === 'CONCLUIDO' && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade.startsWith(t.atividade))))
-                    .reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
+                const jaFeito = execsBase.filter(e => e.status_execucao === 'CONCLUIDO' && execCorrespondeTarefa(e, t)).reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
                 let rest = Math.max(0, minTotal - jaFeito);
                 if (rest === 0) return;
 
@@ -518,37 +540,32 @@
                 let guard = 0;
                 while (rest > 0 && baseFlutuantes.length > 0 && guard < 45) {
                     guard++;
-                    const candidatos = baseFlutuantes.filter(dStr => (LIMITE_DIARIO - agenda[dStr].minutos) >= 15);
+                    const candidatos = baseFlutuantes.filter(dStr => (LIMITE_DIARIO - agenda[dStr].minutos) >= 15 && !agenda[dStr].tarefas.some(x => x.id === t.id));
                     if (candidatos.length === 0) break;
                     let melhor = candidatos[0];
                     candidatos.forEach(d => { if (agenda[d].minutos < agenda[melhor].minutos) melhor = d; });
                     const alocar = Math.min(rest, fatiaIdeal, LIMITE_DIARIO - agenda[melhor].minutos);
-                    agenda[melhor].tarefas.push({ ...t, duracao_minutos: alocar });
-                    agenda[melhor].minutos += alocar;
+                    addTarefaSemDuplicar(melhor, { ...t, duracao_minutos: alocar });
                     rest -= alocar;
                 }
             });
 
+            // 5. Atividades abertas hoje sempre visíveis
             if (agenda[hojeStr]) {
-                const abertas = execucoesDB.filter(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
-                abertas.forEach(execAberta => {
-                    const jaExiste = agenda[hojeStr].tarefas.some(t => t.id === execAberta.tarefa_id || (t.setor === execAberta.setor && t.atividade === execAberta.atividade));
-                    if (!jaExiste) {
-                        agenda[hojeStr].tarefas.unshift({ id: execAberta.tarefa_id, setor: execAberta.setor, atividade: execAberta.atividade, especie: 'Em Curso', prioridade: 0 });
-                    }
+                execucoesDB.filter(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao)).forEach(execAberta => {
+                    const jaExiste = agenda[hojeStr].tarefas.some(t => execCorrespondeTarefa(execAberta, t));
+                    if (!jaExiste) addTarefaSemDuplicar(hojeStr, { id: execAberta.tarefa_id, setor: execAberta.setor, atividade: execAberta.atividade, especie: execAberta.especie || 'Geral', frequencia: 'Em Curso', prioridade: 0 });
                 });
             }
             return agenda;
         }
 
         // =========================================================================
-        // FILTROS DE HISTÓRICO NO FEED DE FOTOS (BLINDADO CONTRA IMPEDIMENTO_EPI)
+        // FILTROS DE HISTÓRICO (BLINDADO CONTRA NAO_REALIZADA E IMPEDIMENTO_EPI)
         // =========================================================================
         function setFiltroPeriodoCliente(periodo) {
-            filtroPeriodoCliente = periodo;
-            dataEspecificaCliente = '';
+            filtroPeriodoCliente = periodo; dataEspecificaCliente = '';
             document.getElementById('input-data-cliente').value = '';
-
             ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
                 document.getElementById(`btn-cli-hist-${p}`).className = (p === periodo)
                     ? "py-1.5 rounded-lg text-[10px] font-extrabold bg-emerald-600 text-white shadow-sm"
@@ -559,84 +576,103 @@
 
         async function filtrarDataEspecificaCliente(dataVal) {
             if (!dataVal) { setFiltroPeriodoCliente('7DIAS'); return; }
-            filtroPeriodoCliente = 'DATA_ESPECIFICA';
-            dataEspecificaCliente = dataVal;
-
-            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
-                document.getElementById(`btn-cli-hist-${p}`).className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
-            });
+            filtroPeriodoCliente = 'DATA_ESPECIFICA'; dataEspecificaCliente = dataVal;
+            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => { document.getElementById(`btn-cli-hist-${p}`).className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white"; });
 
             const { data } = await sb.from('execucoes_auditoria')
                 .select('*').eq('cliente', CLIENTE_FIXO).eq('data_referencia', dataVal).order('dh_envio_servidor', { ascending: false });
 
-            execucoesDataEspecificaClienteDB = (data || []).filter(e => e.status_execucao !== 'IMPEDIMENTO_EPI');
+            execucoesDataEspecificaClienteDB = (data || []).filter(e => !STATUS_OCULTOS_CLIENTE.includes(e.status_execucao));
             renderizarFeedFotosCliente();
         }
 
         function obterExecucoesFiltradasCliente() {
             const hojeStr = dataISO();
-            const visiveisCliente = execucoesDB.filter(e => e.status_execucao !== 'IMPEDIMENTO_EPI');
+            const visiveisCliente = execucoesDB.filter(e => !STATUS_OCULTOS_CLIENTE.includes(e.status_execucao));
 
             if (filtroPeriodoCliente === 'DATA_ESPECIFICA' && dataEspecificaCliente) return execucoesDataEspecificaClienteDB;
             if (filtroPeriodoCliente === 'HOJE') return visiveisCliente.filter(e => e.data_referencia === hojeStr);
-            if (filtroPeriodoCliente === 'ONTEM') {
-                const ontem = new Date(); ontem.setDate(ontem.getDate() - 1);
-                return visiveisCliente.filter(e => e.data_referencia === dataISO(ontem));
-            }
-            if (filtroPeriodoCliente === '7DIAS') {
-                const sete = new Date(); sete.setDate(sete.getDate() - 7);
-                return visiveisCliente.filter(e => e.data_referencia >= dataISO(sete));
-            }
+            if (filtroPeriodoCliente === 'ONTEM') { const o = new Date(); o.setDate(o.getDate() - 1); return visiveisCliente.filter(e => e.data_referencia === dataISO(o)); }
+            if (filtroPeriodoCliente === '7DIAS') { const s = new Date(); s.setDate(s.getDate() - 7); return visiveisCliente.filter(e => e.data_referencia >= dataISO(s)); }
             return visiveisCliente;
         }
 
+        // =========================================================================
+        // PAINEL DE ATIVIDADES DE HOJE (AGRUPADO POR SETOR + ATIVIDADE)
+        // =========================================================================
         function renderizarEntregasCliente() {
             const hojeStr = dataISO();
             const tarefasHoje = agendaMesAtual[hojeStr]?.tarefas || [];
-            let resolvidasHoje = 0, totalEfetivoHoje = 0;
             const listaHojeEl = document.getElementById('lista-programadas-hoje');
 
-            if (tarefasHoje.length === 0) {
+            // Agrupa tarefas do dia por Setor + Atividade (exibe todas as espécies juntas)
+            const mapaBlocos = new Map();
+            tarefasHoje.forEach(t => {
+                const k = `${t.setor}||${t.atividade}`;
+                if (!mapaBlocos.has(k)) mapaBlocos.set(k, { setor: t.setor, atividade: t.atividade, itens: [] });
+                mapaBlocos.get(k).itens.push(t);
+            });
+            const blocosHoje = Array.from(mapaBlocos.values());
+
+            let resolvidosHoje = 0, totalEfetivoHoje = 0;
+
+            if (blocosHoje.length === 0) {
                 listaHojeEl.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Nenhuma rotina fixa prevista para a data de hoje.</p>`;
             } else {
-                listaHojeEl.innerHTML = tarefasHoje.map(t => {
-                    const regAtivo = execucoesDB.find(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao) && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade)));
-                    const regFinalizado = execucoesDB.find(e => ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && e.data_referencia === hojeStr && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade)));
-                    const regReprogramado = execucoesDB.find(e => e.status_execucao === 'IMPEDIMENTO_EPI' && e.data_referencia === hojeStr && (e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade)));
+                listaHojeEl.innerHTML = blocosHoje.map(bloco => {
+                    const totalItens = bloco.itens.length;
+                    let qtdConcluidos = 0, qtdDispensados = 0, qtdReprogramados = 0, regEmCurso = null, regPausado = null;
 
-                    if (!regReprogramado) totalEfetivoHoje++;
-                    if (regFinalizado) resolvidasHoje++;
+                    bloco.itens.forEach(t => {
+                        const rFin = execucoesDB.find(e => ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && e.data_referencia === hojeStr && execCorrespondeTarefa(e, t));
+                        const rRep = execucoesDB.find(e => e.status_execucao === 'IMPEDIMENTO_EPI' && e.data_referencia === hojeStr && execCorrespondeTarefa(e, t));
+                        const rAtv = execucoesDB.find(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
+
+                        if (rFin) { if (rFin.status_execucao === 'DISPENSADO') qtdDispensados++; else qtdConcluidos++; }
+                        else if (rRep) qtdReprogramados++;
+                        else if (rAtv) { if (rAtv.status_execucao === 'EM_ANDAMENTO') regEmCurso = rAtv; else regPausado = rAtv; }
+                    });
+
+                    const qtdResolvidosBloco = qtdConcluidos + qtdDispensados;
+                    const todoReprogramado = qtdReprogramados === totalItens;
+                    const todoResolvido = qtdResolvidosBloco === totalItens;
+
+                    if (!todoReprogramado) totalEfetivoHoje++;
+                    if (todoResolvido) resolvidosHoje++;
 
                     let corBolinha = 'bg-slate-300', bgLinha = '', infoExtra = '';
                     let badgeStatus = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Programado</span>`;
 
-                    if (regReprogramado) {
-                        corBolinha = 'bg-indigo-400';
-                        bgLinha = 'bg-slate-50/70';
+                    if (todoReprogramado) {
+                        corBolinha = 'bg-indigo-400'; bgLinha = 'bg-slate-50/70';
                         badgeStatus = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">🔄 Reprogramado na Grade</span>`;
-                    } else if (regFinalizado && regFinalizado.status_execucao === 'DISPENSADO') {
+                    } else if (todoResolvido && qtdDispensados === totalItens) {
                         corBolinha = 'bg-sky-500'; bgLinha = 'bg-sky-50/60';
-                        badgeStatus = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">☑️ Vistoriado • Não Necessário</span>`;
-                    } else if (regFinalizado) {
+                        badgeStatus = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800">☑️ Vistoriado</span>`;
+                    } else if (todoResolvido) {
                         corBolinha = 'bg-emerald-500'; bgLinha = 'bg-emerald-50/50';
-                        badgeStatus = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">${regFinalizado.entrega_parcial ? 'Parcial Concluída' : 'Concluído'}</span>`;
-                    } else if (regAtivo && regAtivo.status_execucao === 'PAUSADO') {
-                        corBolinha = 'bg-amber-500'; bgLinha = 'bg-amber-50/50';
-                        badgeStatus = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">⏸️ Pausado</span>`;
-                        infoExtra = `<p class="text-[10px] font-semibold text-amber-700 mt-0.5">Motivo: ${regAtivo.motivo_pausa || 'Intervalo'}</p>`;
-                    } else if (regAtivo && regAtivo.status_execucao === 'EM_ANDAMENTO') {
-                        const hIni = new Date(regAtivo.dh_inicio_tarefa).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                        badgeStatus = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Concluído</span>`;
+                    } else if (regEmCurso) {
+                        const hIni = new Date(regEmCurso.dh_inicio_tarefa).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                         corBolinha = 'bg-orange-500 animate-ping'; bgLinha = 'bg-orange-50/60';
                         badgeStatus = `<span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-orange-500 text-white animate-pulse">🟠 Em Execução (${hIni})</span>`;
+                    } else if (regPausado) {
+                        corBolinha = 'bg-amber-500'; bgLinha = 'bg-amber-50/50';
+                        badgeStatus = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">⏸️ Pausado</span>`;
+                        infoExtra = `<p class="text-[10px] font-semibold text-amber-700 mt-0.5">Motivo: ${regPausado.motivo_pausa || 'Intervalo'}</p>`;
+                    } else if (qtdResolvidosBloco > 0) {
+                        corBolinha = 'bg-emerald-400'; bgLinha = 'bg-emerald-50/30';
+                        badgeStatus = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Parcial (${qtdResolvidosBloco}/${totalItens})</span>`;
                     }
 
+                    const especiesTxt = [...new Set(bloco.itens.map(i => i.especie || 'Geral'))].join(', ');
                     return `
                     <div class="flex items-center justify-between p-2.5 rounded-xl ${bgLinha}">
                         <div class="flex items-center gap-2.5 pr-2">
                             <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 ${corBolinha}"></span>
                             <div>
-                                <p class="text-xs font-bold ${regFinalizado ? 'text-slate-500 line-through' : 'text-slate-900'}">${t.atividade}</p>
-                                <p class="text-[10px] text-slate-500">${t.setor} • ${t.especie || 'Geral'}</p>
+                                <p class="text-xs font-bold ${todoResolvido ? 'text-slate-500 line-through' : 'text-slate-900'}">${bloco.atividade}</p>
+                                <p class="text-[10px] text-slate-500">${bloco.setor} • 🌿 ${especiesTxt}</p>
                                 ${infoExtra}
                             </div>
                         </div>
@@ -645,26 +681,32 @@
                 }).join('');
             }
 
-            const pct = totalEfetivoHoje > 0 ? Math.round((resolvidasHoje / totalEfetivoHoje) * 100) : 0;
+            const pct = totalEfetivoHoje > 0 ? Math.round((resolvidosHoje / totalEfetivoHoje) * 100) : 0;
             document.getElementById('pct-numero').textContent = `${pct}%`;
-            document.getElementById('contagem-tarefas').textContent = `${resolvidasHoje} de ${totalEfetivoHoje} hoje`;
+            document.getElementById('contagem-tarefas').textContent = `${resolvidosHoje} de ${totalEfetivoHoje} hoje`;
             document.getElementById('barra-progresso-cliente').style.width = `${pct}%`;
 
             renderizarFeedFotosCliente();
         }
 
+        // =========================================================================
+        // FEED DE FOTOS CONSOLIDADO POR LOTE (grupo_execucao_id)
+        // =========================================================================
         function renderizarFeedFotosCliente() {
             fotosZoomClienteCache = [];
             const listaFiltrada = obterExecucoesFiltradasCliente();
-            document.getElementById('cliente-hist-count').textContent = `${listaFiltrada.length} registro(s)`;
+            const lotes = agruparExecucoesEmLotes(listaFiltrada);
+            document.getElementById('cliente-hist-count').textContent = `${lotes.length} registro(s)`;
 
             const feedEl = document.getElementById('feed-auditoria-fotos');
-            if (listaFiltrada.length === 0) {
+            if (lotes.length === 0) {
                 feedEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-slate-200 text-xs text-slate-400">Nenhuma atividade ou foto encontrada para o período selecionado. Altere o filtro acima para consultar outros dias.</div>`;
                 return;
             }
 
-            feedEl.innerHTML = listaFiltrada.map(e => {
+            feedEl.innerHTML = lotes.map(lote => {
+                const e = lote.principal;
+                const especiesTxt = [...new Set(lote.registros.map(r => r.especie).filter(Boolean))].join(', ');
                 const isDispensado = e.status_execucao === 'DISPENSADO';
                 const emCurso = !['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao);
                 const dataFmt = new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -690,17 +732,11 @@
                     const zD0 = fotosDepoisArr[0] ? registrarFotoZoomCliente(fotosDepoisArr[0], `DEPOIS • ${e.setor}`) : -1;
 
                     const thumbsAntesExtras = fotosAntesArr.length > 1
-                        ? `<div class="flex gap-1.5 mt-1.5">${fotosAntesArr.map((u, idx) => {
-                            const zi = registrarFotoZoomCliente(u, `REGISTRO INICIAL / ANDAMENTO (${idx + 1}) • ${e.setor}`);
-                            return `<img onclick="abrirZoomFotoByIdx(${zi})" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-slate-300 cursor-pointer">`;
-                        }).join('')}</div>`
+                        ? `<div class="flex gap-1.5 mt-1.5">${fotosAntesArr.map((u, idx) => `<img onclick="abrirZoomFotoByIdx(${registrarFotoZoomCliente(u, `REGISTRO INICIAL / ANDAMENTO (${idx + 1}) • ${e.setor}`)})" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-slate-300 cursor-pointer">`).join('')}</div>`
                         : '';
 
                     const thumbsDepoisExtras = fotosDepoisArr.length > 1
-                        ? `<div class="flex gap-1.5 mt-1.5">${fotosDepoisArr.map((u, idx) => {
-                            const zi = registrarFotoZoomCliente(u, `DEPOIS (Foto ${idx + 1}) • ${e.setor}`);
-                            return `<img onclick="abrirZoomFotoByIdx(${zi})" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-emerald-400 cursor-pointer">`;
-                        }).join('')}</div>`
+                        ? `<div class="flex gap-1.5 mt-1.5">${fotosDepoisArr.map((u, idx) => `<img onclick="abrirZoomFotoByIdx(${registrarFotoZoomCliente(u, `DEPOIS (Foto ${idx + 1}) • ${e.setor}`)})" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-emerald-400 cursor-pointer">`).join('')}</div>`
                         : '';
 
                     blocoFotos = `<div class="grid grid-cols-2 gap-2.5">
@@ -725,10 +761,11 @@
 
                 return `
                 <div class="bg-white rounded-2xl p-4 border ${emCurso ? 'border-2 border-orange-300' : (isDispensado ? 'border-sky-200' : 'border-slate-200')} shadow-sm">
-                    <div class="flex justify-between items-start mb-2 gap-2">
+                    <div class="flex justify-between items-start mb-1.5 gap-2">
                         <div>
                             <span class="text-[10px] font-extrabold ${isDispensado ? 'bg-sky-100 text-sky-800' : 'bg-emerald-100 text-emerald-800'} px-2 py-0.5 rounded-md">${e.setor}</span>
                             <h4 class="text-sm font-extrabold text-slate-900 mt-1">${e.atividade}</h4>
+                            ${especiesTxt ? `<p class="text-[10px] font-bold text-emerald-800 mt-0.5">🌿 ${especiesTxt}</p>` : ''}
                         </div>
                         ${badgeTopo}
                     </div>
@@ -744,7 +781,7 @@
         }
 
         // =========================================================================
-        // CALENDÁRIO DO CLIENTE: HISTÓRICO REAL + JANELA FENOLÓGICA DE PODA
+        // CALENDÁRIO DO CLIENTE: LOTES REALIZADOS, PREVISTOS AGRUPADOS & PODA
         // =========================================================================
         function obterEspeciesEmJanelaPodaCli(mes1a12) {
             return especiesDB.filter(sp => sp.meses_poda_drastica && String(sp.meses_poda_drastica).split(',').map(m => parseInt(m.trim(), 10)).includes(mes1a12));
@@ -754,14 +791,13 @@
             calMesCli += delta;
             if (calMesCli < 0) { calMesCli = 11; calAnoCli--; } else if (calMesCli > 11) { calMesCli = 0; calAnoCli++; }
 
-            const inicioISO = dataISO(new Date(calAnoCli, calMesCli, 1));
-            const fimISO = dataISO(new Date(calAnoCli, calMesCli + 1, 0));
-
             const { data } = await sb.from('execucoes_auditoria')
-                .select('*').eq('cliente', CLIENTE_FIXO).gte('data_referencia', inicioISO).lte('data_referencia', fimISO)
+                .select('*').eq('cliente', CLIENTE_FIXO)
+                .gte('data_referencia', dataISO(new Date(calAnoCli, calMesCli, 1)))
+                .lte('data_referencia', dataISO(new Date(calAnoCli, calMesCli + 1, 0)))
                 .order('dh_envio_servidor', { ascending: false });
 
-            execucoesCalendarioCliCache = (data || []).filter(e => e.status_execucao !== 'IMPEDIMENTO_EPI');
+            execucoesCalendarioCliCache = (data || []).filter(e => !STATUS_OCULTOS_CLIENTE.includes(e.status_execucao));
             agendaCalendario = gerarAgendaCliente(calAnoCli, calMesCli, execucoesCalendarioCliCache);
             renderizarCalendarioCliente();
         }
@@ -779,9 +815,8 @@
             const diaSelecionarPadrao = ehMesAtual ? hojeReal.getDate() : 1;
 
             for (let day = 1; day <= totalDias; day++) {
-                const dStr = dataISO(new Date(calAnoCli, calMesCli, day));
-                const ag = agendaCalendario[dStr];
-                const execsNoDia = execucoesCalendarioCliCache.filter(e => e.data_referencia === dStr && e.status_execucao !== 'IMPEDIMENTO_EPI');
+                const dStr = dataISO(new Date(calAnoCli, calMesCli, day)), ag = agendaCalendario[dStr];
+                const execsNoDia = execucoesCalendarioCliCache.filter(e => e.data_referencia === dStr && ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao));
 
                 let classes = "month-cell";
                 if (ehMesAtual && day === hojeReal.getDate()) classes += " today";
@@ -804,62 +839,45 @@
             document.getElementById('selected-day-title').textContent = `Auditoria & Grade • ${dataFmt}`;
 
             const ag = agendaCalendario[dStr];
-            const execsDia = execucoesCalendarioCliCache.filter(e => e.data_referencia === dStr && e.status_execucao !== 'IMPEDIMENTO_EPI');
+            const execsDia = execucoesCalendarioCliCache.filter(e => e.data_referencia === dStr && ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao));
+            const lotesDia = agruparExecucoesEmLotes(execsDia);
             const list = document.getElementById('selected-day-list');
             const especiesPoda = obterEspeciesEmJanelaPodaCli(calMesCli + 1);
 
             let html = '';
 
             if (especiesPoda.length > 0 && ag && ag.util) {
-                const nomesSp = especiesPoda.map(s => `${s.especie} (${s.nome_area})`).join(', ');
-                html += `
-                <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-start gap-2">
-                    <span class="text-base">🌿</span>
-                    <div>
-                        <p class="text-[11px] font-extrabold text-purple-950 uppercase">Janela Agronômica: Avaliação de Poda Drástica</p>
-                        <p class="text-[11px] text-purple-800 mt-0.5">Época ideal para manejo de rejuvenescimento caso necessário: <b>${nomesSp}</b>.</p>
-                    </div>
-                </div>`;
+                html += `<div class="bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-start gap-2"><span class="text-base">🌿</span><div><p class="text-[11px] font-extrabold text-purple-950 uppercase">Janela Agronômica: Avaliação de Poda Drástica</p><p class="text-[11px] text-purple-800 mt-0.5">Época ideal para manejo de rejuvenescimento caso necessário: <b>${especiesPoda.map(s => `${s.especie} (${s.nome_area})`).join(', ')}</b>.</p></div></div>`;
             }
 
-            if (execsDia.length > 0) {
-                document.getElementById('selected-day-count').textContent = `${execsDia.length} entregue(s)`;
-                html += `<p class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider px-1 pt-1">✅ Realizado nesta data (${execsDia.length})</p>`;
-                html += execsDia.map(e => {
-                    const isDisp = e.status_execucao === 'DISPENSADO';
+            if (lotesDia.length > 0) {
+                document.getElementById('selected-day-count').textContent = `${lotesDia.length} entregue(s)`;
+                html += `<p class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider px-1 pt-1">✅ Realizado nesta data (${lotesDia.length})</p>`;
+                html += lotesDia.map(lote => {
+                    const e = lote.principal, isDisp = e.status_execucao === 'DISPENSADO';
+                    const espTxt = [...new Set(lote.registros.map(r => r.especie).filter(Boolean))].join(', ');
                     const todasFotos = [...extrairListaFotos(e.foto_antes_url), ...extrairListaFotos(e.foto_depois_url)];
-                    const thumbs = todasFotos.map(u => {
-                        const zIdx = registrarFotoZoomCliente(u, `${e.setor} • ${e.atividade}`);
-                        return `<img onclick="abrirZoomFotoByIdx(${zIdx})" src="${u}" class="w-11 h-11 rounded-lg object-cover border border-slate-300 cursor-pointer flex-shrink-0">`;
-                    }).join('');
+                    const thumbs = todasFotos.map(u => `<img onclick="abrirZoomFotoByIdx(${registrarFotoZoomCliente(u, `${e.setor} • ${e.atividade}`)})" src="${u}" class="w-11 h-11 rounded-lg object-cover border border-slate-300 cursor-pointer flex-shrink-0">`).join('');
 
-                    return `
-                    <div class="p-3 rounded-xl border ${isDisp ? 'bg-sky-50/70 border-sky-200' : 'bg-emerald-50/60 border-emerald-200'} space-y-1.5">
-                        <div class="flex justify-between items-start gap-2">
-                            <span class="text-[10px] font-extrabold ${isDisp ? 'bg-sky-200 text-sky-900' : 'bg-emerald-200 text-emerald-900'} px-2 py-0.5 rounded">${e.setor}</span>
-                            <span class="text-[10px] font-extrabold ${isDisp ? 'text-sky-800' : 'text-emerald-800'}">${isDisp ? '☑️ Vistoriado' : '✓ Concluído'}</span>
-                        </div>
-                        <p class="text-xs font-extrabold text-slate-900">${e.atividade}</p>
-                        <p class="text-[11px] text-slate-600 italic">"${e.observacao || ''}"</p>
-                        <p class="text-[10px] font-bold text-slate-500">👷 Equipe: ${e.equipe_executora}</p>
-                        ${thumbs ? `<div class="flex gap-1.5 pt-1 overflow-x-auto">${thumbs}</div>` : ''}
-                    </div>`;
+                    return `<div class="p-3 rounded-xl border ${isDisp ? 'bg-sky-50/70 border-sky-200' : 'bg-emerald-50/60 border-emerald-200'} space-y-1.5"><div class="flex justify-between items-start gap-2"><span class="text-[10px] font-extrabold ${isDisp ? 'bg-sky-200 text-sky-900' : 'bg-emerald-200 text-emerald-900'} px-2 py-0.5 rounded">${e.setor}</span><span class="text-[10px] font-extrabold ${isDisp ? 'text-sky-800' : 'text-emerald-800'}">${isDisp ? '☑️ Vistoriado' : '✓ Concluído'}</span></div><p class="text-xs font-extrabold text-slate-900">${e.atividade}</p>${espTxt ? `<p class="text-[10px] font-bold text-slate-700">🌿 ${espTxt}</p>` : ''}<p class="text-[11px] text-slate-600 italic">"${e.observacao || ''}"</p><p class="text-[10px] font-bold text-slate-500">👷 Equipe: ${e.equipe_executora}</p>${thumbs ? `<div class="flex gap-1.5 pt-1 overflow-x-auto">${thumbs}</div>` : ''}</div>`;
                 }).join('');
             }
 
             if (ag && ag.util && ag.tarefas.length > 0) {
-                if (execsDia.length === 0) document.getElementById('selected-day-count').textContent = `${ag.tarefas.length} prevista(s)`;
-                html += `<p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-1 pt-2">📋 Programação Prevista (${ag.tarefas.length})</p>`;
-                html += ag.tarefas.map(t => {
-                    const jaFeitaNoDia = execsDia.some(e => e.tarefa_id === t.id || (e.setor === t.setor && e.atividade === t.atividade));
-                    return `
-                    <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center ${jaFeitaNoDia ? 'opacity-60' : ''}">
-                        <div>
-                            <p class="text-xs font-bold ${jaFeitaNoDia ? 'line-through text-slate-500' : 'text-slate-800'}">${t.atividade}</p>
-                            <p class="text-[10px] text-slate-500">${t.setor} • ${t.especie || 'Geral'}</p>
-                        </div>
-                        <span class="text-[10px] font-bold ${jaFeitaNoDia ? 'text-emerald-700 bg-emerald-50' : 'text-slate-500 bg-white border border-slate-200'} px-2 py-0.5 rounded">${jaFeitaNoDia ? '✓ Entregue' : t.frequencia}</span>
-                    </div>`;
+                const mapaPrev = new Map();
+                ag.tarefas.forEach(t => {
+                    const k = `${t.setor}||${t.atividade}`;
+                    if (!mapaPrev.has(k)) mapaPrev.set(k, { setor: t.setor, atividade: t.atividade, frequencia: t.frequencia, itens: [] });
+                    mapaPrev.get(k).itens.push(t);
+                });
+                const blocosPrev = Array.from(mapaPrev.values());
+
+                if (lotesDia.length === 0) document.getElementById('selected-day-count').textContent = `${blocosPrev.length} bloco(s)`;
+                html += `<p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider px-1 pt-2">📋 Programação Prevista (${blocosPrev.length})</p>`;
+                html += blocosPrev.map(b => {
+                    const todosFeitos = b.itens.every(it => execsDia.some(e => execCorrespondeTarefa(e, it)));
+                    const espList = [...new Set(b.itens.map(it => it.especie || 'Geral'))].join(', ');
+                    return `<div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center ${todosFeitos ? 'opacity-60' : ''}"><div><p class="text-xs font-bold ${todosFeitos ? 'line-through text-slate-500' : 'text-slate-800'}">${b.atividade}</p><p class="text-[10px] text-slate-600 font-semibold">${b.setor}</p><p class="text-[10px] text-slate-500">🌿 ${espList}</p></div><span class="text-[10px] font-bold flex-shrink-0 ml-2 ${todosFeitos ? 'text-emerald-700 bg-emerald-50' : 'text-slate-500 bg-white border border-slate-200'} px-2 py-0.5 rounded">${todosFeitos ? '✓ Entregue' : b.frequencia}</span></div>`;
                 }).join('');
             }
 
@@ -886,18 +904,8 @@
                 const isCliente = m.autor_perfil === 'CLIENTE';
                 const dh = new Date(m.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
                 const tagUrg = m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase mr-1">Prioridade</span>` : '';
-                const tagCargo = !isCliente ? `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">${m.autor_perfil === 'SUPERVISOR' ? 'Supervisão' : 'Equipe'}</span>` : '';
-                return `
-                <div class="flex flex-col ${isCliente ? 'items-end' : 'items-start'}">
-                    <div class="max-w-[85%] rounded-2xl px-3.5 py-2.5 ${isCliente ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm">
-                        <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                            ${tagUrg} ${tagCargo}
-                            <span class="text-[10px] font-extrabold ${isCliente ? 'text-orange-400' : 'text-emerald-700'}">${m.autor_nome}</span>
-                            <span class="text-[9px] opacity-60">• ${dh}</span>
-                        </div>
-                        <p class="text-xs leading-relaxed">${m.mensagem}</p>
-                    </div>
-                </div>`;
+                const tagCargo = !isCliente ? `<span class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">${m.autor_perfil === 'SUPERVISOR' || m.autor_perfil === 'ADMIN' ? 'Supervisão' : 'Equipe'}</span>` : '';
+                return `<div class="flex flex-col ${isCliente ? 'items-end' : 'items-start'}"><div class="max-w-[85%] rounded-2xl px-3.5 py-2.5 ${isCliente ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm"><div class="flex items-center gap-1.5 mb-0.5 flex-wrap">${tagUrg} ${tagCargo}<span class="text-[10px] font-extrabold ${isCliente ? 'text-orange-400' : 'text-emerald-700'}">${m.autor_nome}</span><span class="text-[9px] opacity-60">• ${dh}</span></div><p class="text-xs leading-relaxed">${m.mensagem}</p></div></div>`;
             }).join('');
             box.scrollTop = box.scrollHeight;
         }
@@ -927,7 +935,7 @@
             if (aba === 'solicitacoes') { naoLidasCliente = 0; atualizarBadgeCliente(); carregarChatCliente(); }
         }
 
-        sb.channel('portal-miss-silvia-v931')
+        sb.channel('portal-miss-silvia-v94')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarPortalCliente())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarPortalCliente())
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
