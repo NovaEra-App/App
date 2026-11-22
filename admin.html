@@ -98,7 +98,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col items-end gap-1 flex-shrink-0">
-                        <span id="admin-teto-badge" class="text-[10px] font-extrabold bg-slate-100 text-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-200">Teto: 6h/dia</span>
+                        <span id="admin-teto-badge" class="text-[10px] font-extrabold bg-slate-100 text-slate-800 px-2.5 py-0.5 rounded-lg border border-slate-200">6h/op/dia</span>
                         <span id="admin-quadro-badge" class="text-[10px] font-bold bg-orange-50 text-orange-800 px-2 py-0.5 rounded-lg border border-orange-200">Quadro: 2</span>
                     </div>
                 </div>
@@ -138,14 +138,28 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 1: DASHBOARD, DISPONIBILIDADE, HISTÓRICO E AUDITORIA  -->
+            <!-- ABA 1: DASHBOARD, FORÇA DE TRABALHO, HISTÓRICO E AUDITORIA-->
             <!-- ========================================================= -->
             <div id="view-auditoria" class="space-y-3.5">
 
-                <!-- ALERTA DE QUADRO INCOMPLETO OU IMPEDIMENTO DE EPI -->
-                <div id="alerta-critico-topo" class="hidden bg-red-50 border-2 border-red-300 rounded-2xl p-3.5 shadow-sm flex items-start gap-2.5">
+                <!-- ALERTA CRÍTICO: FORÇA DE TRABALHO INSUFICIENTE, QUADRO INCOMPLETO OU EPI -->
+                <div id="alerta-critico-topo" class="hidden bg-red-50 border-2 border-red-400 rounded-2xl p-3.5 shadow-sm flex items-start gap-2.5">
                     <i data-lucide="alert-octagon" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"></i>
-                    <div class="text-xs text-red-900 space-y-1" id="alerta-critico-texto"></div>
+                    <div class="text-xs text-red-950 space-y-1.5" id="alerta-critico-texto"></div>
+                </div>
+
+                <!-- RADAR PREVENTIVO DE FORÇA DE TRABALHO (PRÓXIMOS 5 DIAS ÚTEIS) -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                                <i data-lucide="gauge" class="w-4 h-4 text-orange-500"></i> Radar de Força de Trabalho (5 Dias Úteis)
+                            </h4>
+                            <p class="text-[10px] text-slate-500">Demanda da grade vs. capacidade do quadro contratado</p>
+                        </div>
+                        <span id="badge-cap-padrao-radar" class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded-full">12h/dia</span>
+                    </div>
+                    <div id="radar-forca-trabalho-5d" class="grid grid-cols-5 gap-1.5 p-2.5 bg-slate-50/50"></div>
                 </div>
 
                 <!-- DASHBOARD 1: PROGRESSO DO CONTRATO NO MÊS -->
@@ -165,10 +179,10 @@
                     <p id="dash-alerta-horas" class="text-[10px] font-bold text-blue-600">Ritmo normal de operação.</p>
                 </div>
 
-                <!-- DASHBOARD 2: QUALIDADE E CLIMA -->
+                <!-- DASHBOARD 2: QUALIDADE, CICLOS PERDIDOS E CLIMA -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div id="card-qualidade" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Qualidade das Entregas</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Qualidade & Aderência</p>
                         <p class="text-2xl font-extrabold text-slate-900" id="dash-pct-qualidade">100%</p>
                         <p class="text-[10px] font-bold text-emerald-600 mt-0.5 leading-tight" id="dash-txt-qualidade">✓ Nenhuma tarefa com problema.</p>
                     </div>
@@ -248,12 +262,12 @@
                     </button>
                 </div>
 
-                <!-- AUDITORIA DE TAREFAS COM FILTRO DE HISTÓRICO E DATAS -->
+                <!-- AUDITORIA DE TAREFAS COM FILTRO DE HISTÓRICO, STATUS E NÃO REALIZADAS -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="bg-slate-900 text-white px-3.5 py-3 space-y-2.5">
                         <div class="flex justify-between items-center">
                             <h4 class="text-xs font-extrabold flex items-center gap-1.5">
-                                <i data-lucide="history" class="w-4 h-4 text-orange-400"></i> Histórico & Auditoria de Atividades
+                                <i data-lucide="history" class="w-4 h-4 text-orange-400"></i> Histórico, Ciclos Perdidos & Auditoria
                             </h4>
                             <span class="text-[10px] font-bold text-slate-400">Toque na foto p/ ampliar</span>
                         </div>
@@ -263,6 +277,13 @@
                             <button onclick="setFiltroPeriodoAdmin('ONTEM')" id="btn-hist-ONTEM" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Ontem</button>
                             <button onclick="setFiltroPeriodoAdmin('7DIAS')" id="btn-hist-7DIAS" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">7 Dias</button>
                             <button onclick="setFiltroPeriodoAdmin('MES')" id="btn-hist-MES" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Mês Atual</button>
+                        </div>
+
+                        <!-- FILTRO RÁPIDO POR TIPO / NÃO REALIZADAS -->
+                        <div class="grid grid-cols-3 gap-1">
+                            <button onclick="setFiltroStatusAdmin('TODOS')" id="btn-st-TODOS" class="py-1 rounded-lg text-[10px] font-extrabold bg-slate-700 text-white border border-slate-600">📋 Todos</button>
+                            <button onclick="setFiltroStatusAdmin('NAO_REALIZADA')" id="btn-st-NAO_REALIZADA" class="py-1 rounded-lg text-[10px] font-extrabold bg-slate-800 text-red-300 border border-slate-700">❌ Não Realizadas</button>
+                            <button onclick="setFiltroStatusAdmin('ALERTAS')" id="btn-st-ALERTAS" class="py-1 rounded-lg text-[10px] font-extrabold bg-slate-800 text-amber-300 border border-slate-700">⚠️ Alertas / EPI</button>
                         </div>
 
                         <div class="flex items-center justify-between gap-2 pt-0.5">
@@ -424,7 +445,7 @@
             </div>
 
             <!-- ========================================================= -->
-            <!-- ABA 4: GESTÃO DE TAREFAS, EPI ESPECÍFICO E SLA HÍBRIDO    -->
+            <!-- ABA 4: GESTÃO DE TAREFAS, ATIVIDADE VITAL, EPI E SLA      -->
             <!-- ========================================================= -->
             <div id="view-tarefas" class="hidden space-y-3.5">
                 <div id="card-form-tarefa" class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm space-y-3 transition-all">
@@ -441,13 +462,13 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Espécie / Alvo</label>
-                            <input list="admin-especies-datalist" id="edit-tarefa-especie" placeholder="Ex: Lambari" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                            <input list="admin-especies-datalist" id="edit-tarefa-especie" placeholder="Ex: Moréias Brancas" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
                             <datalist id="admin-especies-datalist"></datalist>
                         </div>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Descrição da Atividade</label>
-                        <input type="text" id="edit-tarefa-nome" placeholder="Ex: Retirada de pragas / Roçada" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
+                        <input type="text" id="edit-tarefa-nome" placeholder="Ex: Limpeza / Irrigação / Roçada" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-semibold">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 mb-0.5">EPI Específico desta Atividade (Soma ao EPI da Área)</label>
@@ -466,6 +487,7 @@
                                 <option value="Qui">Toda Quinta</option>
                                 <option value="Sex">Toda Sexta</option>
                                 <option value="Quinzenal">Quinzenal</option>
+                                <option value="2x/mês">2x/mês</option>
                                 <option value="1x/mês">1x/mês</option>
                                 <option value="Quadrimestral">Quadrimestral</option>
                             </select>
@@ -484,7 +506,10 @@
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
-                        <div class="space-y-1">
+                        <div class="space-y-1.5">
+                            <label class="flex items-center gap-1.5 text-[11px] font-extrabold text-emerald-800 cursor-pointer">
+                                <input type="checkbox" id="edit-tarefa-vital" class="rounded text-emerald-600 w-4 h-4"> 🌿 Atividade Vital (ex: Irrigação — transborda c/ alerta se pulada)
+                            </label>
                             <label class="flex items-center gap-1.5 text-[11px] font-bold text-slate-700 cursor-pointer">
                                 <input type="checkbox" id="edit-tarefa-chuva" checked class="rounded text-orange-500 w-4 h-4"> Permite fazer c/ chuva
                             </label>
@@ -626,7 +651,7 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Teto Diário (h)</label>
+                            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Horas Produtivas / Operador / Dia</label>
                             <input type="number" step="0.5" id="edit-cli-teto" value="6" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold">
                         </div>
                         <div>
@@ -711,32 +736,37 @@
         <p class="text-[10px] text-slate-400 mt-1">Toque em qualquer lugar para fechar</p>
     </div>
 
-    <!-- MODAL: EDITAR EXECUÇÃO AUDITADA PELO RAMOS / ADMIN -->
+    <!-- MODAL: AJUSTAR OU JUSTIFICAR REGISTRO / CICLO PERDIDO (SUPERVISÃO) -->
     <div id="modal-edit-exec-admin" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-start">
                 <div>
                     <span class="text-[10px] font-extrabold uppercase bg-orange-100 text-orange-800 px-2 py-0.5 rounded">Supervisão</span>
-                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Ajustar Registro de Atividade</h3>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1" id="adm-edit-exec-header">Ajustar / Justificar Registro</h3>
                 </div>
                 <button onclick="fecharModalEditExecAdmin()"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
             </div>
-            <p class="text-xs font-bold text-orange-600" id="adm-edit-exec-title">Tarefa</p>
-
             <div>
+                <p class="text-xs font-bold text-orange-600" id="adm-edit-exec-title">Tarefa</p>
+                <p class="text-[10px] font-bold text-slate-500 mt-0.5" id="adm-edit-exec-especies"></p>
+            </div>
+
+            <div id="bloco-equipe-edit-admin">
                 <label class="block text-[11px] font-extrabold text-slate-700 mb-1.5 uppercase">1. Equipe Executora</label>
                 <div class="flex flex-wrap gap-1.5" id="adm-edit-exec-equipe"></div>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
                 <div>
-                    <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">2. Tempo Real (Min)</label>
+                    <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">2. Tempo Total (Min)</label>
                     <input type="number" id="adm-edit-exec-min" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-bold">
                 </div>
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">3. Avaliação / Status</label>
                     <select id="adm-edit-exec-flag" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-bold">
                         <option value="CONFORME">✓ OK / Conforme</option>
+                        <option value="JUSTIFICADO_SUPERVISAO">📝 Justificado pela Supervisão</option>
+                        <option value="CICLO_PERDIDO">❌ Ciclo Perdido (Não Realizada)</option>
                         <option value="DIVERGENCIA_SLA">⚠️ Tempo fora do padrão</option>
                         <option value="FORA_PERIMETRO">📍 GPS distante</option>
                         <option value="ENVIO_DEFASADO">⏱️ Foto da galeria / atrasada</option>
@@ -745,7 +775,12 @@
             </div>
 
             <div>
-                <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">4. Observação Técnica</label>
+                <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">4. Observação / Justificativa da Supervisão</label>
+                <div id="chips-justif-rapida" class="flex flex-wrap gap-1 mb-1.5">
+                    <button type="button" onclick="aplicarJustificativaAdmin('Chuva intensa durante todo o turno — serviço externo suspenso.')" class="text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200 px-2 py-1 rounded-lg">🌧️ Chuva no dia</button>
+                    <button type="button" onclick="aplicarJustificativaAdmin('Força de trabalho insuficiente / falta de operador sem cobertura.')" class="text-[10px] font-bold bg-red-50 text-red-800 border border-red-200 px-2 py-1 rounded-lg">👷 Falta de efetivo</button>
+                    <button type="button" onclick="aplicarJustificativaAdmin('Equipe realocada para demanda emergencial autorizada.')" class="text-[10px] font-bold bg-amber-50 text-amber-900 border border-amber-200 px-2 py-1 rounded-lg">🚚 Apoio emergencial</button>
+                </div>
                 <textarea id="adm-edit-exec-obs" rows="2" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500"></textarea>
             </div>
 
@@ -770,7 +805,7 @@
     </div>
     <script>
         // =========================================================================
-        // 1. CONFIGURAÇÃO SUPABASE (ADMIN v9.3.1 - 3 CAMADAS, EPI & SUPRIMENTOS)
+        // 1. CONFIGURAÇÃO SUPABASE (ADMIN v9.4 - FORÇA DE TRABALHO, VITAL & CICLOS)
         // =========================================================================
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
@@ -785,15 +820,18 @@
         let canalChatAdmin = 'SUPERVISAO';
 
         let filtroPeriodoAdmin = 'HOJE';
+        let filtroStatusAdmin = 'TODOS';
         let dataEspecificaAdmin = '';
         let execucoesDataEspecificaDB = [];
         let filtroSupAdmin = 'PENDENTES';
+        let ciclosVerificadosAdmin = {};
 
         window.clientesDB = [];
         window.colaboradoresTodosDB = [];
         window.cronogramaTodosDB = [];
         window.execucoesMesDB = [];
         window.execucoes60dDB = [];
+        window.presencasRecentesDB = [];
         window.areasClienteDB = [];
         window.especiesClienteDB = [];
         window.pedidosSuprimentosDB = [];
@@ -801,6 +839,7 @@
         window.presencaHojeDB = null;
         window.loginsAdminDB = [];
         window.fotosZoomAdminCache = [];
+        window.lotesAuditoriaCache = [];
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
@@ -833,8 +872,44 @@
         function ehFeriado(d) { return window.feriadosDB.includes(dataISO(d)); }
         function diaUtil(d) { return d.getDay() !== 0 && d.getDay() !== 6 && !ehFeriado(d); }
 
+        function execCorrespondeTarefa(e, t) {
+            if (e.tarefa_id && t.id) return Number(e.tarefa_id) === Number(t.id);
+            const espE = (e.especie || '').trim().toLowerCase();
+            const espT = (t.especie || '').trim().toLowerCase();
+            return e.setor === t.setor && e.atividade === t.atividade && (!espE || !espT || espE === espT);
+        }
+
+        function isFreqFlutuante(freqStr) {
+            const f = (freqStr || '').toLowerCase();
+            return f.includes('mês') || f.includes('mensal') || f.includes('quinzenal') || f.includes('quadrimestral');
+        }
+        function isFreqDiaria(freqStr) {
+            const f = (freqStr || '').toLowerCase();
+            return f.includes('diári') || f.includes('diari') || f.includes('seg a sex') || f.includes('5x');
+        }
+        function diaCorrespondeFrequencia(freqStr, diaSemana) {
+            const f = (freqStr || '').toLowerCase();
+            if (isFreqDiaria(f)) return diaSemana >= 1 && diaSemana <= 5;
+            if (f.includes('3x/semana')) return diaSemana === 1 || diaSemana === 3 || diaSemana === 5;
+            if (f.includes('2x/semana')) return diaSemana === 2 || diaSemana === 4;
+            if (f.includes('seg') && diaSemana === 1) return true;
+            if (f.includes('ter') && diaSemana === 2) return true;
+            if (f.includes('qua') && diaSemana === 3) return true;
+            if (f.includes('qui') && diaSemana === 4) return true;
+            if (f.includes('sex') && diaSemana === 5) return true;
+            return false;
+        }
+        function proximaOcorrenciaRecorrenteISO(freqStr, aPartirISO) {
+            const d = new Date(aPartirISO + 'T12:00:00');
+            for (let i = 1; i <= 14; i++) {
+                d.setDate(d.getDate() + 1);
+                if (diaUtil(d) && diaCorrespondeFrequencia(freqStr, d.getDay())) return dataISO(d);
+            }
+            return null;
+        }
+
         // =========================================================================
-        // 2. MOTOR HÍBRIDO DE SLA (OPÇÃO A: MÉDIA LIMPA + 20% + ARRED. 5 MIN)
+        // 2. MOTOR HÍBRIDO DE SLA (POR TAREFA_ID / ESPÉCIE + 20% + ARRED. 5 MIN)
         // =========================================================================
         function calcularSlaCalibradoAdmin(t) {
             const baseMin = Number(t.duracao_minutos) || 30;
@@ -844,8 +919,7 @@
                 e.cliente === clienteAtivo &&
                 e.status_execucao === 'CONCLUIDO' &&
                 !e.entrega_parcial &&
-                e.setor === t.setor &&
-                e.atividade === t.atividade &&
+                execCorrespondeTarefa(e, t) &&
                 Number(e.duracao_real_min) >= 5 &&
                 Number(e.duracao_real_min) <= (baseMin * 3)
             );
@@ -872,37 +946,96 @@
         }
 
         // =========================================================================
-        // 3. MOTOR DE SOM (WEB AUDIO API), NOTIFICAÇÕES POP-UP E MARQUINHAS
+        // 3. FECHAMENTO AUTOMÁTICO DE CICLOS VENCIDOS (VITAL VS. ROTINA)
+        // =========================================================================
+        async function sincronizarCiclosExpiradosAdmin() {
+            if (!navigator.onLine || ciclosVerificadosAdmin[clienteAtivo]) return;
+            ciclosVerificadosAdmin[clienteAtivo] = true;
+
+            const hoje = new Date(), hojeStr = dataISO(hoje);
+            const tarefasRec = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo && t.ativo !== false && !t.data_alvo && !isFreqFlutuante(t.frequencia));
+            if (tarefasRec.length === 0) return;
+
+            const execsCli = window.execucoes60dDB.filter(e => e.cliente === clienteAtivo);
+            const presencasDatas = new Set(window.presencasRecentesDB.filter(p => p.cliente === clienteAtivo && p.status_validacao !== 'AUTORIZADO_GESTAO').map(p => p.data_turno));
+            const paraGravar = [];
+
+            for (let offset = 7; offset >= 1; offset--) {
+                const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - offset);
+                if (d.getMonth() !== hoje.getMonth() || !diaUtil(d)) continue;
+                const dStr = dataISO(d);
+
+                tarefasRec.forEach(t => {
+                    if (!diaCorrespondeFrequencia(t.frequencia, d.getDay())) return;
+                    if (execsCli.some(e => e.data_referencia === dStr && execCorrespondeTarefa(e, t))) return;
+
+                    const diaria = isFreqDiaria(t.frequencia), vital = Boolean(t.vital);
+                    if (vital && !diaria) {
+                        const proxISO = proximaOcorrenciaRecorrenteISO(t.frequencia, dStr);
+                        if (!proxISO || hojeStr < proxISO) return;
+                        const atendidaNoCiclo = execsCli.some(e =>
+                            e.data_referencia >= dStr && e.data_referencia < proxISO &&
+                            ['CONCLUIDO', 'DISPENSADO', 'IMPEDIMENTO_EPI'].includes(e.status_execucao) &&
+                            execCorrespondeTarefa(e, t)
+                        );
+                        if (atendidaNoCiclo) return;
+                    }
+
+                    const postoAtivoNaData = presencasDatas.has(dStr);
+                    const motivoAuto = postoAtivoNaData
+                        ? `Ciclo vencido (${vital ? 'Atividade Vital' : 'Rotina'}) — Posto ativo na data, tarefa não executada.`
+                        : `Ciclo vencido (${vital ? 'Atividade Vital' : 'Rotina'}) — Posto sem ativação na data.`;
+
+                    paraGravar.push({
+                        tarefa_id: t.id, data_referencia: dStr, cliente: clienteAtivo, setor: t.setor, atividade: t.atividade,
+                        especie: t.especie || 'Geral', equipe_executora: 'Sistema (Ciclo Vencido)', registrado_por: 'Automático',
+                        observacao: motivoAuto, dh_inicio_tarefa: `${dStr}T17:00:00`, dh_envio_servidor: new Date().toISOString(),
+                        duracao_estimada_min: calcularSlaCalibradoAdmin(t).min, duracao_real_min: 0,
+                        flag_auditoria: 'CICLO_PERDIDO', status_execucao: 'NAO_REALIZADA'
+                    });
+                });
+            }
+
+            for (const reg of paraGravar) {
+                try {
+                    const { data, error } = await sb.from('execucoes_auditoria').insert([reg]).select();
+                    if (!error && data?.[0]) {
+                        window.execucoesMesDB.push(data[0]);
+                        window.execucoes60dDB.push(data[0]);
+                    }
+                } catch (e) {}
+            }
+        }
+
+        // =========================================================================
+        // 4. MOTOR DE SOM, NOTIFICAÇÕES POP-UP E MARQUINHAS
         // =========================================================================
         let audioCtxGlobal = null;
         let mensagensNaoLidasAdmin = { SUPERVISAO: 0, CLIENTE: 0 };
 
         function desbloquearAudioNotificacao() {
             try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AC();
                 if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
             } catch (e) {}
         }
 
         function tocarChimeNotificacao() {
             try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                if (!audioCtxGlobal) audioCtxGlobal = new AudioContext();
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!audioCtxGlobal) audioCtxGlobal = new AC();
                 if (audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
-
-                const osc = audioCtxGlobal.createOscillator();
-                const gain = audioCtxGlobal.createGain();
+                const osc = audioCtxGlobal.createOscillator(), gain = audioCtxGlobal.createGain();
                 osc.connect(gain); gain.connect(audioCtxGlobal.destination);
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(587.33, audioCtxGlobal.currentTime);
                 osc.frequency.setValueAtTime(880.00, audioCtxGlobal.currentTime + 0.12);
                 gain.gain.setValueAtTime(0.22, audioCtxGlobal.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtxGlobal.currentTime + 0.55);
-                osc.start(audioCtxGlobal.currentTime);
-                osc.stop(audioCtxGlobal.currentTime + 0.55);
+                osc.start(audioCtxGlobal.currentTime); osc.stop(audioCtxGlobal.currentTime + 0.55);
             } catch (e) {}
         }
 
@@ -910,10 +1043,7 @@
             desbloquearAudioNotificacao();
             if ("Notification" in window) {
                 Notification.requestPermission().then(perm => {
-                    if (perm === 'granted') {
-                        tocarChimeNotificacao();
-                        alert("🔔 Som e alertas pop-up ativados!");
-                    }
+                    if (perm === 'granted') { tocarChimeNotificacao(); alert("🔔 Som e alertas pop-up ativados!"); }
                 });
             }
         }
@@ -921,7 +1051,6 @@
         function dispararNotificacaoAdmin(autor, canal, texto, urgente, destinoAba = 'chat') {
             const canalNomes = { SUPERVISAO: 'Operadores', CLIENTE: 'Cliente', SUPRIMENTOS: 'Suprimentos' };
             const titulo = urgente ? `🚨 URGENTE • ${autor}` : `💬 ${autor} (${canalNomes[canal] || canal})`;
-
             if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
                 try { new Notification(titulo, { body: texto }); } catch (e) {}
             }
@@ -941,25 +1070,10 @@
                 selecionarAbaAdmin(destinoAba);
                 if (destinoAba === 'chat' && canal) selecionarCanalChatAdmin(canal);
             };
-            toast.innerHTML = `
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center flex-shrink-0">
-                        <i data-lucide="bell-ring" class="w-4 h-4"></i>
-                    </div>
-                    <div class="truncate">
-                        <p class="text-[11px] font-extrabold text-orange-400 truncate">${titulo}</p>
-                        <p class="text-xs text-slate-100 truncate">${texto}</p>
-                    </div>
-                </div>
-                <span class="text-[10px] font-extrabold bg-orange-500 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Abrir</span>
-            `;
+            toast.innerHTML = `<div class="flex items-center gap-2.5 min-w-0"><div class="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center flex-shrink-0"><i data-lucide="bell-ring" class="w-4 h-4"></i></div><div class="truncate"><p class="text-[11px] font-extrabold text-orange-400 truncate">${titulo}</p><p class="text-xs text-slate-100 truncate">${texto}</p></div></div><span class="text-[10px] font-extrabold bg-orange-500 text-white px-2.5 py-1 rounded-lg flex-shrink-0">Abrir</span>`;
             initIcons();
-            toast.classList.remove('-translate-y-24', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                toast.classList.add('-translate-y-24', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 5000);
+            toast.classList.remove('-translate-y-24', 'opacity-0'); toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => { toast.classList.add('-translate-y-24', 'opacity-0'); toast.classList.remove('translate-y-0', 'opacity-100'); }, 5000);
         }
 
         function atualizarBadgesNaoLidasAdmin() {
@@ -974,11 +1088,7 @@
                 if (btn) {
                     let badge = btn.querySelector('.canal-badge-dot');
                     if (mensagensNaoLidasAdmin[canal] > 0) {
-                        if (!badge) {
-                            badge = document.createElement('span');
-                            badge.className = 'canal-badge-dot ml-1.5 px-1.5 py-0.2 bg-red-600 text-white text-[9px] font-extrabold rounded-full';
-                            btn.appendChild(badge);
-                        }
+                        if (!badge) { badge = document.createElement('span'); badge.className = 'canal-badge-dot ml-1.5 px-1.5 py-0.2 bg-red-600 text-white text-[9px] font-extrabold rounded-full'; btn.appendChild(badge); }
                         badge.textContent = mensagensNaoLidasAdmin[canal];
                     } else if (badge) badge.remove();
                 }
@@ -986,23 +1096,17 @@
         }
 
         // =========================================================================
-        // 4. LOGIN E CONTROLE DE ACESSO (RBAC)
+        // 5. LOGIN, RBAC E CARREGAMENTO SUPABASE
         // =========================================================================
         async function realizarLoginAdmin() {
             const login = document.getElementById('login-user').value.trim().toLowerCase();
             const senha = document.getElementById('login-pass').value.trim();
-            const erroEl = document.getElementById('login-erro');
-            const btn = document.getElementById('btn-login');
-
+            const erroEl = document.getElementById('login-erro'), btn = document.getElementById('btn-login');
             if (!login || !senha) return;
-            btn.disabled = true; btn.textContent = "Verificando credenciais...";
-            erroEl.classList.add('hidden');
+            btn.disabled = true; btn.textContent = "Verificando credenciais..."; erroEl.classList.add('hidden');
 
-            const { data, error } = await sb.from('usuarios_admin')
-                .select('*').eq('login', login).eq('senha', senha).eq('ativo', true).limit(1);
-
+            const { data, error } = await sb.from('usuarios_admin').select('*').eq('login', login).eq('senha', senha).eq('ativo', true).limit(1);
             btn.disabled = false; btn.textContent = "Acessar Painel de Controle";
-
             if (error || !data || data.length === 0) { erroEl.classList.remove('hidden'); return; }
 
             adminLogado = { login: data[0].login, nome: data[0].nome_exibicao, perfil: data[0].perfil };
@@ -1011,8 +1115,7 @@
         }
 
         function logoutAdmin() {
-            sessionStorage.removeItem('novaera_admin_session');
-            adminLogado = null;
+            sessionStorage.removeItem('novaera_admin_session'); adminLogado = null;
             document.getElementById('admin-app').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('login-pass').value = '';
@@ -1027,24 +1130,22 @@
             const isAdmin = adminLogado.perfil === 'ADMIN';
             document.getElementById('btn-tab-contratos').classList.toggle('hidden', !isAdmin);
             document.getElementById('bloco-gestao-logins').classList.toggle('hidden', !isAdmin);
-
-            initIcons();
-            carregarDadosAdmin();
-            iniciarRealtimeAdmin();
+            initIcons(); carregarDadosAdmin(); iniciarRealtimeAdmin();
         }
 
         async function carregarDadosAdmin() {
             const hojeStr = dataISO();
             const inicioMes = dataISO(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
             const d60 = new Date(); d60.setDate(d60.getDate() - 60);
+            const d10 = new Date(); d10.setDate(d10.getDate() - 10);
 
-            const [resCli, resColab, resCrono, resExec60d, resFer, resPres, resAreas, resEsp, resSup] = await Promise.all([
+            const [resCli, resColab, resCrono, resExec60d, resFer, resPresRec, resAreas, resEsp, resSup] = await Promise.all([
                 sb.from('clientes').select('*').order('nome', { ascending: true }),
                 sb.from('colaboradores').select('*').order('nome', { ascending: true }),
                 sb.from('cronograma_mestre').select('*').order('prioridade', { ascending: true }),
                 sb.from('execucoes_auditoria').select('*').gte('data_referencia', dataISO(d60)).order('dh_envio_servidor', { ascending: false }),
                 sb.from('feriados_config').select('*'),
-                sb.from('presenca_posto').select('*').eq('data_turno', hojeStr).eq('cliente', clienteAtivo).order('dh_checkin_aparelho', { ascending: false }).limit(1),
+                sb.from('presenca_posto').select('*').eq('cliente', clienteAtivo).gte('data_turno', dataISO(d10)).order('dh_checkin_aparelho', { ascending: false }),
                 sb.from('cliente_areas').select('*').eq('cliente', clienteAtivo).order('nome_area', { ascending: true }),
                 sb.from('cliente_especies').select('*').eq('cliente', clienteAtivo).order('nome_area', { ascending: true }),
                 sb.from('pedidos_suprimentos').select('*').eq('cliente', clienteAtivo).order('criado_em', { ascending: false }).limit(50)
@@ -1058,7 +1159,8 @@
                 window.execucoesMesDB = resExec60d.data.filter(e => e.data_referencia >= inicioMes);
             }
             if (resFer.data) window.feriadosDB = resFer.data.map(f => f.data_feriado);
-            window.presencaHojeDB = resPres.data?.[0] || null;
+            window.presencasRecentesDB = resPresRec.data || [];
+            window.presencaHojeDB = window.presencasRecentesDB.find(p => p.data_turno === hojeStr) || null;
             window.areasClienteDB = resAreas.data || [];
             window.especiesClienteDB = resEsp.data || [];
             window.pedidosSuprimentosDB = resSup.data || [];
@@ -1068,63 +1170,43 @@
                 window.loginsAdminDB = resUsr.data || [];
             }
 
+            await sincronizarCiclosExpiradosAdmin();
             popularSeletorClientes();
             renderizarTudoAdmin();
         }
 
         function popularSeletorClientes() {
-            const sel = document.getElementById('admin-select-cliente');
-            const selColab = document.getElementById('novo-colab-posto');
+            const sel = document.getElementById('admin-select-cliente'), selColab = document.getElementById('novo-colab-posto');
             if (window.clientesDB.length > 0) {
                 const html = window.clientesDB.map(c => `<option value="${c.nome}" ${c.nome === clienteAtivo ? 'selected' : ''}>${c.nome}</option>`).join('');
                 sel.innerHTML = html;
                 if (selColab) selColab.innerHTML = html;
             }
-
             const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
             if (cliObj) {
-                document.getElementById('admin-teto-badge').textContent = `Teto: ${cliObj.teto_diario_horas}h/dia`;
+                document.getElementById('admin-teto-badge').textContent = `${cliObj.teto_diario_horas}h/op/dia`;
                 document.getElementById('admin-quadro-badge').textContent = `Quadro: ${cliObj.quadro_contratado_qtd || 2} (${cliObj.quadro_cargos || 'Equipe'})`;
                 document.getElementById('admin-contato-info').textContent = `👤 Contato: ${cliObj.contato_nome || 'Não cadastrado'}${cliObj.endereco ? ' • ' + cliObj.endereco : ''}`;
-
-                const whatsBtn = document.getElementById('admin-contato-whats');
-                const telLimpo = (cliObj.contato_telefone || '').replace(/\D/g, '');
-                if (telLimpo.length >= 10) {
-                    whatsBtn.href = `https://wa.me/55${telLimpo}`;
-                    whatsBtn.classList.remove('hidden');
-                } else {
-                    whatsBtn.classList.add('hidden');
-                }
+                const whatsBtn = document.getElementById('admin-contato-whats'), telLimpo = (cliObj.contato_telefone || '').replace(/\D/g, '');
+                if (telLimpo.length >= 10) { whatsBtn.href = `https://wa.me/55${telLimpo}`; whatsBtn.classList.remove('hidden'); }
+                else whatsBtn.classList.add('hidden');
             }
 
             const areasAtivas = window.areasClienteDB.filter(a => a.ativo !== false);
             const selEspArea = document.getElementById('edit-esp-area');
-            if (selEspArea) {
-                selEspArea.innerHTML = areasAtivas.length > 0
-                    ? areasAtivas.map(a => `<option value="${a.nome_area}">${a.nome_area}</option>`).join('')
-                    : `<option value="Geral">Geral (Cadastre uma área acima)</option>`;
-            }
+            if (selEspArea) selEspArea.innerHTML = areasAtivas.length > 0 ? areasAtivas.map(a => `<option value="${a.nome_area}">${a.nome_area}</option>`).join('') : `<option value="Geral">Geral</option>`;
             const dlAreas = document.getElementById('admin-areas-datalist');
             if (dlAreas) dlAreas.innerHTML = areasAtivas.map(a => `<option value="${a.nome_area}">`).join('');
-
             const dlEsp = document.getElementById('admin-especies-datalist');
-            if (dlEsp) {
-                const nomesUnicos = [...new Set(window.especiesClienteDB.map(s => s.especie))];
-                dlEsp.innerHTML = nomesUnicos.map(n => `<option value="${n}">`).join('');
-            }
+            if (dlEsp) dlEsp.innerHTML = [...new Set(window.especiesClienteDB.map(s => s.especie))].map(n => `<option value="${n}">`).join('');
         }
 
-        function trocarClienteAdmin(novoCli) {
-            clienteAtivo = novoCli;
-            localStorage.setItem('novaera_admin_cliente', clienteAtivo);
-            carregarDadosAdmin();
-        }
+        function trocarClienteAdmin(novoCli) { clienteAtivo = novoCli; localStorage.setItem('novaera_admin_cliente', clienteAtivo); carregarDadosAdmin(); }
 
         function selecionarAbaAdmin(aba) {
             abaAdminAtiva = aba;
             ['auditoria', 'suprimentos', 'inventario', 'tarefas', 'equipe', 'contratos', 'chat'].forEach(a => {
-                const v = document.getElementById(`view-${a}`);
-                if (v) v.classList.toggle('hidden', a !== aba);
+                const v = document.getElementById(`view-${a}`); if (v) v.classList.toggle('hidden', a !== aba);
                 const btn = document.getElementById(`btn-tab-${a}`);
                 if (btn && !btn.classList.contains('hidden')) {
                     btn.className = (a === aba)
@@ -1132,11 +1214,7 @@
                         : "flex-1 min-w-[23%] py-2 px-1 rounded-xl text-[10px] font-extrabold text-slate-700 hover:text-slate-900 transition-all relative";
                 }
             });
-            if (aba === 'chat') {
-                mensagensNaoLidasAdmin[canalChatAdmin] = 0;
-                atualizarBadgesNaoLidasAdmin();
-                carregarChatAdmin();
-            }
+            if (aba === 'chat') { mensagensNaoLidasAdmin[canalChatAdmin] = 0; atualizarBadgesNaoLidasAdmin(); carregarChatAdmin(); }
         }
 
         function calcularMinutosChuvaHoje() {
@@ -1149,8 +1227,92 @@
         }
 
         // =========================================================================
-        // 5. DISPONIBILIDADE INDIVIDUAL POR OPERADOR (HORAS DISPONÍVEIS NO POSTO)
+        // 6. CÁLCULO DE FORÇA DE TRABALHO (HOJE + RADAR DOS PRÓXIMOS 5 DIAS ÚTEIS)
         // =========================================================================
+        function calcularDemandaPrevistaData(dObj, incluirVitaisAtrasadas = false) {
+            const dStr = dataISO(dObj), hojeStr = dataISO(new Date());
+            const tarefasAtivas = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo && t.ativo !== false);
+            const execsCli = window.execucoes60dDB.filter(e => e.cliente === clienteAtivo);
+            const idsContados = new Set();
+            let totalMin = 0, vitaisAtrasadas = [];
+
+            tarefasAtivas.forEach(t => {
+                const minT = calcularSlaCalibradoAdmin(t).min;
+                if (t.data_alvo === dStr) {
+                    if (!idsContados.has(t.id)) { idsContados.add(t.id); totalMin += minT; }
+                } else if (dStr === hojeStr && t.data_alvo && t.data_alvo < hojeStr) {
+                    const resolvida = execsCli.some(e => ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
+                    if (!resolvida && !idsContados.has(t.id)) { idsContados.add(t.id); totalMin += minT; }
+                } else if (!t.data_alvo && !isFreqFlutuante(t.frequencia)) {
+                    if (diaCorrespondeFrequencia(t.frequencia, dObj.getDay())) {
+                        if (!idsContados.has(t.id)) { idsContados.add(t.id); totalMin += minT; }
+                    }
+                }
+            });
+
+            if (incluirVitaisAtrasadas && dStr === hojeStr) {
+                tarefasAtivas.forEach(t => {
+                    if (!t.vital || t.data_alvo || isFreqFlutuante(t.frequencia) || isFreqDiaria(t.frequencia) || idsContados.has(t.id)) return;
+                    for (let off = 1; off <= 7; off++) {
+                        const dAnt = new Date(dObj.getFullYear(), dObj.getMonth(), dObj.getDate() - off);
+                        if (!diaUtil(dAnt) || !diaCorrespondeFrequencia(t.frequencia, dAnt.getDay())) continue;
+                        const dAntISO = dataISO(dAnt);
+                        const atendida = execsCli.some(e => e.data_referencia >= dAntISO && e.data_referencia <= hojeStr && ['CONCLUIDO', 'DISPENSADO', 'IMPEDIMENTO_EPI'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
+                        if (!atendida) {
+                            idsContados.add(t.id);
+                            totalMin += calcularSlaCalibradoAdmin(t).min;
+                            vitaisAtrasadas.push(`${t.setor} (${t.atividade})`);
+                        }
+                        break;
+                    }
+                });
+            }
+            return { totalMin, vitaisAtrasadas };
+        }
+
+        function renderizarRadarForcaTrabalho(capPadraoMin, tetoOpHoras, quadroQtd) {
+            const box = document.getElementById('radar-forca-trabalho-5d');
+            document.getElementById('badge-cap-padrao-radar').textContent = `${quadroQtd} op × ${tetoOpHoras}h = ${(capPadraoMin / 60).toFixed(0)}h/dia`;
+
+            const dias = [];
+            const cursor = new Date();
+            let guard = 0;
+            while (dias.length < 5 && guard < 20) {
+                guard++;
+                if (diaUtil(cursor)) dias.push(new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()));
+                cursor.setDate(cursor.getDate() + 1);
+            }
+
+            let diasEmDeficit = [];
+            box.innerHTML = dias.map((dObj, i) => {
+                const isHoje = dataISO(dObj) === dataISO(new Date());
+                const { totalMin } = calcularDemandaPrevistaData(dObj, isHoje);
+                const deficit = totalMin - capPadraoMin;
+                const pct = capPadraoMin > 0 ? Math.round((totalMin / capPadraoMin) * 100) : 0;
+
+                let corCard = 'bg-white border-slate-200 text-slate-800', corBadge = 'text-emerald-700 bg-emerald-50';
+                if (deficit > 0) {
+                    corCard = 'bg-red-50 border-red-300 text-red-950'; corBadge = 'text-white bg-red-600';
+                    diasEmDeficit.push(`${dObj.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' })} (-${formatarMinutosStr(deficit)})`);
+                } else if (pct >= 85) {
+                    corCard = 'bg-amber-50 border-amber-300 text-amber-950'; corBadge = 'text-amber-900 bg-amber-200';
+                }
+
+                const diaSem = dObj.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+                const diaNum = String(dObj.getDate()).padStart(2, '0');
+                return `
+                <div class="rounded-xl border p-2 text-center ${corCard}">
+                    <p class="text-[9px] font-extrabold uppercase opacity-75">${isHoje ? 'HOJE' : diaSem} ${diaNum}</p>
+                    <p class="text-xs font-extrabold mt-0.5">${(totalMin / 60).toFixed(1).replace('.0', '')}h</p>
+                    <span class="inline-block text-[8px] font-extrabold px-1.5 py-0.5 rounded mt-1 ${corBadge}">
+                        ${deficit > 0 ? `+${(deficit / 60).toFixed(1).replace('.0', '')}h ⚠️` : `${pct}% OK`}
+                    </span>
+                </div>`;
+            }).join('');
+
+            return diasEmDeficit;
+        }
+
         function renderizarDisponibilidadeOperadoresHoje() {
             const box = document.getElementById('lista-disponibilidade-hoje');
             const badgeTotal = document.getElementById('badge-capacidade-total-hoje');
@@ -1164,35 +1326,16 @@
 
             let listaDisp = Array.isArray(reg.disponibilidade_operadores) && reg.disponibilidade_operadores.length > 0
                 ? reg.disponibilidade_operadores
-                : (reg.equipe_presente || '').split(',').map(s => s.trim()).filter(Boolean).map(n => ({
-                    nome: n, inicio: reg.dh_checkin_aparelho, fim: reg.dh_checkout_posto || null, motivo_saida: null
-                }));
+                : (reg.equipe_presente || '').split(',').map(s => s.trim()).filter(Boolean).map(n => ({ nome: n, inicio: reg.dh_checkin_aparelho, fim: reg.dh_checkout_posto || null, motivo_saida: null }));
 
             let totalMinDisp = 0, ativosCount = 0;
-
             box.innerHTML = listaDisp.map(op => {
-                const tIni = new Date(op.inicio).getTime();
-                const tFim = op.fim ? new Date(op.fim).getTime() : Date.now();
+                const tIni = new Date(op.inicio).getTime(), tFim = op.fim ? new Date(op.fim).getTime() : Date.now();
                 const minOp = Math.max(1, Math.round((tFim - tIni) / 60000));
-                totalMinDisp += minOp;
-                if (!op.fim) ativosCount++;
-
+                totalMinDisp += minOp; if (!op.fim) ativosCount++;
                 const hIni = new Date(op.inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 const hFim = op.fim ? new Date(op.fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Agora';
-
-                return `
-                <div class="py-2 flex justify-between items-center gap-2">
-                    <div>
-                        <p class="font-extrabold text-slate-900 flex items-center gap-1.5">
-                            <span>${op.fim ? '⚪' : '🟢'} ${op.nome}</span>
-                            <span class="text-[10px] font-bold text-slate-500">(${hIni} – ${hFim})</span>
-                        </p>
-                        ${op.motivo_saida ? `<p class="text-[10px] text-amber-700 font-semibold">↳ ${op.motivo_saida}</p>` : ''}
-                    </div>
-                    <span class="text-[11px] font-extrabold ${op.fim ? 'bg-slate-100 text-slate-700' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'} px-2.5 py-1 rounded-lg">
-                        ${formatarMinutosStr(minOp)} disp.
-                    </span>
-                </div>`;
+                return `<div class="py-2 flex justify-between items-center gap-2"><div><p class="font-extrabold text-slate-900 flex items-center gap-1.5"><span>${op.fim ? '⚪' : '🟢'} ${op.nome}</span><span class="text-[10px] font-bold text-slate-500">(${hIni} – ${hFim})</span></p>${op.motivo_saida ? `<p class="text-[10px] text-amber-700 font-semibold">↳ ${op.motivo_saida}</p>` : ''}</div><span class="text-[11px] font-extrabold ${op.fim ? 'bg-slate-100 text-slate-700' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'} px-2.5 py-1 rounded-lg">${formatarMinutosStr(minOp)} disp.</span></div>`;
             }).join('');
 
             badgeTotal.textContent = `${formatarMinutosStr(totalMinDisp)} disp.`;
@@ -1200,136 +1343,158 @@
         }
 
         // =========================================================================
-        // 6. FILTROS DE HISTÓRICO E AUDITORIA (COM LIGHTBOX PROTEGIDO POR ÍNDICE)
+        // 7. HISTÓRICO AGRUPADO EM LOTES, NÃO REALIZADAS E AUDITORIA
         // =========================================================================
-        function setFiltroPeriodoAdmin(periodo) {
-            filtroPeriodoAdmin = periodo;
-            dataEspecificaAdmin = '';
-            document.getElementById('input-data-especifica-admin').value = '';
-
-            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
-                document.getElementById(`btn-hist-${p}`).className = (p === periodo)
-                    ? "py-1.5 rounded-lg text-[10px] font-extrabold bg-orange-500 text-white shadow-sm"
-                    : "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
+        function agruparExecucoesEmLotes(lista) {
+            const mapa = new Map();
+            lista.forEach(e => {
+                const k = e.grupo_execucao_id || `SINGLE_${e.id}`;
+                if (!mapa.has(k)) mapa.set(k, { chaveLote: k, grupo_execucao_id: e.grupo_execucao_id || null, principal: e, registros: [] });
+                mapa.get(k).registros.push(e);
             });
+            return Array.from(mapa.values());
+        }
+
+        function setFiltroPeriodoAdmin(periodo) {
+            filtroPeriodoAdmin = periodo; dataEspecificaAdmin = '';
+            document.getElementById('input-data-especifica-admin').value = '';
+            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
+                document.getElementById(`btn-hist-${p}`).className = (p === periodo) ? "py-1.5 rounded-lg text-[10px] font-extrabold bg-orange-500 text-white shadow-sm" : "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
+            });
+            renderizarListaAuditoriaAdmin();
+        }
+
+        function setFiltroStatusAdmin(st) {
+            filtroStatusAdmin = st;
+            document.getElementById('btn-st-TODOS').className = st === 'TODOS' ? "py-1 rounded-lg text-[10px] font-extrabold bg-orange-500 text-white" : "py-1 rounded-lg text-[10px] font-extrabold bg-slate-800 text-slate-300 border border-slate-700";
+            document.getElementById('btn-st-NAO_REALIZADA').className = st === 'NAO_REALIZADA' ? "py-1 rounded-lg text-[10px] font-extrabold bg-red-600 text-white" : "py-1 rounded-lg text-[10px] font-extrabold bg-slate-800 text-red-300 border border-slate-700";
+            document.getElementById('btn-st-ALERTAS').className = st === 'ALERTAS' ? "py-1 rounded-lg text-[10px] font-extrabold bg-amber-500 text-slate-950" : "py-1 rounded-lg text-[10px] font-extrabold bg-slate-800 text-amber-300 border border-slate-700";
             renderizarListaAuditoriaAdmin();
         }
 
         async function filtrarDataEspecificaAdmin(dataVal) {
             if (!dataVal) { setFiltroPeriodoAdmin('HOJE'); return; }
-            filtroPeriodoAdmin = 'DATA_ESPECIFICA';
-            dataEspecificaAdmin = dataVal;
-
-            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => {
-                document.getElementById(`btn-hist-${p}`).className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white";
-            });
-
-            const { data } = await sb.from('execucoes_auditoria')
-                .select('*').eq('cliente', clienteAtivo).eq('data_referencia', dataVal).order('dh_envio_servidor', { ascending: false });
-
+            filtroPeriodoAdmin = 'DATA_ESPECIFICA'; dataEspecificaAdmin = dataVal;
+            ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => { document.getElementById(`btn-hist-${p}`).className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white"; });
+            const { data } = await sb.from('execucoes_auditoria').select('*').eq('cliente', clienteAtivo).eq('data_referencia', dataVal).order('dh_envio_servidor', { ascending: false });
             execucoesDataEspecificaDB = data || [];
             renderizarListaAuditoriaAdmin();
         }
 
         function obterExecucoesFiltradasAdmin() {
-            const hojeStr = dataISO();
-            const execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
+            const hojeStr = dataISO(), execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
+            let base = execsCli;
+            if (filtroPeriodoAdmin === 'DATA_ESPECIFICA' && dataEspecificaAdmin) base = execucoesDataEspecificaDB;
+            else if (filtroPeriodoAdmin === 'HOJE') base = execsCli.filter(e => e.data_referencia === hojeStr);
+            else if (filtroPeriodoAdmin === 'ONTEM') { const o = new Date(); o.setDate(o.getDate() - 1); base = execsCli.filter(e => e.data_referencia === dataISO(o)); }
+            else if (filtroPeriodoAdmin === '7DIAS') { const s = new Date(); s.setDate(s.getDate() - 7); base = execsCli.filter(e => e.data_referencia >= dataISO(s)); }
 
-            if (filtroPeriodoAdmin === 'DATA_ESPECIFICA' && dataEspecificaAdmin) return execucoesDataEspecificaDB;
-            if (filtroPeriodoAdmin === 'HOJE') return execsCli.filter(e => e.data_referencia === hojeStr);
-            if (filtroPeriodoAdmin === 'ONTEM') {
-                const ontem = new Date(); ontem.setDate(ontem.getDate() - 1);
-                return execsCli.filter(e => e.data_referencia === dataISO(ontem));
-            }
-            if (filtroPeriodoAdmin === '7DIAS') {
-                const sete = new Date(); sete.setDate(sete.getDate() - 7);
-                return execsCli.filter(e => e.data_referencia >= dataISO(sete));
-            }
-            return execsCli;
+            if (filtroStatusAdmin === 'NAO_REALIZADA') return base.filter(e => e.status_execucao === 'NAO_REALIZADA');
+            if (filtroStatusAdmin === 'ALERTAS') return base.filter(e => e.status_execucao === 'IMPEDIMENTO_EPI' || (e.status_execucao === 'CONCLUIDO' && e.flag_auditoria !== 'CONFORME'));
+            return base;
         }
 
         function renderizarListaAuditoriaAdmin() {
             window.fotosZoomAdminCache = [];
             const listaFiltrada = obterExecucoesFiltradasAdmin();
+            const lotes = agruparExecucoesEmLotes(listaFiltrada);
+            window.lotesAuditoriaCache = lotes;
+
             const concluidasPeriodo = listaFiltrada.filter(e => e.status_execucao === 'CONCLUIDO');
             const minPeriodo = concluidasPeriodo.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
-
-            document.getElementById('resumo-filtro-historico').textContent = `${listaFiltrada.length} reg • ${formatarMinutosStr(minPeriodo)}`;
+            document.getElementById('resumo-filtro-historico').textContent = `${lotes.length} reg • ${formatarMinutosStr(minPeriodo)}`;
 
             const labelsFlag = {
-                'CONFORME': '✓ OK',
-                'DIVERGENCIA_SLA': '⚠️ Alerta SLA',
-                'FORA_PERIMETRO': '📍 GPS Distante',
-                'ENVIO_DEFASADO': '⏱️ Galeria/Atraso',
-                'SINAL_GPS_ATIPICO': '🛰️ GPS Suspeito'
+                'CONFORME': '✓ OK', 'JUSTIFICADO_SUPERVISAO': '📝 Justificado', 'CICLO_PERDIDO': '❌ Não Realizada',
+                'DIVERGENCIA_SLA': '⚠️ Alerta SLA', 'FORA_PERIMETRO': '📍 GPS Distante', 'ENVIO_DEFASADO': '⏱️ Galeria/Atraso', 'SINAL_GPS_ATIPICO': '🛰️ GPS Suspeito'
             };
 
-            document.getElementById('gestao-execucoes-list').innerHTML = listaFiltrada.map(e => {
+            document.getElementById('gestao-execucoes-list').innerHTML = lotes.map((lote, lIdx) => {
+                const e = lote.principal;
+                const especiesTxt = [...new Set(lote.registros.map(r => r.especie).filter(Boolean))].join(', ');
+                const realTotal = lote.registros.reduce((acc, r) => acc + (Number(r.duracao_real_min) || 0), 0);
+                const estTotal = lote.registros.reduce((acc, r) => acc + (Number(r.duracao_estimada_min) || 0), 0);
+
                 let badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded ${e.flag_auditoria === 'CONFORME' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${labelsFlag[e.flag_auditoria] || e.flag_auditoria}</span>`;
-                if (e.status_execucao === 'IMPEDIMENTO_EPI') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-red-600 text-white">🚨 FALTA EPI</span>`;
+                if (e.status_execucao === 'NAO_REALIZADA') {
+                    badge = e.flag_auditoria === 'JUSTIFICADO_SUPERVISAO'
+                        ? `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-slate-200 text-slate-800">📝 NÃO REALIZADA (Justif.)</span>`
+                        : `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-red-600 text-white">❌ NÃO REALIZADA</span>`;
+                } else if (e.status_execucao === 'IMPEDIMENTO_EPI') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-red-600 text-white">🚨 FALTA EPI</span>`;
                 else if (e.status_execucao === 'PAUSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-amber-200 text-amber-900">⏸️ PAUSADO</span>`;
                 else if (e.status_execucao === 'EM_ANDAMENTO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-orange-500 text-white">🟠 EM CURSO</span>`;
                 else if (e.status_execucao === 'DISPENSADO') badge = `<span class="text-[9px] font-extrabold px-2 py-0.5 rounded bg-sky-100 text-sky-800">⏭️ DISPENSADO</span>`;
 
-                const thumbsAntes = extrairListaFotos(e.foto_antes_url).map((u, idx) => {
-                    const zIdx = registrarFotoZoomAdmin(u, `REGISTRO INICIAL / ANDAMENTO (${idx + 1}) • ${e.setor}`);
-                    return `<div onclick="abrirZoomAdminByIdx(${zIdx})" class="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-300 cursor-pointer flex-shrink-0">
-                        <img src="${u}" class="w-full h-full object-cover">
-                        <span class="absolute bottom-0 inset-x-0 bg-slate-900/80 text-white text-[6px] font-bold text-center">INICIAL</span>
-                    </div>`;
-                }).join('');
-
-                const thumbsDepois = extrairListaFotos(e.foto_depois_url).map((u, idx) => {
-                    const zIdx = registrarFotoZoomAdmin(u, `DEPOIS (${idx + 1}) • ${e.setor} (${e.atividade})`);
-                    return `<div onclick="abrirZoomAdminByIdx(${zIdx})" class="relative w-12 h-12 rounded-lg overflow-hidden border border-emerald-400 cursor-pointer flex-shrink-0">
-                        <img src="${u}" class="w-full h-full object-cover">
-                        <span class="absolute bottom-0 inset-x-0 bg-emerald-800/90 text-white text-[6px] font-bold text-center">DEPOIS</span>
-                    </div>`;
-                }).join('');
+                const thumbsAntes = extrairListaFotos(e.foto_antes_url).map((u, idx) => `<div onclick="abrirZoomAdminByIdx(${registrarFotoZoomAdmin(u, `REGISTRO INICIAL / ANDAMENTO (${idx + 1}) • ${e.setor}`)})" class="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-300 cursor-pointer flex-shrink-0"><img src="${u}" class="w-full h-full object-cover"><span class="absolute bottom-0 inset-x-0 bg-slate-900/80 text-white text-[6px] font-bold text-center">INICIAL</span></div>`).join('');
+                const thumbsDepois = extrairListaFotos(e.foto_depois_url).map((u, idx) => `<div onclick="abrirZoomAdminByIdx(${registrarFotoZoomAdmin(u, `DEPOIS (${idx + 1}) • ${e.setor} (${e.atividade})`)})" class="relative w-12 h-12 rounded-lg overflow-hidden border border-emerald-400 cursor-pointer flex-shrink-0"><img src="${u}" class="w-full h-full object-cover"><span class="absolute bottom-0 inset-x-0 bg-emerald-800/90 text-white text-[6px] font-bold text-center">DEPOIS</span></div>`).join('');
 
                 const galeriaMiniaturas = (thumbsAntes || thumbsDepois) ? `<div class="flex gap-1.5 pt-1.5 overflow-x-auto">${thumbsAntes}${thumbsDepois}</div>` : '';
                 const pausaTxt = e.minutos_pausa_descontados > 0 ? ` (Pausa: -${e.minutos_pausa_descontados}m)` : '';
                 const dataFmt = new Date((e.data_referencia || dataISO()) + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-                const horaFmt = new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const horaFmt = e.status_execucao === 'NAO_REALIZADA' ? 'Ciclo' : new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const bgLinha = e.status_execucao === 'NAO_REALIZADA' ? 'bg-red-50/60' : (e.status_execucao === 'IMPEDIMENTO_EPI' ? 'bg-amber-50/70' : 'hover:bg-slate-50');
 
                 return `
-                <div class="p-3.5 text-xs flex justify-between items-start gap-2 ${e.status_execucao === 'IMPEDIMENTO_EPI' ? 'bg-red-50/70' : 'hover:bg-slate-50'}">
+                <div class="p-3.5 text-xs flex justify-between items-start gap-2 ${bgLinha}">
                     <div class="space-y-0.5 min-w-0 flex-1">
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-[10px] font-extrabold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded border border-slate-200">${dataFmt} • ${horaFmt}</span>
                             <p class="font-extrabold text-slate-900">${e.setor} • ${e.atividade}</p>
                         </div>
-                        <p class="text-[11px] text-slate-600">👷 <b>${e.equipe_executora}</b> • Real: <b>${e.duracao_real_min || 0}m</b>${pausaTxt} / Previsto: ${e.duracao_estimada_min}m</p>
+                        ${especiesTxt ? `<p class="text-[10px] font-bold text-emerald-800">🌿 ${especiesTxt}</p>` : ''}
+                        <p class="text-[11px] text-slate-600">👷 <b>${e.equipe_executora}</b> • Real: <b>${formatarMinutosStr(realTotal)}</b>${pausaTxt} / Prev: ${formatarMinutosStr(estTotal)}</p>
                         <p class="text-[10px] text-slate-500 italic">"${e.observacao || ''}"</p>
                         ${galeriaMiniaturas}
                     </div>
                     <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
                         ${badge}
-                        <button onclick="abrirModalEditExecAdmin(${e.id})" class="text-[10px] font-extrabold bg-slate-100 hover:bg-orange-100 text-slate-700 hover:text-orange-800 px-2.5 py-1 rounded-lg border border-slate-200">
-                            ✏️ Ajustar
+                        <button onclick="abrirModalEditLoteAdmin(${lIdx})" class="text-[10px] font-extrabold bg-slate-100 hover:bg-orange-100 text-slate-700 hover:text-orange-800 px-2.5 py-1 rounded-lg border border-slate-200">
+                            ${e.status_execucao === 'NAO_REALIZADA' ? '📝 Justificar' : '✏️ Ajustar'}
                         </button>
                     </div>
                 </div>`;
-            }).join('') || `<p class="p-6 text-xs text-slate-400 text-center">Nenhuma atividade encontrada para a data/período selecionado.</p>`;
+            }).join('') || `<p class="p-6 text-xs text-slate-400 text-center">Nenhum registro encontrado para este filtro/período.</p>`;
         }
 
         async function renderizarTudoAdmin() {
-            const stPlantao = document.getElementById('gestao-status-plantao');
-            const subPlantao = document.getElementById('gestao-sub-plantao');
-            const isFdsFeriado = !diaUtil(new Date());
-
+            const stPlantao = document.getElementById('gestao-status-plantao'), subPlantao = document.getElementById('gestao-sub-plantao');
+            const hoje = new Date(), isFdsFeriado = !diaUtil(hoje);
             const { ativosCount } = renderizarDisponibilidadeOperadoresHoje();
 
             const cliObj = window.clientesDB.find(c => c.nome === clienteAtivo);
             const quadroContratado = Number(cliObj?.quadro_contratado_qtd) || 2;
+            const tetoPorOpHoras = Number(cliObj?.teto_diario_horas) || 6;
+            const capPadraoMin = quadroContratado * tetoPorOpHoras * 60;
+
+            // Capacidade real hoje: usa operadores ativos se o posto já abriu, ou quadro contratado se ainda vai abrir
+            const opsConsideradosHoje = (window.presencaHojeDB && !['TURNO_ENCERRADO', 'AUTORIZADO_GESTAO'].includes(window.presencaHojeDB.status_validacao) && ativosCount > 0)
+                ? ativosCount : quadroContratado;
+            const capRealHojeMin = opsConsideradosHoje * tetoPorOpHoras * 60;
+
+            const { totalMin: demandaHojeMin, vitaisAtrasadas } = calcularDemandaPrevistaData(hoje, true);
+            const diasEmDeficitRadar = renderizarRadarForcaTrabalho(capPadraoMin, tetoPorOpHoras, quadroContratado);
+
+            // ALERTAS CRÍTICOS NO TOPO DO DASHBOARD DO RAMOS
             const pedidosUrgentesAbertos = window.pedidosSuprimentosDB.filter(p => p.urgente && p.status_pedido !== 'ENTREGUE');
             const alertasCriticos = [];
 
+            if (!isFdsFeriado && demandaHojeMin > capRealHojeMin) {
+                const deficitMin = demandaHojeMin - capRealHojeMin;
+                const opsNecessarios = Math.ceil(demandaHojeMin / (tetoPorOpHoras * 60));
+                const reforcoQtd = Math.max(1, opsNecessarios - opsConsideradosHoje);
+                alertasCriticos.push(`🚨 <b>FORÇA DE TRABALHO INSUFICIENTE HOJE:</b> Demanda de <b>${formatarMinutosStr(demandaHojeMin)}</b> para capacidade de <b>${formatarMinutosStr(capRealHojeMin)}</b> (${opsConsideradosHoje} op). Déficit de <b>${formatarMinutosStr(deficitMin)}</b> — necessário reforço de <b>+${reforcoQtd} operador(es)</b> ou redistribuição.`);
+            }
+            if (vitaisAtrasadas.length > 0) {
+                alertasCriticos.push(`💧 <b>ATIVIDADE VITAL EM ATRASO:</b> ${vitaisAtrasadas.join(', ')} (transbordada com prioridade máxima hoje).`);
+            }
             if (window.presencaHojeDB && !['TURNO_ENCERRADO', 'AUTORIZADO_GESTAO'].includes(window.presencaHojeDB.status_validacao) && ativosCount < quadroContratado) {
                 alertasCriticos.push(`⚠️ <b>Quadro Incompleto Hoje:</b> Contrato prevê ${quadroContratado} posições, mas há apenas ${ativosCount} operador(es) ativo(s) no local.`);
             }
+            if (diasEmDeficitRadar.length > 0 && !(demandaHojeMin > capRealHojeMin && diasEmDeficitRadar.length === 1)) {
+                alertasCriticos.push(`📅 <b>Radar Semanal com Sobrecarga:</b> ${diasEmDeficitRadar.join(' • ')}.`);
+            }
             if (pedidosUrgentesAbertos.length > 0) {
-                alertasCriticos.push(`🚨 <b>${pedidosUrgentesAbertos.length} Pedido(s) Urgente(s) em Suprimentos:</b> ${pedidosUrgentesAbertos.map(p => p.item).join(', ')}. <button onclick="selecionarAbaAdmin('suprimentos')" class="underline font-extrabold">Ver agora →</button>`);
+                alertasCriticos.push(`📦 <b>${pedidosUrgentesAbertos.length} Pedido(s) Urgente(s) em Suprimentos:</b> ${pedidosUrgentesAbertos.map(p => p.item).join(', ')}. <button onclick="selecionarAbaAdmin('suprimentos')" class="underline font-extrabold">Ver agora →</button>`);
             }
 
             const boxCritico = document.getElementById('alerta-critico-topo');
@@ -1338,103 +1503,75 @@
                 document.getElementById('alerta-critico-texto').innerHTML = alertasCriticos.map(a => `<p>${a}</p>`).join('');
             } else boxCritico.classList.add('hidden');
 
+            // Status do posto hoje
             if (window.presencaHojeDB) {
                 const h = new Date(window.presencaHojeDB.dh_checkin_aparelho).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 if (window.presencaHojeDB.status_validacao === 'TURNO_ENCERRADO') {
-                    stPlantao.textContent = `🏁 Expediente Encerrado`;
-                    subPlantao.textContent = `Equipe: ${window.presencaHojeDB.equipe_presente}`;
+                    stPlantao.textContent = `🏁 Expediente Encerrado`; subPlantao.textContent = `Equipe: ${window.presencaHojeDB.equipe_presente}`;
                 } else if (window.presencaHojeDB.status_validacao === 'AUTORIZADO_GESTAO') {
-                    stPlantao.textContent = `🔓 Plantão Liberado pela Supervisão`;
-                    subPlantao.textContent = `Aguardando chegada da equipe no local`;
+                    stPlantao.textContent = `🔓 Plantão Liberado pela Supervisão`; subPlantao.textContent = `Aguardando chegada da equipe no local`;
                 } else {
                     stPlantao.textContent = `🟢 Posto Ativo desde ${h} (${window.presencaHojeDB.status_validacao})`;
                     subPlantao.textContent = `Disponíveis agora: ${window.presencaHojeDB.equipe_presente} • GPS: ${window.presencaHojeDB.distancia_metros ?? 'Subsolo'}m`;
                 }
             } else if (isFdsFeriado) {
-                stPlantao.textContent = "🔒 Posto Fechado (Fim de Semana / Feriado)";
-                subPlantao.textContent = "Toque em 'Liberar Plantão' caso haja escala extraordinária.";
+                stPlantao.textContent = "🔒 Posto Fechado (Fim de Semana / Feriado)"; subPlantao.textContent = "Toque em 'Liberar Plantão' caso haja escala extraordinária.";
             } else {
-                stPlantao.textContent = "⏳ Dia Útil Normal • Aguardando Ativação da Equipe";
-                subPlantao.textContent = "Nenhum check-in registrado até o momento.";
+                stPlantao.textContent = "⏳ Dia Útil Normal • Aguardando Ativação da Equipe"; subPlantao.textContent = "Nenhum check-in registrado até o momento.";
             }
 
+            // Dashboard 1: Avanço do Contrato no Mês
             const tarefasAtivasCli = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo && t.ativo !== false);
             let minEstimadosMes = 0;
             tarefasAtivasCli.forEach(t => {
-                const f = (t.frequencia || '').toLowerCase();
-                const min = calcularSlaCalibradoAdmin(t).min;
+                const f = (t.frequencia || '').toLowerCase(), min = calcularSlaCalibradoAdmin(t).min;
                 if (f.includes('seg a sex') || f.includes('diári') || f.includes('5x')) minEstimadosMes += min * 22;
                 else if (f.includes('seg, qua, sex') || f.includes('3x')) minEstimadosMes += min * 13;
                 else if (f.includes('ter, qui') || f.includes('2x')) minEstimadosMes += min * 9;
-                else if (f.includes('quinzenal')) minEstimadosMes += min * 2;
+                else if (f.includes('quinzenal') || f.includes('2x/mês')) minEstimadosMes += min * 2;
                 else if (f.includes('mês') || f.includes('mensal') || f.includes('quadrimestral')) minEstimadosMes += min;
                 else minEstimadosMes += min * 4;
             });
 
             const execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
             const execsConcluidas = execsCli.filter(e => e.status_execucao === 'CONCLUIDO');
+            const naoRealizadasMes = execsCli.filter(e => e.status_execucao === 'NAO_REALIZADA' && e.flag_auditoria !== 'JUSTIFICADO_SUPERVISAO');
             const minRealizadosMes = execsConcluidas.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
 
-            const horasRealizadas = (minRealizadosMes / 60).toFixed(1);
-            const horasLimite = Math.round(minEstimadosMes / 60);
+            const horasRealizadas = (minRealizadosMes / 60).toFixed(1), horasLimite = Math.round(minEstimadosMes / 60);
             const pctHoras = horasLimite > 0 ? Math.min(100, Math.round((minRealizadosMes / minEstimadosMes) * 100)) : 0;
 
             document.getElementById('dash-horas-mes').innerHTML = `${horasRealizadas}h <span class="text-xs text-slate-500 font-bold">trabalhadas</span>`;
             document.getElementById('dash-limite-mes').textContent = `${horasLimite}h`;
-
-            const barraHoras = document.getElementById('dash-barra-horas');
-            const alertaHoras = document.getElementById('dash-alerta-horas');
+            const barraHoras = document.getElementById('dash-barra-horas'), alertaHoras = document.getElementById('dash-alerta-horas');
             barraHoras.style.width = `${pctHoras}%`;
+            if (pctHoras >= 100) { barraHoras.className = "h-full bg-red-500 transition-all duration-500"; alertaHoras.className = "text-[10px] font-extrabold text-red-600"; alertaHoras.textContent = "⚠️ Alerta: Carga de horas do contrato estourada!"; }
+            else if (pctHoras >= 85) { barraHoras.className = "h-full bg-amber-500 transition-all duration-500"; alertaHoras.className = "text-[10px] font-bold text-amber-600"; alertaHoras.textContent = "Atenção: Próximo do limite de horas contratadas."; }
+            else { barraHoras.className = "h-full bg-blue-500 transition-all duration-500"; alertaHoras.className = "text-[10px] font-bold text-blue-600"; alertaHoras.textContent = `Ritmo normal (${pctHoras}% da carga mensal concluída).`; }
 
-            if (pctHoras >= 100) {
-                barraHoras.className = "h-full bg-red-500 transition-all duration-500";
-                alertaHoras.className = "text-[10px] font-extrabold text-red-600";
-                alertaHoras.textContent = "⚠️ Alerta: Carga de horas do contrato estourada!";
-            } else if (pctHoras >= 85) {
-                barraHoras.className = "h-full bg-amber-500 transition-all duration-500";
-                alertaHoras.className = "text-[10px] font-bold text-amber-600";
-                alertaHoras.textContent = "Atenção: Próximo do limite de horas contratadas.";
-            } else {
-                barraHoras.className = "h-full bg-blue-500 transition-all duration-500";
-                alertaHoras.className = "text-[10px] font-bold text-blue-600";
-                alertaHoras.textContent = `Ritmo normal (${pctHoras}% da carga mensal concluída).`;
-            }
-
+            // Dashboard 2: Qualidade & Aderência (inclui Ciclos Perdidos no mês)
             const divergentes = execsConcluidas.filter(e => e.flag_auditoria !== 'CONFORME');
-            const pctConf = execsConcluidas.length > 0 ? Math.round(((execsConcluidas.length - divergentes.length) / execsConcluidas.length) * 100) : 100;
+            const totalAvaliaveis = execsConcluidas.length + naoRealizadasMes.length;
+            const totalProblemas = divergentes.length + naoRealizadasMes.length;
+            const pctConf = totalAvaliaveis > 0 ? Math.round(((totalAvaliaveis - totalProblemas) / totalAvaliaveis) * 100) : 100;
 
             document.getElementById('dash-pct-qualidade').textContent = `${pctConf}%`;
-            const txtQualidade = document.getElementById('dash-txt-qualidade');
-            const cardQualidade = document.getElementById('card-qualidade');
-
-            if (divergentes.length > 0) {
+            const txtQualidade = document.getElementById('dash-txt-qualidade'), cardQualidade = document.getElementById('card-qualidade');
+            if (totalProblemas > 0) {
                 cardQualidade.className = "bg-red-50 p-3.5 rounded-2xl border border-red-200 shadow-sm";
                 txtQualidade.className = "text-[10px] font-bold text-red-600 mt-0.5 leading-tight";
-                txtQualidade.textContent = `❌ ${divergentes.length} tarefa(s) com alerta (GPS, foto ou tempo).`;
+                txtQualidade.textContent = `${naoRealizadasMes.length > 0 ? `❌ ${naoRealizadasMes.length} não realizada(s)` : ''}${naoRealizadasMes.length > 0 && divergentes.length > 0 ? ' • ' : ''}${divergentes.length > 0 ? `⚠️ ${divergentes.length} alerta(s)` : ''}`;
             } else {
                 cardQualidade.className = "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm";
                 txtQualidade.className = "text-[10px] font-bold text-emerald-600 mt-0.5 leading-tight";
-                txtQualidade.textContent = "✓ Nenhuma tarefa com problema.";
+                txtQualidade.textContent = "✓ 100% dentro do padrão no mês.";
             }
 
-            const minChuva = calcularMinutosChuvaHoje();
-            const iconeClima = document.getElementById('dash-icone-clima');
-            const txtClima = document.getElementById('dash-txt-clima');
-            const subClima = document.getElementById('dash-sub-clima');
-
-            if (window.presencaHojeDB?.modo_chuva_ativo) {
-                iconeClima.textContent = "🌧️"; txtClima.textContent = "Chovendo Agora";
-                txtClima.className = "text-base font-extrabold text-blue-400 animate-pulse";
-                subClima.textContent = `Serviço externo pausado (${formatarMinutosStr(minChuva)})`;
-            } else if (minChuva > 0) {
-                iconeClima.textContent = "🌦️"; txtClima.textContent = "Instável Hoje";
-                txtClima.className = "text-base font-extrabold text-white";
-                subClima.textContent = `Já choveu ${formatarMinutosStr(minChuva)} no turno.`;
-            } else {
-                iconeClima.textContent = "☀️"; txtClima.textContent = "Tempo Seco";
-                txtClima.className = "text-base font-extrabold text-white";
-                subClima.textContent = "Condições normais de operação.";
-            }
+            // Clima
+            const minChuva = calcularMinutosChuvaHoje(), iconeClima = document.getElementById('dash-icone-clima'), txtClima = document.getElementById('dash-txt-clima'), subClima = document.getElementById('dash-sub-clima');
+            if (window.presencaHojeDB?.modo_chuva_ativo) { iconeClima.textContent = "🌧️"; txtClima.textContent = "Chovendo Agora"; txtClima.className = "text-base font-extrabold text-blue-400 animate-pulse"; subClima.textContent = `Serviço externo pausado (${formatarMinutosStr(minChuva)})`; }
+            else if (minChuva > 0) { iconeClima.textContent = "🌦️"; txtClima.textContent = "Instável Hoje"; txtClima.className = "text-base font-extrabold text-white"; subClima.textContent = `Já choveu ${formatarMinutosStr(minChuva)} no turno.`; }
+            else { iconeClima.textContent = "☀️"; txtClima.textContent = "Tempo Seco"; txtClima.className = "text-base font-extrabold text-white"; subClima.textContent = "Condições normais de operação."; }
 
             renderizarListaAuditoriaAdmin();
             renderizarSuprimentosAdmin();
@@ -1447,133 +1584,48 @@
 
             const { data: logsRej } = await sb.from('logs_rejeicao').select('*').eq('cliente', clienteAtivo).order('dh_tentativa', { ascending: false }).limit(20);
             document.getElementById('badge-rejeicoes').textContent = (logsRej || []).length;
-            document.getElementById('gestao-rejeicoes-list').innerHTML = (logsRej || []).map(l => {
-                const dh = new Date(l.dh_tentativa).toLocaleString('pt-BR');
-                return `<div class="p-3 text-xs"><div class="flex justify-between font-bold text-red-800"><span>${l.operador} • ${l.motivo_tecnico}</span><span class="text-[10px] text-slate-400">${dh}</span></div><p class="text-[10px] text-slate-600 mt-0.5">${l.setor} (${l.atividade})</p></div>`;
-            }).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma foto rejeitada neste contrato.</p>`;
+            document.getElementById('gestao-rejeicoes-list').innerHTML = (logsRej || []).map(l => `<div class="p-3 text-xs"><div class="flex justify-between font-bold text-red-800"><span>${l.operador} • ${l.motivo_tecnico}</span><span class="text-[10px] text-slate-400">${new Date(l.dh_tentativa).toLocaleString('pt-BR')}</span></div><p class="text-[10px] text-slate-600 mt-0.5">${l.setor} (${l.atividade})</p></div>`).join('') || `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma foto rejeitada neste contrato.</p>`;
 
             initIcons();
         }
 
         // =========================================================================
-        // 7. GESTÃO DE SUPRIMENTOS (ADMIN / RAMOS)
+        // 8. SUPRIMENTOS, ÁREAS E INVENTÁRIO BOTÂNICO
         // =========================================================================
         function setFiltroSupAdmin(filtro) {
             filtroSupAdmin = filtro;
-            document.getElementById('btn-sup-f-PENDENTES').className = filtro === 'PENDENTES'
-                ? "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-orange-500 text-white"
-                : "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300";
-            document.getElementById('btn-sup-f-TODOS').className = filtro === 'TODOS'
-                ? "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-orange-500 text-white"
-                : "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300";
+            document.getElementById('btn-sup-f-PENDENTES').className = filtro === 'PENDENTES' ? "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-orange-500 text-white" : "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300";
+            document.getElementById('btn-sup-f-TODOS').className = filtro === 'TODOS' ? "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-orange-500 text-white" : "text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300";
             renderizarSuprimentosAdmin();
         }
-
         function renderizarSuprimentosAdmin() {
-            const todos = window.pedidosSuprimentosDB || [];
-            const abertosCount = todos.filter(p => p.status_pedido !== 'ENTREGUE').length;
+            const todos = window.pedidosSuprimentosDB || [], abertosCount = todos.filter(p => p.status_pedido !== 'ENTREGUE').length;
             const dot = document.getElementById('admin-sup-dot');
-            if (dot) {
-                if (abertosCount > 0) { dot.classList.remove('hidden'); dot.textContent = abertosCount > 9 ? '9+' : abertosCount; }
-                else dot.classList.add('hidden');
-            }
-
+            if (dot) { if (abertosCount > 0) { dot.classList.remove('hidden'); dot.textContent = abertosCount > 9 ? '9+' : abertosCount; } else dot.classList.add('hidden'); }
             const lista = filtroSupAdmin === 'PENDENTES' ? todos.filter(p => p.status_pedido !== 'ENTREGUE') : todos;
             const el = document.getElementById('admin-lista-suprimentos');
             if (lista.length === 0) { el.innerHTML = `<p class="p-6 text-xs text-slate-400 text-center">Nenhum pedido de suprimento/EPI neste filtro.</p>`; return; }
-
-            const badgesStatus = {
-                'SOLICITADO': `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏳ Solicitado</span>`,
-                'EM_COMPRA': `<span class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">🚚 Em Separação</span>`,
-                'ENTREGUE': `<span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">✅ Entregue</span>`
-            };
-
-            el.innerHTML = lista.map(p => {
-                const dt = new Date(p.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-                return `
-                <div class="p-3.5 text-xs space-y-2 ${p.urgente && p.status_pedido !== 'ENTREGUE' ? 'bg-red-50/50' : ''}">
-                    <div class="flex justify-between items-start gap-2">
-                        <div>
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                ${p.origem_impedimento ? `<span class="text-[9px] font-extrabold bg-red-600 text-white px-1.5 py-0.5 rounded">🚨 IMPEDIU TAREFA</span>` : ''}
-                                ${p.urgente && !p.origem_impedimento ? `<span class="text-[9px] font-extrabold bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded">URGENTE</span>` : ''}
-                                <span class="text-[9px] font-bold bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">${p.categoria}</span>
-                                <span class="font-extrabold text-slate-900">${p.item}</span>
-                                <span class="font-extrabold text-orange-600">(${p.quantidade_calculada})</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mt-1">📍 Área: <b>${p.area_destino}</b> • Solicitado por <b>${p.solicitante}</b> em ${dt}</p>
-                            ${p.observacao ? `<p class="text-[11px] text-slate-700 italic mt-0.5">"${p.observacao}"</p>` : ''}
-                        </div>
-                        <div class="flex-shrink-0">${badgesStatus[p.status_pedido] || p.status_pedido}</div>
-                    </div>
-                    ${p.status_pedido !== 'ENTREGUE' ? `
-                    <div class="flex gap-1.5 pt-1">
-                        ${p.status_pedido === 'SOLICITADO' ? `<button onclick="atualizarStatusSuprimento(${p.id}, 'EM_COMPRA')" class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold py-1.5 px-2 rounded-xl text-[11px]">🚚 Em Separação / Compra</button>` : ''}
-                        <button onclick="atualizarStatusSuprimento(${p.id}, 'ENTREGUE')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-2 rounded-xl text-[11px] shadow-sm">✅ Confirmar Entrega</button>
-                    </div>` : ''}
-                </div>`;
-            }).join('');
+            const badges = { SOLICITADO: `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏳ Solicitado</span>`, EM_COMPRA: `<span class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">🚚 Em Separação</span>`, ENTREGUE: `<span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">✅ Entregue</span>` };
+            el.innerHTML = lista.map(p => `<div class="p-3.5 text-xs space-y-2 ${p.urgente && p.status_pedido !== 'ENTREGUE' ? 'bg-red-50/50' : ''}"><div class="flex justify-between items-start gap-2"><div><div class="flex items-center gap-1.5 flex-wrap">${p.origem_impedimento ? `<span class="text-[9px] font-extrabold bg-red-600 text-white px-1.5 py-0.5 rounded">🚨 IMPEDIU TAREFA</span>` : ''}${p.urgente && !p.origem_impedimento ? `<span class="text-[9px] font-extrabold bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded">URGENTE</span>` : ''}<span class="text-[9px] font-bold bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">${p.categoria}</span><span class="font-extrabold text-slate-900">${p.item}</span><span class="font-extrabold text-orange-600">(${p.quantidade_calculada})</span></div><p class="text-[10px] text-slate-500 mt-1">📍 Área: <b>${p.area_destino}</b> • Solicitado por <b>${p.solicitante}</b> em ${new Date(p.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</p>${p.observacao ? `<p class="text-[11px] text-slate-700 italic mt-0.5">"${p.observacao}"</p>` : ''}</div><div class="flex-shrink-0">${badges[p.status_pedido] || p.status_pedido}</div></div>${p.status_pedido !== 'ENTREGUE' ? `<div class="flex gap-1.5 pt-1">${p.status_pedido === 'SOLICITADO' ? `<button onclick="atualizarStatusSuprimento(${p.id}, 'EM_COMPRA')" class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold py-1.5 px-2 rounded-xl text-[11px]">🚚 Em Separação / Compra</button>` : ''}<button onclick="atualizarStatusSuprimento(${p.id}, 'ENTREGUE')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-2 rounded-xl text-[11px] shadow-sm">✅ Confirmar Entrega</button></div>` : ''}</div>`).join('');
         }
+        async function atualizarStatusSuprimento(id, novoStatus) { await sb.from('pedidos_suprimentos').update({ status_pedido: novoStatus, atualizado_em: new Date().toISOString() }).eq('id', id); carregarDadosAdmin(); }
 
-        async function atualizarStatusSuprimento(id, novoStatus) {
-            await sb.from('pedidos_suprimentos').update({ status_pedido: novoStatus, atualizado_em: new Date().toISOString() }).eq('id', id);
-            carregarDadosAdmin();
-        }
-
-        // =========================================================================
-        // 8. CAMADAS 2 (ÁREAS/EPI) & 3 (ESPÉCIES + CALCULADORA EXCLUSIVA SUPERVISOR)
-        // =========================================================================
         function renderizarCrudAreas() {
             const el = document.getElementById('lista-areas-crud');
             if (window.areasClienteDB.length === 0) { el.innerHTML = `<p class="p-4 text-xs text-slate-400 text-center">Nenhuma área cadastrada ainda.</p>`; return; }
-            el.innerHTML = window.areasClienteDB.map(a => `
-                <div class="p-3.5 flex justify-between items-center gap-2 ${a.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
-                    <div>
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <p class="text-xs font-extrabold text-slate-900">${a.nome_area}</p>
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${a.permite_chuva ? 'bg-blue-100 text-blue-800' : 'bg-sky-50 text-sky-700 border border-sky-200'}">
-                                ${a.permite_chuva ? '☔ Permite Chuva' : '☀️ Só Tempo Seco'}
-                            </span>
-                        </div>
-                        <p class="text-[10px] font-semibold ${a.epi_obrigatorio ? 'text-amber-800' : 'text-slate-400'} mt-0.5">
-                            ${a.epi_obrigatorio ? `EPI Local: ${a.epi_obrigatorio}` : 'Sem EPI especial de localização'}
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-1.5 flex-shrink-0">
-                        <button onclick="carregarAreaNoForm(${a.id})" class="text-[10px] font-extrabold bg-orange-50 text-orange-700 px-2.5 py-1.5 rounded-xl border border-orange-200">✏️ Editar</button>
-                        <button onclick="alternarAtivoArea(${a.id}, ${a.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2 py-1.5 rounded-xl bg-slate-100 text-slate-600">${a.ativo === false ? 'Ativar' : 'Inativar'}</button>
-                    </div>
-                </div>`).join('');
+            el.innerHTML = window.areasClienteDB.map(a => `<div class="p-3.5 flex justify-between items-center gap-2 ${a.ativo === false ? 'bg-slate-100 opacity-60' : ''}"><div><div class="flex items-center gap-1.5 flex-wrap"><p class="text-xs font-extrabold text-slate-900">${a.nome_area}</p><span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${a.permite_chuva ? 'bg-blue-100 text-blue-800' : 'bg-sky-50 text-sky-700 border border-sky-200'}">${a.permite_chuva ? '☔ Permite Chuva' : '☀️ Só Tempo Seco'}</span></div><p class="text-[10px] font-semibold ${a.epi_obrigatorio ? 'text-amber-800' : 'text-slate-400'} mt-0.5">${a.epi_obrigatorio ? `EPI Local: ${a.epi_obrigatorio}` : 'Sem EPI especial de localização'}</p></div><div class="flex items-center gap-1.5 flex-shrink-0"><button onclick="carregarAreaNoForm(${a.id})" class="text-[10px] font-extrabold bg-orange-50 text-orange-700 px-2.5 py-1.5 rounded-xl border border-orange-200">✏️ Editar</button><button onclick="alternarAtivoArea(${a.id}, ${a.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2 py-1.5 rounded-xl bg-slate-100 text-slate-600">${a.ativo === false ? 'Ativar' : 'Inativar'}</button></div></div>`).join('');
         }
-
         function carregarAreaNoForm(id) {
-            const a = window.areasClienteDB.find(x => x.id === id);
-            if (!a) return;
-            document.getElementById('edit-area-id').value = a.id;
-            document.getElementById('edit-area-nome').value = a.nome_area;
-            document.getElementById('edit-area-epi').value = a.epi_obrigatorio || '';
-            document.getElementById('edit-area-chuva').checked = Boolean(a.permite_chuva);
-            document.getElementById('form-area-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando Área: ${a.nome_area}</span>`;
-            document.getElementById('btn-salvar-area').textContent = "Atualizar Área";
+            const a = window.areasClienteDB.find(x => x.id === id); if (!a) return;
+            document.getElementById('edit-area-id').value = a.id; document.getElementById('edit-area-nome').value = a.nome_area; document.getElementById('edit-area-epi').value = a.epi_obrigatorio || ''; document.getElementById('edit-area-chuva').checked = Boolean(a.permite_chuva);
+            document.getElementById('form-area-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando Área: ${a.nome_area}</span>`; document.getElementById('btn-salvar-area').textContent = "Atualizar Área";
             document.getElementById('card-form-area').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
-        function limparFormArea() {
-            document.getElementById('edit-area-id').value = '';
-            document.getElementById('edit-area-nome').value = '';
-            document.getElementById('edit-area-epi').value = '';
-            document.getElementById('edit-area-chuva').checked = false;
-            document.getElementById('form-area-titulo').textContent = '➕ Cadastrar Área / Setor do Posto';
-            document.getElementById('btn-salvar-area').textContent = "Salvar Área";
-        }
-
+        function limparFormArea() { document.getElementById('edit-area-id').value = ''; document.getElementById('edit-area-nome').value = ''; document.getElementById('edit-area-epi').value = ''; document.getElementById('edit-area-chuva').checked = false; document.getElementById('form-area-titulo').textContent = '➕ Cadastrar Área / Setor do Posto'; document.getElementById('btn-salvar-area').textContent = "Salvar Área"; }
         async function salvarAreaCliente() {
-            const id = document.getElementById('edit-area-id').value;
-            const nome = document.getElementById('edit-area-nome').value.trim();
-            if (!nome) { alert("Informe o nome da área."); return; }
+            const id = document.getElementById('edit-area-id').value, nome = document.getElementById('edit-area-nome').value.trim(); if (!nome) { alert("Informe o nome da área."); return; }
             const payload = { cliente: clienteAtivo, nome_area: nome, epi_obrigatorio: document.getElementById('edit-area-epi').value.trim(), permite_chuva: document.getElementById('edit-area-chuva').checked, ativo: true };
-            if (id) await sb.from('cliente_areas').update(payload).eq('id', id);
-            else await sb.from('cliente_areas').insert([payload]);
+            if (id) await sb.from('cliente_areas').update(payload).eq('id', id); else await sb.from('cliente_areas').insert([payload]);
             limparFormArea(); carregarDadosAdmin();
         }
         async function alternarAtivoArea(id, ativo) { await sb.from('cliente_areas').update({ ativo }).eq('id', id); carregarDadosAdmin(); }
@@ -1588,110 +1640,75 @@
                 const sacosTerra5cm = Math.max(1, Math.ceil((areaEquivM2 * 50) / 25));
                 const aduboNpkKg = Math.max(0.5, areaEquivM2 * 0.10).toFixed(1);
                 const mesesFmt = (sp.meses_poda_drastica || '').split(',').map(m => NOMES_MESES[parseInt(m.trim(), 10)] || '').filter(Boolean).join(', ');
-
-                return `
-                <div class="p-3.5 space-y-2 ${sp.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
-                    <div class="flex justify-between items-start gap-2">
-                        <div>
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">${sp.nome_area}</span>
-                                <span class="text-xs font-extrabold text-slate-900">${sp.especie}</span>
-                            </div>
-                            <p class="text-[11px] text-slate-600 mt-0.5">
-                                Medida: <b>${val} ${sp.medida_unidade}</b> • Rendimento base: <b>${sp.rendimento_hora} ${sp.medida_unidade}/h</b>
-                                ${mesesFmt ? ` • <span class="text-purple-700 font-bold">✂️ Poda Drástica: ${mesesFmt}</span>` : ''}
-                            </p>
-                        </div>
-                        <div class="flex gap-1 flex-shrink-0">
-                            <button onclick="carregarEspecieNoForm(${sp.id})" class="text-[10px] font-extrabold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200">✏️ Editar</button>
-                            <button onclick="excluirEspecie(${sp.id})" class="text-[10px] font-extrabold bg-red-50 text-red-700 px-2 py-1 rounded-lg">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-1.5 bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-2 text-center">
-                        <div><p class="text-[9px] font-bold text-emerald-800 uppercase">Mudas (+10%)</p><p class="text-xs font-extrabold text-slate-900">${mudasReposicao} mudas</p></div>
-                        <div class="border-x border-emerald-200"><p class="text-[9px] font-bold text-emerald-800 uppercase">Terra (5cm)</p><p class="text-xs font-extrabold text-slate-900">${sacosTerra5cm} sc 25kg</p></div>
-                        <div><p class="text-[9px] font-bold text-emerald-800 uppercase">Adubo NPK</p><p class="text-xs font-extrabold text-slate-900">${aduboNpkKg} kg</p></div>
-                    </div>
-                </div>`;
+                return `<div class="p-3.5 space-y-2 ${sp.ativo === false ? 'bg-slate-100 opacity-60' : ''}"><div class="flex justify-between items-start gap-2"><div><div class="flex items-center gap-1.5 flex-wrap"><span class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">${sp.nome_area}</span><span class="text-xs font-extrabold text-slate-900">${sp.especie}</span></div><p class="text-[11px] text-slate-600 mt-0.5">Medida: <b>${val} ${sp.medida_unidade}</b> • Rendimento base: <b>${sp.rendimento_hora} ${sp.medida_unidade}/h</b>${mesesFmt ? ` • <span class="text-purple-700 font-bold">✂️ Poda Drástica: ${mesesFmt}</span>` : ''}</p></div><div class="flex gap-1 flex-shrink-0"><button onclick="carregarEspecieNoForm(${sp.id})" class="text-[10px] font-extrabold bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-lg border border-emerald-200">✏️ Editar</button><button onclick="excluirEspecie(${sp.id})" class="text-[10px] font-extrabold bg-red-50 text-red-700 px-2 py-1 rounded-lg">🗑️</button></div></div><div class="grid grid-cols-3 gap-1.5 bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-2 text-center"><div><p class="text-[9px] font-bold text-emerald-800 uppercase">Mudas (+10%)</p><p class="text-xs font-extrabold text-slate-900">${mudasReposicao} mudas</p></div><div class="border-x border-emerald-200"><p class="text-[9px] font-bold text-emerald-800 uppercase">Terra (5cm)</p><p class="text-xs font-extrabold text-slate-900">${sacosTerra5cm} sc 25kg</p></div><div><p class="text-[9px] font-bold text-emerald-800 uppercase">Adubo NPK</p><p class="text-xs font-extrabold text-slate-900">${aduboNpkKg} kg</p></div></div></div>`;
             }).join('');
         }
-
         function carregarEspecieNoForm(id) {
-            const sp = window.especiesClienteDB.find(x => x.id === id);
-            if (!sp) return;
-            document.getElementById('edit-esp-id').value = sp.id;
-            document.getElementById('edit-esp-area').value = sp.nome_area;
-            document.getElementById('edit-esp-nome').value = sp.especie;
-            document.getElementById('edit-esp-medida').value = sp.medida_valor;
-            document.getElementById('edit-esp-unidade').value = sp.medida_unidade;
-            document.getElementById('edit-esp-densidade').value = sp.densidade_mudas_m2;
-            document.getElementById('edit-esp-rendimento').value = sp.rendimento_hora;
-            document.getElementById('edit-esp-poda').value = sp.meses_poda_drastica || '';
-            document.getElementById('form-esp-titulo').innerHTML = `<span class="text-emerald-700">✏️ Editando: ${sp.especie}</span>`;
-            document.getElementById('btn-salvar-esp').textContent = "Atualizar Espécie";
+            const sp = window.especiesClienteDB.find(x => x.id === id); if (!sp) return;
+            document.getElementById('edit-esp-id').value = sp.id; document.getElementById('edit-esp-area').value = sp.nome_area; document.getElementById('edit-esp-nome').value = sp.especie; document.getElementById('edit-esp-medida').value = sp.medida_valor; document.getElementById('edit-esp-unidade').value = sp.medida_unidade; document.getElementById('edit-esp-densidade').value = sp.densidade_mudas_m2; document.getElementById('edit-esp-rendimento').value = sp.rendimento_hora; document.getElementById('edit-esp-poda').value = sp.meses_poda_drastica || '';
+            document.getElementById('form-esp-titulo').innerHTML = `<span class="text-emerald-700">✏️ Editando: ${sp.especie}</span>`; document.getElementById('btn-salvar-esp').textContent = "Atualizar Espécie";
             document.getElementById('card-form-especie').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-
-        function limparFormEspecie() {
-            document.getElementById('edit-esp-id').value = '';
-            document.getElementById('edit-esp-nome').value = '';
-            document.getElementById('edit-esp-medida').value = 10;
-            document.getElementById('edit-esp-densidade').value = 15;
-            document.getElementById('edit-esp-rendimento').value = 8;
-            document.getElementById('edit-esp-poda').value = '7,8';
-            document.getElementById('form-esp-titulo').textContent = '🌿 Cadastrar Espécie Botânica na Área';
-            document.getElementById('btn-salvar-esp').textContent = "Salvar Espécie no Inventário";
-        }
-
+        function limparFormEspecie() { document.getElementById('edit-esp-id').value = ''; document.getElementById('edit-esp-nome').value = ''; document.getElementById('edit-esp-medida').value = 10; document.getElementById('edit-esp-densidade').value = 15; document.getElementById('edit-esp-rendimento').value = 8; document.getElementById('edit-esp-poda').value = '7,8'; document.getElementById('form-esp-titulo').textContent = '🌿 Cadastrar Espécie Botânica na Área'; document.getElementById('btn-salvar-esp').textContent = "Salvar Espécie no Inventário"; }
         async function salvarEspecieCliente() {
-            const id = document.getElementById('edit-esp-id').value;
-            const especie = document.getElementById('edit-esp-nome').value.trim();
-            if (!especie) { alert("Digite o nome da espécie."); return; }
-            const payload = {
-                cliente: clienteAtivo, nome_area: document.getElementById('edit-esp-area').value, especie,
-                medida_valor: parseFloat(document.getElementById('edit-esp-medida').value) || 0,
-                medida_unidade: document.getElementById('edit-esp-unidade').value,
-                densidade_mudas_m2: parseFloat(document.getElementById('edit-esp-densidade').value) || 15,
-                rendimento_hora: parseFloat(document.getElementById('edit-esp-rendimento').value) || 8,
-                meses_poda_drastica: document.getElementById('edit-esp-poda').value.trim(), ativo: true
-            };
-            if (id) await sb.from('cliente_especies').update(payload).eq('id', id);
-            else await sb.from('cliente_especies').insert([payload]);
+            const id = document.getElementById('edit-esp-id').value, especie = document.getElementById('edit-esp-nome').value.trim(); if (!especie) { alert("Digite o nome da espécie."); return; }
+            const payload = { cliente: clienteAtivo, nome_area: document.getElementById('edit-esp-area').value, especie, medida_valor: parseFloat(document.getElementById('edit-esp-medida').value) || 0, medida_unidade: document.getElementById('edit-esp-unidade').value, densidade_mudas_m2: parseFloat(document.getElementById('edit-esp-densidade').value) || 15, rendimento_hora: parseFloat(document.getElementById('edit-esp-rendimento').value) || 8, meses_poda_drastica: document.getElementById('edit-esp-poda').value.trim(), ativo: true };
+            if (id) await sb.from('cliente_especies').update(payload).eq('id', id); else await sb.from('cliente_especies').insert([payload]);
             limparFormEspecie(); carregarDadosAdmin();
         }
         async function excluirEspecie(id) { if (!confirm("Remover esta espécie do inventário?")) return; await sb.from('cliente_especies').delete().eq('id', id); carregarDadosAdmin(); }
 
         // =========================================================================
-        // 9. EDIÇÃO DE EXECUÇÃO AUDITADA, FECHAMENTOS & EXPORTAÇÃO CSV
+        // 9. AJUSTE / JUSTIFICATIVA DE LOTE, FECHAMENTOS & EXPORTAÇÃO CSV
         // =========================================================================
-        let idExecEditandoAdmin = null;
-        function abrirModalEditExecAdmin(execId) {
-            const reg = window.execucoesMesDB.find(e => e.id === execId) || execucoesDataEspecificaDB.find(e => e.id === execId);
-            if (!reg) return;
-            idExecEditandoAdmin = execId;
+        let loteEditandoAdmin = null;
+        function abrirModalEditLoteAdmin(lIdx) {
+            const lote = window.lotesAuditoriaCache[lIdx]; if (!lote) return;
+            loteEditandoAdmin = lote;
+            const reg = lote.principal, isNaoReal = reg.status_execucao === 'NAO_REALIZADA';
+            const espTxt = [...new Set(lote.registros.map(r => r.especie).filter(Boolean))].join(', ');
+            const tempoAtual = lote.registros.reduce((acc, r) => acc + (Number(r.duracao_real_min) || 0), 0);
+
+            document.getElementById('adm-edit-exec-header').textContent = isNaoReal ? 'Justificar Ciclo Não Realizado' : 'Ajustar Registro de Atividade';
             document.getElementById('adm-edit-exec-title').textContent = `${reg.setor} • ${reg.atividade}`;
-            document.getElementById('adm-edit-exec-min').value = reg.duracao_real_min || 30;
-            document.getElementById('adm-edit-exec-flag').value = reg.flag_auditoria || 'CONFORME';
+            document.getElementById('adm-edit-exec-especies').textContent = espTxt ? `🌿 Espécies: ${espTxt}` : '';
+            document.getElementById('adm-edit-exec-min').value = tempoAtual;
+            document.getElementById('adm-edit-exec-flag').value = isNaoReal ? 'JUSTIFICADO_SUPERVISAO' : (reg.flag_auditoria || 'CONFORME');
             document.getElementById('adm-edit-exec-obs').value = reg.observacao || '';
+            document.getElementById('bloco-equipe-edit-admin').classList.toggle('hidden', isNaoReal);
+
             const atuais = (reg.equipe_executora || '').split(',').map(s => s.trim());
             const colabsOp = window.colaboradoresTodosDB.filter(c => c.ativo !== false && ['OPERADOR', 'ENCARREGADO'].includes(c.perfil));
             document.getElementById('adm-edit-exec-equipe').innerHTML = colabsOp.map(c => `<label class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl cursor-pointer"><input type="checkbox" value="${c.nome}" ${atuais.includes(c.nome) ? 'checked' : ''} class="w-3.5 h-3.5 text-orange-500 rounded"><span class="text-xs font-bold text-slate-700">${c.nome}</span></label>`).join('');
-            document.getElementById('modal-edit-exec-admin').classList.remove('hidden');
-            initIcons();
+            document.getElementById('modal-edit-exec-admin').classList.remove('hidden'); initIcons();
         }
-        function fecharModalEditExecAdmin() { idExecEditandoAdmin = null; document.getElementById('modal-edit-exec-admin').classList.add('hidden'); }
+        function aplicarJustificativaAdmin(txt) {
+            document.getElementById('adm-edit-exec-obs').value = `[JUSTIFICADO POR ${adminLogado?.nome || 'SUPERVISÃO'}] ${txt}`;
+            document.getElementById('adm-edit-exec-flag').value = 'JUSTIFICADO_SUPERVISAO';
+        }
+        function fecharModalEditExecAdmin() { loteEditandoAdmin = null; document.getElementById('modal-edit-exec-admin').classList.add('hidden'); }
 
         async function salvarEdicaoExecAdmin() {
-            if (!idExecEditandoAdmin) return;
+            if (!loteEditandoAdmin) return;
+            const isNaoReal = loteEditandoAdmin.principal.status_execucao === 'NAO_REALIZADA';
             const selecionados = Array.from(document.querySelectorAll('#adm-edit-exec-equipe input:checked')).map(c => c.value);
-            if (selecionados.length === 0) { alert("Selecione ao menos um operador."); return; }
+            if (!isNaoReal && selecionados.length === 0) { alert("Selecione ao menos um operador."); return; }
+
+            const novoTempoTotal = Math.max(0, parseInt(document.getElementById('adm-edit-exec-min').value, 10) || 0);
+            const novaFlag = document.getElementById('adm-edit-exec-flag').value;
+            const novaObs = document.getElementById('adm-edit-exec-obs').value.trim();
+
             const btn = document.getElementById('btn-adm-salvar-exec'); btn.disabled = true; btn.textContent = "Salvando...";
-            await sb.from('execucoes_auditoria').update({
-                equipe_executora: selecionados.join(', '),
-                duracao_real_min: parseInt(document.getElementById('adm-edit-exec-min').value, 10) || 1,
-                flag_auditoria: document.getElementById('adm-edit-exec-flag').value,
-                observacao: document.getElementById('adm-edit-exec-obs').value.trim()
-            }).eq('id', idExecEditandoAdmin);
+            const somaEst = loteEditandoAdmin.registros.reduce((acc, r) => acc + (Number(r.duracao_estimada_min) || 30), 0);
+
+            for (const r of loteEditandoAdmin.registros) {
+                const peso = (Number(r.duracao_estimada_min) || 30) / Math.max(1, somaEst);
+                const tempoItem = isNaoReal ? 0 : (loteEditandoAdmin.registros.length === 1 ? novoTempoTotal : Math.max(1, Math.round(novoTempoTotal * peso)));
+                const payload = { flag_auditoria: novaFlag, observacao: novaObs, duracao_real_min: tempoItem };
+                if (!isNaoReal) payload.equipe_executora = selecionados.join(', ');
+                await sb.from('execucoes_auditoria').update(payload).eq('id', r.id);
+            }
+
             btn.disabled = false; btn.textContent = "Salvar Ajuste da Supervisão";
             fecharModalEditExecAdmin();
             if (filtroPeriodoAdmin === 'DATA_ESPECIFICA' && dataEspecificaAdmin) await filtrarDataEspecificaAdmin(dataEspecificaAdmin);
@@ -1702,36 +1719,34 @@
             const hoje = new Date(), execsCli = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
             let dataCorteISO = dataISO(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
             let tituloPeriodo = `FECHAMENTO MENSAL (${hoje.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()})`;
-            if (tipo === 'SEMANAL') {
-                const sete = new Date(); sete.setDate(hoje.getDate() - 7); dataCorteISO = dataISO(sete);
-                tituloPeriodo = `FECHAMENTO SEMANAL (ÚLTIMOS 7 DIAS — ${sete.toLocaleDateString('pt-BR')} A ${hoje.toLocaleDateString('pt-BR')})`;
-            }
+            if (tipo === 'SEMANAL') { const sete = new Date(); sete.setDate(hoje.getDate() - 7); dataCorteISO = dataISO(sete); tituloPeriodo = `FECHAMENTO SEMANAL (ÚLTIMOS 7 DIAS — ${sete.toLocaleDateString('pt-BR')} A ${hoje.toLocaleDateString('pt-BR')})`; }
+
             const filtradas = execsCli.filter(e => e.data_referencia >= dataCorteISO);
             const concluidas = filtradas.filter(e => e.status_execucao === 'CONCLUIDO');
             const dispensadas = filtradas.filter(e => e.status_execucao === 'DISPENSADO');
+            const naoRealizadas = filtradas.filter(e => e.status_execucao === 'NAO_REALIZADA');
             const impedimentosEpi = filtradas.filter(e => e.status_execucao === 'IMPEDIMENTO_EPI');
             const emCurso = filtradas.filter(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
             const minTrabalhados = concluidas.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
             const conformes = concluidas.filter(e => e.flag_auditoria === 'CONFORME').length;
             const pctQualidade = concluidas.length > 0 ? Math.round((conformes / concluidas.length) * 100) : 100;
             const contagemSetores = {};
-            concluidas.forEach(e => { contagemSetores[e.setor] = (contagemSetores[e.setor] || 0) + 1; });
+            agruparExecucoesEmLotes(concluidas).forEach(l => { contagemSetores[l.principal.setor] = (contagemSetores[l.principal.setor] || 0) + 1; });
             const resumoSetores = Object.entries(contagemSetores).map(([s, q]) => `  • ${s}: ${q} entrega(s)`).join('\n') || '  • Sem entregas concluídas no período';
 
-            const relatorio = `📊 *${tituloPeriodo}*\n🏢 *Contrato:* ${clienteAtivo}\n━━━━━━━━━━━━━━━━━━━━\n✅ *Atividades Concluídas:* ${concluidas.length}\n☑️ *Vistorias Técnicas (Dispensadas):* ${dispensadas.length}\n🔄 *Em Andamento / Transbordo:* ${emCurso.length}\n${impedimentosEpi.length > 0 ? `🚨 *Impedimentos por Falta de EPI:* ${impedimentosEpi.length}\n` : ''}⏱️ *Carga Líquida Auditada:* ${formatarMinutosStr(minTrabalhados)} (${(minTrabalhados / 60).toFixed(1)}h)\n🛡️ *Índice de Qualidade:* ${pctQualidade}%\n━━━━━━━━━━━━━━━━━━━━\n📍 *Entregas por Setor:*\n${resumoSetores}`;
+            const relatorio = `📊 *${tituloPeriodo}*\n🏢 *Contrato:* ${clienteAtivo}\n━━━━━━━━━━━━━━━━━━━━\n✅ *Blocos Concluídos:* ${agruparExecucoesEmLotes(concluidas).length} (${concluidas.length} espécies/itens)\n☑️ *Vistorias Técnicas (Dispensadas):* ${agruparExecucoesEmLotes(dispensadas).length}\n❌ *Ciclos Não Realizados (Interno):* ${naoRealizadas.length}\n🔄 *Em Andamento / Transbordo:* ${agruparExecucoesEmLotes(emCurso).length}\n${impedimentosEpi.length > 0 ? `🚨 *Impedimentos por Falta de EPI:* ${impedimentosEpi.length}\n` : ''}⏱️ *Carga Líquida Auditada:* ${formatarMinutosStr(minTrabalhados)} (${(minTrabalhados / 60).toFixed(1)}h)\n🛡️ *Índice de Qualidade:* ${pctQualidade}%\n━━━━━━━━━━━━━━━━━━━━\n📍 *Entregas por Setor:*\n${resumoSetores}`;
             document.getElementById('fechamento-modal-titulo').textContent = tipo === 'SEMANAL' ? '📅 Fechamento Semanal' : '📊 Fechamento Mensal';
             document.getElementById('fechamento-texto-preview').textContent = relatorio;
-            document.getElementById('modal-fechamento-periodo').classList.remove('hidden');
-            initIcons();
+            document.getElementById('modal-fechamento-periodo').classList.remove('hidden'); initIcons();
         }
         function copiarTextoFechamentoModal() { navigator.clipboard.writeText(document.getElementById('fechamento-texto-preview').textContent); alert("Fechamento copiado!"); }
 
         async function exportarBaseCSV() {
             const { data, error } = await sb.from('execucoes_auditoria').select('*').eq('cliente', clienteAtivo).order('dh_envio_servidor', { ascending: false });
             if (error || !data || data.length === 0) { alert("Nenhum registro para exportar."); return; }
-            const cab = ["ID", "Data_Referencia", "Contrato", "Setor", "Atividade", "Equipe_Executora", "Registrado_Por", "Status_Execucao", "Avaliacao_Auditoria", "Tempo_Previsto_Min", "Tempo_Real_Liquido_Min", "Minutos_Pausa_Descontados", "Distancia_GPS_Metros", "Origem_Foto", "Observacao_Tecnica", "Inicio_Tarefa", "Fim_Captura_Foto", "Links_Inicial_Andamento", "Links_Fotos_Depois"];
+            const cab = ["ID", "Grupo_Execucao_ID", "Data_Referencia", "Contrato", "Setor", "Atividade", "Especie", "Equipe_Executora", "Registrado_Por", "Status_Execucao", "Avaliacao_Auditoria", "Tempo_Previsto_Min", "Tempo_Real_Liquido_Min", "Minutos_Pausa_Descontados", "Distancia_GPS_Metros", "Origem_Foto", "Observacao_Tecnica", "Inicio_Tarefa", "Fim_Captura_Foto", "Links_Inicial_Andamento", "Links_Fotos_Depois"];
             const limpar = v => v === null || v === undefined ? '""' : `"${String(v).replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
-            const linhas = data.map(r => [r.id, r.data_referencia, r.cliente, r.setor, r.atividade, r.equipe_executora, r.registrado_por, r.status_execucao, r.flag_auditoria, r.duracao_estimada_min, r.duracao_real_min, r.minutos_pausa_descontados || 0, r.distancia_cliente_m ?? '', r.origem_midia, r.observacao, r.dh_inicio_tarefa, r.dh_captura_exif, r.foto_antes_url, r.foto_depois_url].map(limpar).join(';'));
+            const linhas = data.map(r => [r.id, r.grupo_execucao_id || '', r.data_referencia, r.cliente, r.setor, r.atividade, r.especie || '', r.equipe_executora, r.registrado_por, r.status_execucao, r.flag_auditoria, r.duracao_estimada_min, r.duracao_real_min, r.minutos_pausa_descontados || 0, r.distancia_cliente_m ?? '', r.origem_midia, r.observacao, r.dh_inicio_tarefa, r.dh_captura_exif, r.foto_antes_url, r.foto_depois_url].map(limpar).join(';'));
             baixarArquivoCSV([cab.join(';'), ...linhas].join('\r\n'), `Auditoria_NovaEra_${clienteAtivo.replace(/\s+/g, '_')}_${dataISO()}.csv`);
         }
 
@@ -1742,14 +1757,10 @@
             const limpar = v => v === null || v === undefined ? '""' : `"${String(v).replace(/"/g, '""')}"`;
             const linhas = [];
             data.forEach(reg => {
-                const ops = Array.isArray(reg.disponibilidade_operadores) && reg.disponibilidade_operadores.length > 0
-                    ? reg.disponibilidade_operadores
-                    : (reg.equipe_presente || '').split(',').map(s => s.trim()).filter(Boolean).map(n => ({ nome: n, inicio: reg.dh_checkin_aparelho, fim: reg.dh_checkout_posto, motivo_saida: '' }));
+                const ops = Array.isArray(reg.disponibilidade_operadores) && reg.disponibilidade_operadores.length > 0 ? reg.disponibilidade_operadores : (reg.equipe_presente || '').split(',').map(s => s.trim()).filter(Boolean).map(n => ({ nome: n, inicio: reg.dh_checkin_aparelho, fim: reg.dh_checkout_posto, motivo_saida: '' }));
                 ops.forEach(op => {
-                    const tIni = op.inicio ? new Date(op.inicio).getTime() : 0;
-                    const tFim = op.fim ? new Date(op.fim).getTime() : (reg.dh_checkout_posto ? new Date(reg.dh_checkout_posto).getTime() : Date.now());
-                    const mins = tIni > 0 ? Math.max(0, Math.round((tFim - tIni) / 60000)) : 0;
-                    linhas.push([reg.data_turno, reg.cliente, op.nome, op.inicio || '', op.fim || '', mins, op.motivo_saida || '', reg.minutos_chuva_acumulados || 0].map(limpar).join(';'));
+                    const tIni = op.inicio ? new Date(op.inicio).getTime() : 0, tFim = op.fim ? new Date(op.fim).getTime() : (reg.dh_checkout_posto ? new Date(reg.dh_checkout_posto).getTime() : Date.now());
+                    linhas.push([reg.data_turno, reg.cliente, op.nome, op.inicio || '', op.fim || '', tIni > 0 ? Math.max(0, Math.round((tFim - tIni) / 60000)) : 0, op.motivo_saida || '', reg.minutos_chuva_acumulados || 0].map(limpar).join(';'));
                 });
             });
             baixarArquivoCSV([cab.join(';'), ...linhas].join('\r\n'), `Disponibilidade_Operadores_${clienteAtivo.replace(/\s+/g, '_')}_${dataISO()}.csv`);
@@ -1758,8 +1769,7 @@
         function baixarArquivoCSV(conteudo, nomeArquivo) {
             const blob = new Blob(["\uFEFF" + conteudo], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob), a = document.createElement('a');
-            a.href = url; a.download = nomeArquivo; document.body.appendChild(a); a.click();
-            document.body.removeChild(a); URL.revokeObjectURL(url);
+            a.href = url; a.download = nomeArquivo; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         }
 
         async function autorizarPlantaoExcepcional() {
@@ -1781,7 +1791,7 @@
             const dispHoje = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && e.data_referencia === hojeStr && e.status_execucao === 'DISPENSADO');
             const emCurso = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
             const minHoje = execsHoje.reduce((a, b) => a + (Number(b.duracao_real_min) || 0), 0);
-            const texto = `📋 *RELATÓRIO DO DIA — NOVA ERA*\n📍 *Contrato:* ${clienteAtivo}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n👷 *Equipe no Posto:* ${window.presencaHojeDB?.equipe_presente || 'Sem check-in'}\n✅ *Concluídas hoje:* ${execsHoje.length} atividades\n☑️ *Vistoriadas/Dispensadas:* ${dispHoje.length}\n🔄 *Em Andamento:* ${emCurso.length}\n⏱️ *Tempo Trabalhado Hoje:* ${formatarMinutosStr(minHoje)}\n🌦️ *Chuva Acumulada:* ${formatarMinutosStr(calcularMinutosChuvaHoje())}`;
+            const texto = `📋 *RELATÓRIO DO DIA — NOVA ERA*\n📍 *Contrato:* ${clienteAtivo}\n📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n👷 *Equipe no Posto:* ${window.presencaHojeDB?.equipe_presente || 'Sem check-in'}\n✅ *Blocos Concluídos hoje:* ${agruparExecucoesEmLotes(execsHoje).length} (${execsHoje.length} espécies/itens)\n☑️ *Vistoriadas/Dispensadas:* ${agruparExecucoesEmLotes(dispHoje).length}\n🔄 *Em Andamento:* ${agruparExecucoesEmLotes(emCurso).length}\n⏱️ *Tempo Trabalhado Hoje:* ${formatarMinutosStr(minHoje)}\n🌦️ *Chuva Acumulada:* ${formatarMinutosStr(calcularMinutosChuvaHoje())}`;
             navigator.clipboard.writeText(texto); alert("Resumo de hoje copiado!");
         }
 
@@ -1793,10 +1803,11 @@
                 const linhas = csv.split(/\r?\n/).map(l => l.split(',')), novos = [];
                 for (let i = 1; i < linhas.length; i++) {
                     const col = linhas[i]; if (!col || col.length < 3 || !col[2]) continue;
-                    const durStr = (col[4] || '30m').trim();
+                    const durStr = (col[4] || '30m').trim(), ativ = (col[2] || '').replace(/"/g, '').trim();
                     let min = 30; const hM = durStr.match(/(\d+)\s*h/i), mM = durStr.match(/(\d+)\s*m/i);
                     if (hM || mM) min = (hM ? parseInt(hM[1]) * 60 : 0) + (mM ? parseInt(mM[1]) : 0);
-                    novos.push({ cliente: clienteAtivo, setor: (col[0] || 'Geral').replace(/"/g, '').trim(), ambiente: (col[1] || '').replace(/"/g, '').trim(), atividade: (col[2] || '').replace(/"/g, '').trim(), frequencia: (col[3] || 'Semanal').replace(/"/g, '').trim(), duracao_str: durStr, duracao_minutos: min, especie: (col[5] || 'Diversas').replace(/"/g, '').trim(), permite_chuva: !(col[7] || '').toLowerCase().includes('n'), prioridade: parseInt(col[8]) === 1 ? 1 : 2 });
+                    const isVital = /irriga|rega/i.test(ativ);
+                    novos.push({ cliente: clienteAtivo, setor: (col[0] || 'Geral').replace(/"/g, '').trim(), ambiente: (col[1] || '').replace(/"/g, '').trim(), atividade: ativ, frequencia: (col[3] || 'Semanal').replace(/"/g, '').trim(), duracao_str: durStr, duracao_minutos: min, especie: (col[5] || 'Diversas').replace(/"/g, '').trim(), permite_chuva: !(col[7] || '').toLowerCase().includes('n'), vital: isVital, prioridade: parseInt(col[8]) === 1 ? 1 : 2 });
                 }
                 if (novos.length > 0) { await sb.from('cronograma_mestre').delete().eq('cliente', clienteAtivo); await sb.from('cronograma_mestre').insert(novos); alert(`${novos.length} atividades sincronizadas!`); carregarDadosAdmin(); }
             } catch (e) { alert("Erro ao importar: " + e.message); }
@@ -1804,7 +1815,7 @@
         }
 
         // =========================================================================
-        // 10. CRUD TAREFAS, EQUIPE, LOGINS E CONTRATOS (CAMADA 1 COMPLETA)
+        // 10. CRUD TAREFAS (COM VITAL), EQUIPE, LOGINS E CONTRATOS
         // =========================================================================
         function renderizarCrudTarefas() {
             const lista = window.cronogramaTodosDB.filter(t => t.cliente === clienteAtivo);
@@ -1820,11 +1831,12 @@
                     <div>
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <span class="text-[10px] font-extrabold bg-slate-200 text-slate-800 px-2 py-0.5 rounded">${t.setor}</span>
+                            ${t.vital ? `<span class="text-[9px] font-extrabold bg-emerald-100 text-emerald-900 px-1.5 py-0.5 rounded border border-emerald-300">🌿 VITAL</span>` : ''}
                             <span class="text-[10px] font-bold text-slate-500">${t.frequencia}</span>
                             ${badgeSla}
                             ${t.epi_especifico ? `<span class="text-[9px] font-extrabold bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded">🦺 ${t.epi_especifico}</span>` : ''}
                         </div>
-                        <p class="text-xs font-bold text-slate-900 mt-1">${t.atividade}</p>
+                        <p class="text-xs font-bold text-slate-900 mt-1">${t.atividade} <span class="text-emerald-700 font-semibold">• ${t.especie || 'Geral'}</span></p>
                     </div>
                     <div class="flex items-center gap-1.5 flex-shrink-0">
                         <button onclick="carregarTarefaNoForm(${t.id})" class="text-[10px] font-extrabold bg-orange-50 hover:bg-orange-100 text-orange-700 px-3 py-1.5 rounded-xl border border-orange-200 shadow-sm">✏️ Editar</button>
@@ -1835,41 +1847,22 @@
         }
 
         function carregarTarefaNoForm(id) {
-            const t = window.cronogramaTodosDB.find(x => x.id === id);
-            if (!t) return;
-            document.getElementById('edit-tarefa-id').value = t.id;
-            document.getElementById('edit-tarefa-setor').value = t.setor;
-            document.getElementById('edit-tarefa-especie').value = t.especie || '';
-            document.getElementById('edit-tarefa-nome').value = t.atividade;
-            document.getElementById('edit-tarefa-epi').value = t.epi_especifico || '';
-            document.getElementById('edit-tarefa-freq').value = t.frequencia;
-            document.getElementById('edit-tarefa-min').value = t.duracao_minutos || 30;
-            document.getElementById('edit-tarefa-prio').value = t.prioridade || 2;
-            document.getElementById('edit-tarefa-chuva').checked = t.permite_chuva !== false;
-            document.getElementById('edit-tarefa-travar-sla').checked = Boolean(t.travar_sla_manual);
+            const t = window.cronogramaTodosDB.find(x => x.id === id); if (!t) return;
+            document.getElementById('edit-tarefa-id').value = t.id; document.getElementById('edit-tarefa-setor').value = t.setor; document.getElementById('edit-tarefa-especie').value = t.especie || ''; document.getElementById('edit-tarefa-nome').value = t.atividade; document.getElementById('edit-tarefa-epi').value = t.epi_especifico || ''; document.getElementById('edit-tarefa-freq').value = t.frequencia; document.getElementById('edit-tarefa-min').value = t.duracao_minutos || 30; document.getElementById('edit-tarefa-prio').value = t.prioridade || 2; document.getElementById('edit-tarefa-vital').checked = Boolean(t.vital); document.getElementById('edit-tarefa-chuva').checked = t.permite_chuva !== false; document.getElementById('edit-tarefa-travar-sla').checked = Boolean(t.travar_sla_manual);
             document.getElementById('form-tarefa-titulo').innerHTML = `<span class="text-orange-600">✏️ Editando: ${t.atividade.substring(0,22)}...</span>`;
             document.getElementById('btn-salvar-tarefa').textContent = "Atualizar Tarefa";
-            const card = document.getElementById('card-form-tarefa');
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            card.classList.remove('highlight-edit'); void card.offsetWidth; card.classList.add('highlight-edit');
+            const card = document.getElementById('card-form-tarefa'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); card.classList.remove('highlight-edit'); void card.offsetWidth; card.classList.add('highlight-edit');
         }
 
         function limparFormTarefaGestao() {
-            document.getElementById('edit-tarefa-id').value = '';
-            document.getElementById('edit-tarefa-setor').value = '';
-            document.getElementById('edit-tarefa-especie').value = '';
-            document.getElementById('edit-tarefa-nome').value = '';
-            document.getElementById('edit-tarefa-epi').value = '';
-            document.getElementById('edit-tarefa-min').value = 45;
-            document.getElementById('edit-tarefa-travar-sla').checked = false;
-            document.getElementById('form-tarefa-titulo').textContent = '➕ Cadastrar Nova Tarefa';
-            document.getElementById('btn-salvar-tarefa').textContent = "Salvar Tarefa";
+            ['edit-tarefa-id', 'edit-tarefa-setor', 'edit-tarefa-especie', 'edit-tarefa-nome', 'edit-tarefa-epi'].forEach(i => document.getElementById(i).value = '');
+            document.getElementById('edit-tarefa-min').value = 45; document.getElementById('edit-tarefa-vital').checked = false; document.getElementById('edit-tarefa-travar-sla').checked = false;
+            document.getElementById('form-tarefa-titulo').textContent = '➕ Cadastrar Nova Tarefa'; document.getElementById('btn-salvar-tarefa').textContent = "Salvar Tarefa";
             document.getElementById('card-form-tarefa').classList.remove('highlight-edit');
         }
 
         async function salvarTarefaGestao() {
-            const id = document.getElementById('edit-tarefa-id').value;
-            const setor = document.getElementById('edit-tarefa-setor').value.trim(), nome = document.getElementById('edit-tarefa-nome').value.trim();
+            const id = document.getElementById('edit-tarefa-id').value, setor = document.getElementById('edit-tarefa-setor').value.trim(), nome = document.getElementById('edit-tarefa-nome').value.trim();
             if (!setor || !nome) { alert("Preencha Setor e Atividade."); return; }
             const min = parseInt(document.getElementById('edit-tarefa-min').value, 10) || 30;
             const payload = {
@@ -1877,26 +1870,18 @@
                 frequencia: document.getElementById('edit-tarefa-freq').value, duracao_minutos: min, duracao_str: formatarMinutosStr(min),
                 especie: document.getElementById('edit-tarefa-especie').value.trim() || 'Diversas',
                 prioridade: parseInt(document.getElementById('edit-tarefa-prio').value, 10) || 2,
+                vital: document.getElementById('edit-tarefa-vital').checked,
                 permite_chuva: document.getElementById('edit-tarefa-chuva').checked,
                 travar_sla_manual: document.getElementById('edit-tarefa-travar-sla').checked, ativo: true
             };
-            if (id) await sb.from('cronograma_mestre').update(payload).eq('id', id);
-            else await sb.from('cronograma_mestre').insert([payload]);
+            if (id) await sb.from('cronograma_mestre').update(payload).eq('id', id); else await sb.from('cronograma_mestre').insert([payload]);
             limparFormTarefaGestao(); carregarDadosAdmin();
         }
         async function alternarAtivoTarefa(id, ativo) { await sb.from('cronograma_mestre').update({ ativo }).eq('id', id); carregarDadosAdmin(); }
 
         function renderizarCrudEquipe() {
             const opcoesClientes = window.clientesDB.map(c => c.nome), perfis = ['OPERADOR', 'ENCARREGADO', 'SUPERVISOR', 'GESTOR'];
-            document.getElementById('gestao-lista-equipe-crud').innerHTML = window.colaboradoresTodosDB.map(c => `
-                <div class="p-3.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-55' : ''}">
-                    <div><p class="text-xs font-extrabold text-slate-900">${c.nome}</p><p class="text-[10px] font-bold ${c.ativo === false ? 'text-red-600' : 'text-emerald-600'}">${c.ativo === false ? '🔴 Inativo' : '🟢 Ativo'}</p></div>
-                    <div class="flex items-center gap-1.5 flex-wrap">
-                        ${c.ativo !== false ? `<select onchange="alterarPerfilColaboradorGestao(${c.id}, this.value)" class="bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-extrabold text-emerald-800">${perfis.map(p => `<option value="${p}" ${c.perfil === p ? 'selected' : ''}>${p}</option>`).join('')}</select>` : ''}
-                        ${c.ativo !== false ? `<select onchange="realocarColaboradorGestao(${c.id}, this.value)" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-800">${opcoesClientes.map(n => `<option value="${n}" ${c.cliente_padrao === n ? 'selected' : ''}>${n}</option>`).join('')}<option value="" ${!c.cliente_padrao ? 'selected' : ''}>[ Sem Posto Fixo ]</option></select>` : ''}
-                        <button onclick="alternarStatusColaboradorGestao(${c.id}, ${c.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg ${c.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${c.ativo === false ? 'Reativar' : 'Inativar'}</button>
-                    </div>
-                </div>`).join('');
+            document.getElementById('gestao-lista-equipe-crud').innerHTML = window.colaboradoresTodosDB.map(c => `<div class="p-3.5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-55' : ''}"><div><p class="text-xs font-extrabold text-slate-900">${c.nome}</p><p class="text-[10px] font-bold ${c.ativo === false ? 'text-red-600' : 'text-emerald-600'}">${c.ativo === false ? '🔴 Inativo' : '🟢 Ativo'}</p></div><div class="flex items-center gap-1.5 flex-wrap">${c.ativo !== false ? `<select onchange="alterarPerfilColaboradorGestao(${c.id}, this.value)" class="bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-extrabold text-emerald-800">${perfis.map(p => `<option value="${p}" ${c.perfil === p ? 'selected' : ''}>${p}</option>`).join('')}</select>` : ''}${c.ativo !== false ? `<select onchange="realocarColaboradorGestao(${c.id}, this.value)" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-800">${opcoesClientes.map(n => `<option value="${n}" ${c.cliente_padrao === n ? 'selected' : ''}>${n}</option>`).join('')}<option value="" ${!c.cliente_padrao ? 'selected' : ''}>[ Sem Posto Fixo ]</option></select>` : ''}<button onclick="alternarStatusColaboradorGestao(${c.id}, ${c.ativo === false ? 'true' : 'false'})" class="text-[10px] font-extrabold px-2.5 py-1.5 rounded-lg ${c.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${c.ativo === false ? 'Reativar' : 'Inativar'}</button></div></div>`).join('');
         }
         async function adicionarColaboradorGestao() {
             const nome = document.getElementById('novo-colab-nome').value.trim(); if (!nome) { alert("Digite o nome."); return; }
@@ -1908,11 +1893,7 @@
         async function alternarStatusColaboradorGestao(id, s) { await sb.from('colaboradores').update({ ativo: s }).eq('id', id); carregarDadosAdmin(); }
 
         function renderizarCrudLogins() {
-            document.getElementById('lista-logins-crud').innerHTML = window.loginsAdminDB.map(u => `
-                <div class="py-2.5 flex justify-between items-center ${u.ativo === false ? 'opacity-50' : ''}">
-                    <div><p class="text-[11px] font-extrabold text-slate-800">${u.nome_exibicao} <span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">${u.perfil}</span></p><p class="text-[10px] font-bold text-slate-500">Usuário: <span class="text-orange-600">${u.login}</span></p></div>
-                    <button onclick="alternarStatusLogin(${u.id}, ${u.ativo === false ? 'true' : 'false'})" class="text-[9px] font-extrabold px-2 py-1 rounded-lg ${u.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-700'}">${u.ativo === false ? 'Ativar Acesso' : 'Bloquear Acesso'}</button>
-                </div>`).join('');
+            document.getElementById('lista-logins-crud').innerHTML = window.loginsAdminDB.map(u => `<div class="py-2.5 flex justify-between items-center ${u.ativo === false ? 'opacity-50' : ''}"><div><p class="text-[11px] font-extrabold text-slate-800">${u.nome_exibicao} <span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">${u.perfil}</span></p><p class="text-[10px] font-bold text-slate-500">Usuário: <span class="text-orange-600">${u.login}</span></p></div><button onclick="alternarStatusLogin(${u.id}, ${u.ativo === false ? 'true' : 'false'})" class="text-[9px] font-extrabold px-2 py-1 rounded-lg ${u.ativo === false ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-700'}">${u.ativo === false ? 'Ativar Acesso' : 'Bloquear Acesso'}</button></div>`).join('');
         }
         async function adicionarOuAtualizarLoginAdmin() {
             const login = document.getElementById('novo-login-user').value.trim().toLowerCase(), senha = document.getElementById('novo-login-pass').value.trim(), nome = document.getElementById('novo-login-nome').value.trim();
@@ -1925,115 +1906,52 @@
         async function alternarStatusLogin(id, s) { await sb.from('usuarios_admin').update({ ativo: s }).eq('id', id); carregarDadosAdmin(); }
 
         function renderizarCrudContratos() {
-            document.getElementById('gestao-lista-contratos-crud').innerHTML = window.clientesDB.map(c => `
-                <div class="p-3.5 flex justify-between items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-60' : ''}">
-                    <div>
-                        <p class="text-xs font-extrabold text-slate-900">${c.nome}</p>
-                        <p class="text-[10px] text-slate-600">👤 ${c.contato_nome || 'Sem contato'} ${c.contato_telefone ? '• ' + c.contato_telefone : ''}</p>
-                        <p class="text-[10px] text-slate-500">Quadro: <b>${c.quadro_contratado_qtd || 2}</b> (${c.quadro_cargos || 'Equipe'}) • Teto: <b>${c.teto_diario_horas}h/dia</b></p>
-                    </div>
-                    <button onclick="carregarContratoNoForm(${c.id})" class="text-[10px] font-extrabold bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-2 rounded-xl shadow-sm flex-shrink-0">⚙️ Configurar</button>
-                </div>`).join('');
+            document.getElementById('gestao-lista-contratos-crud').innerHTML = window.clientesDB.map(c => `<div class="p-3.5 flex justify-between items-center gap-2 ${c.ativo === false ? 'bg-slate-100 opacity-60' : ''}"><div><p class="text-xs font-extrabold text-slate-900">${c.nome}</p><p class="text-[10px] text-slate-600">👤 ${c.contato_nome || 'Sem contato'} ${c.contato_telefone ? '• ' + c.contato_telefone : ''}</p><p class="text-[10px] text-slate-500">Quadro: <b>${c.quadro_contratado_qtd || 2}</b> (${c.quadro_cargos || 'Equipe'}) • Cap: <b>${c.teto_diario_horas}h/op/dia</b></p></div><button onclick="carregarContratoNoForm(${c.id})" class="text-[10px] font-extrabold bg-orange-500 hover:bg-orange-600 text-white px-3.5 py-2 rounded-xl shadow-sm flex-shrink-0">⚙️ Configurar</button></div>`).join('');
         }
-
         function carregarContratoNoForm(id) {
-            const c = window.clientesDB.find(x => x.id === id);
-            if (!c) return;
-            document.getElementById('edit-cli-id').value = c.id;
-            document.getElementById('edit-cli-nome').value = c.nome;
-            document.getElementById('edit-cli-end').value = c.endereco || '';
-            document.getElementById('edit-cli-contato-nome').value = c.contato_nome || '';
-            document.getElementById('edit-cli-contato-tel').value = c.contato_telefone || '';
-            document.getElementById('edit-cli-contato-email').value = c.contato_email || '';
-            document.getElementById('edit-cli-quadro-qtd').value = c.quadro_contratado_qtd || 2;
-            document.getElementById('edit-cli-quadro-cargos').value = c.quadro_cargos || '1 Encarregado + 1 Operador';
-            document.getElementById('edit-cli-teto').value = c.teto_diario_horas || 6;
-            document.getElementById('edit-cli-raio').value = c.raio_metros || 300;
-            document.getElementById('edit-cli-lat').value = c.latitude;
-            document.getElementById('edit-cli-lng').value = c.longitude;
-            document.getElementById('edit-cli-ativo').checked = c.ativo !== false;
-            document.getElementById('form-contrato-titulo').innerHTML = `<span class="text-orange-600">⚙️ Editando: ${c.nome}</span>`;
-            document.getElementById('btn-salvar-contrato').textContent = `Atualizar ${c.nome}`;
-            const card = document.getElementById('card-form-contrato');
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            card.classList.remove('highlight-edit'); void card.offsetWidth; card.classList.add('highlight-edit');
+            const c = window.clientesDB.find(x => x.id === id); if (!c) return;
+            document.getElementById('edit-cli-id').value = c.id; document.getElementById('edit-cli-nome').value = c.nome; document.getElementById('edit-cli-end').value = c.endereco || ''; document.getElementById('edit-cli-contato-nome').value = c.contato_nome || ''; document.getElementById('edit-cli-contato-tel').value = c.contato_telefone || ''; document.getElementById('edit-cli-contato-email').value = c.contato_email || ''; document.getElementById('edit-cli-quadro-qtd').value = c.quadro_contratado_qtd || 2; document.getElementById('edit-cli-quadro-cargos').value = c.quadro_cargos || '1 Encarregado + 1 Operador'; document.getElementById('edit-cli-teto').value = c.teto_diario_horas || 6; document.getElementById('edit-cli-raio').value = c.raio_metros || 300; document.getElementById('edit-cli-lat').value = c.latitude; document.getElementById('edit-cli-lng').value = c.longitude; document.getElementById('edit-cli-ativo').checked = c.ativo !== false;
+            document.getElementById('form-contrato-titulo').innerHTML = `<span class="text-orange-600">⚙️ Editando: ${c.nome}</span>`; document.getElementById('btn-salvar-contrato').textContent = `Atualizar ${c.nome}`;
+            const card = document.getElementById('card-form-contrato'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); card.classList.remove('highlight-edit'); void card.offsetWidth; card.classList.add('highlight-edit');
         }
-
         function limparFormContratoGestao() {
             ['edit-cli-id', 'edit-cli-nome', 'edit-cli-end', 'edit-cli-contato-nome', 'edit-cli-contato-tel', 'edit-cli-contato-email', 'edit-cli-lat', 'edit-cli-lng'].forEach(i => document.getElementById(i).value = '');
-            document.getElementById('edit-cli-quadro-qtd').value = 2;
-            document.getElementById('edit-cli-quadro-cargos').value = '1 Encarregado + 1 Operador';
-            document.getElementById('edit-cli-teto').value = 6;
-            document.getElementById('edit-cli-raio').value = 300;
-            document.getElementById('edit-cli-ativo').checked = true;
-            document.getElementById('form-contrato-titulo').textContent = '➕ Cadastrar Novo Contrato';
-            document.getElementById('btn-salvar-contrato').textContent = "Salvar Contrato";
-            document.getElementById('card-form-contrato').classList.remove('highlight-edit');
+            document.getElementById('edit-cli-quadro-qtd').value = 2; document.getElementById('edit-cli-quadro-cargos').value = '1 Encarregado + 1 Operador'; document.getElementById('edit-cli-teto').value = 6; document.getElementById('edit-cli-raio').value = 300; document.getElementById('edit-cli-ativo').checked = true;
+            document.getElementById('form-contrato-titulo').textContent = '➕ Cadastrar Novo Contrato'; document.getElementById('btn-salvar-contrato').textContent = "Salvar Contrato"; document.getElementById('card-form-contrato').classList.remove('highlight-edit');
         }
-
         function usarGpsAtualNoContrato() {
             if (!navigator.geolocation) { alert("GPS não suportado."); return; }
-            navigator.geolocation.getCurrentPosition(pos => {
-                document.getElementById('edit-cli-lat').value = pos.coords.latitude.toFixed(6);
-                document.getElementById('edit-cli-lng').value = pos.coords.longitude.toFixed(6);
-            }, () => alert("Não foi possível obter sua localização atual."));
+            navigator.geolocation.getCurrentPosition(pos => { document.getElementById('edit-cli-lat').value = pos.coords.latitude.toFixed(6); document.getElementById('edit-cli-lng').value = pos.coords.longitude.toFixed(6); }, () => alert("Não foi possível obter sua localização atual."));
         }
-
         async function salvarContratoGestao() {
-            const id = document.getElementById('edit-cli-id').value, nome = document.getElementById('edit-cli-nome').value.trim();
-            if (!nome) { alert("Informe o nome do cliente."); return; }
-            const payload = {
-                codigo: nome.toUpperCase().replace(/[^A-Z0-9]/g, '_'), nome,
-                endereco: document.getElementById('edit-cli-end').value.trim(),
-                contato_nome: document.getElementById('edit-cli-contato-nome').value.trim(),
-                contato_telefone: document.getElementById('edit-cli-contato-tel').value.trim(),
-                contato_email: document.getElementById('edit-cli-contato-email').value.trim(),
-                quadro_contratado_qtd: parseInt(document.getElementById('edit-cli-quadro-qtd').value, 10) || 2,
-                quadro_cargos: document.getElementById('edit-cli-quadro-cargos').value.trim(),
-                latitude: parseFloat(document.getElementById('edit-cli-lat').value) || -23.5888,
-                longitude: parseFloat(document.getElementById('edit-cli-lng').value) || -46.6819,
-                raio_metros: parseInt(document.getElementById('edit-cli-raio').value, 10) || 300,
-                teto_diario_horas: parseFloat(document.getElementById('edit-cli-teto').value) || 6,
-                pin_gestor: '2026', ativo: document.getElementById('edit-cli-ativo').checked
-            };
-            if (id) await sb.from('clientes').update(payload).eq('id', id);
-            else await sb.from('clientes').insert([payload]);
-            limparFormContratoGestao(); await carregarDadosAdmin();
-            alert(`Contrato "${nome}" salvo com sucesso!`);
+            const id = document.getElementById('edit-cli-id').value, nome = document.getElementById('edit-cli-nome').value.trim(); if (!nome) { alert("Informe o nome do cliente."); return; }
+            const payload = { codigo: nome.toUpperCase().replace(/[^A-Z0-9]/g, '_'), nome, endereco: document.getElementById('edit-cli-end').value.trim(), contato_nome: document.getElementById('edit-cli-contato-nome').value.trim(), contato_telefone: document.getElementById('edit-cli-contato-tel').value.trim(), contato_email: document.getElementById('edit-cli-contato-email').value.trim(), quadro_contratado_qtd: parseInt(document.getElementById('edit-cli-quadro-qtd').value, 10) || 2, quadro_cargos: document.getElementById('edit-cli-quadro-cargos').value.trim(), latitude: parseFloat(document.getElementById('edit-cli-lat').value) || -23.5888, longitude: parseFloat(document.getElementById('edit-cli-lng').value) || -46.6819, raio_metros: parseInt(document.getElementById('edit-cli-raio').value, 10) || 300, teto_diario_horas: parseFloat(document.getElementById('edit-cli-teto').value) || 6, pin_gestor: '2026', ativo: document.getElementById('edit-cli-ativo').checked };
+            if (id) await sb.from('clientes').update(payload).eq('id', id); else await sb.from('clientes').insert([payload]);
+            limparFormContratoGestao(); await carregarDadosAdmin(); alert(`Contrato "${nome}" salvo com sucesso!`);
         }
 
         // =========================================================================
-        // 11. CENTRAL DE COMUNICAÇÃO E REALTIME
+        // 11. CHAT E REALTIME
         // =========================================================================
         function selecionarCanalChatAdmin(canal) {
             canalChatAdmin = canal; mensagensNaoLidasAdmin[canal] = 0; atualizarBadgesNaoLidasAdmin();
-            ['SUPERVISAO', 'CLIENTE'].forEach(c => {
-                document.getElementById(`btn-adm-canal-${c}`).className = (c === canal)
-                    ? "py-2.5 px-2 rounded-xl text-xs font-extrabold bg-white text-slate-900 shadow-sm flex items-center justify-center"
-                    : "py-2.5 px-2 rounded-xl text-xs font-extrabold text-slate-600 flex items-center justify-center";
-            });
+            ['SUPERVISAO', 'CLIENTE'].forEach(c => { document.getElementById(`btn-adm-canal-${c}`).className = (c === canal) ? "py-2.5 px-2 rounded-xl text-xs font-extrabold bg-white text-slate-900 shadow-sm flex items-center justify-center" : "py-2.5 px-2 rounded-xl text-xs font-extrabold text-slate-600 flex items-center justify-center"; });
             document.getElementById('adm-chat-desc').textContent = canal === 'SUPERVISAO' ? 'Linha direta entre Supervisão e Operadores do posto' : 'Canal oficial com a Administração do Condomínio';
             atualizarBadgesNaoLidasAdmin(); carregarChatAdmin();
         }
-
         async function carregarChatAdmin() {
             const { data } = await sb.from('mensagens_chat').select('*').eq('cliente', clienteAtivo).eq('canal', canalChatAdmin).order('criado_em', { ascending: true }).limit(60);
             const box = document.getElementById('admin-chat-messages');
             if (!data || data.length === 0) { box.innerHTML = `<p class="text-center text-xs text-slate-400 py-10">Nenhuma mensagem neste canal.</p>`; return; }
             box.innerHTML = data.map(m => {
-                const souSupervisao = m.autor_perfil === 'SUPERVISOR' || m.autor_perfil === 'ADMIN';
-                const dh = new Date(m.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-                const badgeUrg = m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded mr-1">Prioridade</span>` : '';
-                return `<div class="flex flex-col ${souSupervisao ? 'items-end' : 'items-start'}"><div class="max-w-[82%] rounded-2xl px-3.5 py-2.5 ${souSupervisao ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm"><div class="flex items-center gap-1.5 mb-0.5">${badgeUrg}<span class="text-[10px] font-extrabold ${souSupervisao ? 'text-orange-400' : 'text-emerald-600'}">${m.autor_nome}</span><span class="text-[9px] opacity-60">• ${dh}</span></div><p class="text-xs leading-relaxed">${m.mensagem}</p></div></div>`;
+                const souSup = m.autor_perfil === 'SUPERVISOR' || m.autor_perfil === 'ADMIN';
+                return `<div class="flex flex-col ${souSup ? 'items-end' : 'items-start'}"><div class="max-w-[82%] rounded-2xl px-3.5 py-2.5 ${souSup ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-slate-800'} shadow-sm"><div class="flex items-center gap-1.5 mb-0.5">${m.urgente ? `<span class="bg-red-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded mr-1">Prioridade</span>` : ''}<span class="text-[10px] font-extrabold ${souSup ? 'text-orange-400' : 'text-emerald-600'}">${m.autor_nome}</span><span class="text-[9px] opacity-60">• ${new Date(m.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span></div><p class="text-xs leading-relaxed">${m.mensagem}</p></div></div>`;
             }).join('');
             box.scrollTop = box.scrollHeight;
         }
-
         async function enviarMensagemAdmin() {
-            const input = document.getElementById('admin-chat-input'), texto = input.value.trim();
-            if (!texto) return;
-            const urgente = document.getElementById('admin-chat-urgente').checked;
-            input.value = ''; document.getElementById('admin-chat-urgente').checked = false;
+            const input = document.getElementById('admin-chat-input'), texto = input.value.trim(); if (!texto) return;
+            const urgente = document.getElementById('admin-chat-urgente').checked; input.value = ''; document.getElementById('admin-chat-urgente').checked = false;
             await sb.from('mensagens_chat').insert([{ cliente: clienteAtivo, canal: canalChatAdmin, autor_nome: adminLogado?.nome || 'Supervisão', autor_perfil: adminLogado?.perfil || 'SUPERVISOR', mensagem: texto, urgente }]);
             carregarChatAdmin();
         }
@@ -2042,12 +1960,11 @@
         function iniciarRealtimeAdmin() {
             if (canalRealtimeAdminIniciado) return;
             canalRealtimeAdminIniciado = true;
-            sb.channel('novaera-admin-v931')
+            sb.channel('novaera-admin-v94')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarDadosAdmin())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarDadosAdmin())
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pedidos_suprimentos' }, payload => {
-                    const p = payload.new;
-                    if (p.cliente !== clienteAtivo) return;
+                    const p = payload.new; if (p.cliente !== clienteAtivo) return;
                     tocarChimeNotificacao();
                     dispararNotificacaoAdmin(p.solicitante, 'SUPRIMENTOS', `Novo pedido: ${p.item} (${p.quantidade_calculada})`, p.urgente, 'suprimentos');
                     carregarDadosAdmin();
