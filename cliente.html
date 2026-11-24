@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f172a">
-    <title>Miss Silvia • Portal de Paisagismo Nova Era</title>
+    <title>Portal de Paisagismo • Nova Era</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -24,131 +24,185 @@
         .day-num { font-size: 12px; font-weight: 700; color: #334155; align-self: flex-start; }
         .task-dots { margin-top: auto; display: flex; flex-wrap: wrap; gap: 3px; }
         .dot { width: 6px; height: 6px; border-radius: 9999px; }
+
+        /* ESTILOS DE IMPRESSÃO / EXPORTAÇÃO PDF EXECUTIVO */
+        @page { size: A4 portrait; margin: 10mm; }
+        @media print {
+            body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            header, main, nav, #lightbox-modal, #modal-pdf-cliente, #toast-chat-cliente {
+                display: none !important;
+            }
+            #print-cliente-container {
+                display: block !important;
+                width: 100% !important;
+            }
+            .print-avoid-break { break-inside: avoid; page-break-inside: avoid; }
+            .print-page-break { break-before: page; page-break-before: always; }
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 relative min-h-screen select-none" onclick="desbloquearAudioNotificacao()">
 
     <!-- CABEÇALHO EXECUTIVO DO CLIENTE COM LOGO OFICIAL -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
-        <div class="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
+        <div class="max-w-md lg:max-w-6xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
                 <img src="Logo.jpg" onerror="this.style.display='none'" alt="Nova Era" class="w-9 h-9 rounded-xl object-cover border border-slate-700 bg-white flex-shrink-0">
-                <div>
+                <div class="min-w-0">
                     <div class="flex items-center gap-1.5">
-                        <h1 class="font-extrabold text-sm tracking-tight text-white">Edifício Miss Silvia</h1>
-                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">AO VIVO</span>
+                        <h1 id="header-cliente-nome" class="font-extrabold text-sm lg:text-base tracking-tight text-white truncate">Carregando contrato...</h1>
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex-shrink-0">AO VIVO</span>
                     </div>
-                    <p class="text-[10px] text-slate-400 font-medium">Portal de Fiscalização • Nova Era Paisagismo</p>
+                    <p class="text-[10px] text-slate-400 font-medium truncate">Portal de Fiscalização • Nova Era Paisagismo</p>
                 </div>
             </div>
-            <button onclick="carregarPortalCliente()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl border border-slate-700" title="Atualizar">
-                <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-            </button>
+
+            <!-- NAVEGAÇÃO TOPO VISÍVEL APENAS NO DESKTOP -->
+            <div class="hidden lg:flex items-center gap-1.5 bg-slate-800 p-1 rounded-xl border border-slate-700">
+                <button onclick="trocarAbaCliente('entregas')" id="nav-desk-entregas" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition-all">✅ Entregas & Fotos</button>
+                <button onclick="trocarAbaCliente('calendario')" id="nav-desk-calendario" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition-all">📅 Histórico & Mês</button>
+                <button onclick="trocarAbaCliente('solicitacoes')" id="nav-desk-solicitacoes" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition-all relative flex items-center gap-1.5">
+                    <span>💬 Solicitações</span>
+                    <span id="dot-msg-cliente-desk" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-red-600 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button onclick="abrirModalPdfCliente()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-extrabold px-2.5 lg:px-3 py-2 rounded-xl shadow-sm flex items-center gap-1.5" title="Exportar Relatório PDF">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Exportar PDF</span>
+                    <span class="sm:hidden">PDF</span>
+                </button>
+                <button onclick="carregarPortalCliente()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-xl border border-slate-700" title="Atualizar">
+                    <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto pb-safe pt-3.5 px-3.5">
-
-        <!-- STATUS DA EQUIPE NO LOCAL E CLIMA ACUMULADO -->
-        <div id="status-posto-card" class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm mb-3.5 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div id="posto-badge-icon" class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i>
-                </div>
-                <div class="truncate">
-                    <p id="posto-status-titulo" class="text-xs font-extrabold text-slate-900 truncate">Verificando status da equipe...</p>
-                    <p id="posto-status-sub" class="text-[11px] text-slate-500 truncate">Sincronizando dados do turno de hoje</p>
-                </div>
-            </div>
-            <span id="clima-badge" class="text-[10px] font-bold bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-xl border border-slate-200 flex items-center gap-1 flex-shrink-0">
-                ☀️ Tempo Seco
-            </span>
-        </div>
-
-        <!-- RESUMO DE PROGRESSO DO DIA -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 mb-4">
-            <div class="flex justify-between items-end mb-2">
-                <div>
-                    <p class="text-[10px] font-extrabold text-orange-600 uppercase tracking-wider">Acompanhamento em Tempo Real</p>
-                    <h2 class="text-lg font-extrabold text-slate-900" id="view-title">Entregas & Auditoria</h2>
-                    <p class="text-xs text-slate-500 capitalize" id="current-date"></p>
-                </div>
-                <div class="text-right">
-                    <span id="pct-numero" class="text-xl font-extrabold text-emerald-600">0%</span>
-                    <p id="contagem-tarefas" class="text-[10px] font-bold text-slate-500">0 de 0 hoje</p>
-                </div>
-            </div>
-            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div id="barra-progresso-cliente" class="h-full bg-gradient-to-r from-orange-500 to-emerald-500 transition-all duration-500" style="width: 0%"></div>
-            </div>
-        </div>
+    <main class="max-w-md lg:max-w-6xl mx-auto pb-safe lg:pb-10 pt-3.5 px-3.5 lg:px-6">
 
         <!-- ========================================== -->
-        <!-- ABA 1: GALERIA DE ENTREGAS E HISTÓRICO     -->
+        <!-- ABA 1: ENTREGAS, PAINEL DO DIA E HISTÓRICO -->
         <!-- ========================================== -->
-        <div id="tab-view-entregas" class="space-y-3.5">
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
-                    <h3 class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
-                        <i data-lucide="activity" class="w-4 h-4 text-orange-500"></i> Painel de Atividades de Hoje
-                    </h3>
-                    <span class="text-[10px] font-bold text-slate-500">Atualização ao vivo</span>
+        <div id="tab-view-entregas" class="space-y-3.5 lg:grid lg:grid-cols-12 lg:gap-5 lg:space-y-0 items-start">
+
+            <!-- COLUNA ESQUERDA (DESKTOP): STATUS, PROGRESSO E PAINEL DE HOJE -->
+            <div class="lg:col-span-5 lg:sticky lg:top-20 space-y-3.5">
+                <!-- STATUS DA EQUIPE NO LOCAL E CLIMA ACUMULADO -->
+                <div id="status-posto-card" class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div id="posto-badge-icon" class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i>
+                        </div>
+                        <div class="truncate">
+                            <p id="posto-status-titulo" class="text-xs font-extrabold text-slate-900 truncate">Verificando status da equipe...</p>
+                            <p id="posto-status-sub" class="text-[11px] text-slate-500 truncate">Sincronizando dados do turno de hoje</p>
+                        </div>
+                    </div>
+                    <span id="clima-badge" class="text-[10px] font-bold bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-xl border border-slate-200 flex items-center gap-1 flex-shrink-0">
+                        ☀️ Tempo Seco
+                    </span>
                 </div>
-                <div id="lista-programadas-hoje" class="divide-y divide-slate-100 p-2"></div>
+
+                <!-- RESUMO DE PROGRESSO DO DIA -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-end mb-2">
+                        <div>
+                            <p class="text-[10px] font-extrabold text-orange-600 uppercase tracking-wider">Acompanhamento em Tempo Real</p>
+                            <h2 class="text-lg font-extrabold text-slate-900" id="view-title">Entregas & Auditoria</h2>
+                            <p class="text-xs text-slate-500 capitalize" id="current-date"></p>
+                        </div>
+                        <div class="text-right">
+                            <span id="pct-numero" class="text-xl font-extrabold text-emerald-600">0%</span>
+                            <p id="contagem-tarefas" class="text-[10px] font-bold text-slate-500">0 de 0 hoje</p>
+                        </div>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="barra-progresso-cliente" class="h-full bg-gradient-to-r from-orange-500 to-emerald-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- PAINEL DE ATIVIDADES DE HOJE -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
+                        <h3 class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                            <i data-lucide="activity" class="w-4 h-4 text-orange-500"></i> Painel de Atividades de Hoje
+                        </h3>
+                        <span class="text-[10px] font-bold text-slate-500">Atualização ao vivo</span>
+                    </div>
+                    <div id="lista-programadas-hoje" class="divide-y divide-slate-100 p-2 lg:max-h-[46vh] lg:overflow-y-auto"></div>
+                </div>
             </div>
 
-            <!-- BARRA DE FILTRO DE HISTÓRICO DE FOTOS E ENTREGAS -->
-            <div class="bg-slate-900 text-white rounded-2xl p-3 shadow-sm space-y-2.5">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-xs font-extrabold flex items-center gap-1.5">
-                        <i data-lucide="camera" class="w-4 h-4 text-emerald-400"></i> Histórico de Fotos e Vistorias
-                    </h3>
-                    <span id="cliente-hist-count" class="text-[10px] font-extrabold bg-slate-800 text-emerald-300 px-2 py-0.5 rounded-full border border-slate-700">0 registros</span>
+            <!-- COLUNA DIREITA (DESKTOP): FILTROS + FEED EM SANFONA POR DIA -->
+            <div class="lg:col-span-7 space-y-3">
+                <!-- BARRA DE FILTRO DE HISTÓRICO DE FOTOS E ENTREGAS -->
+                <div class="bg-slate-900 text-white rounded-2xl p-3.5 shadow-sm space-y-2.5">
+                    <div class="flex justify-between items-center gap-2">
+                        <h3 class="text-xs font-extrabold flex items-center gap-1.5">
+                            <i data-lucide="camera" class="w-4 h-4 text-emerald-400"></i> Histórico de Fotos e Vistorias
+                        </h3>
+                        <div class="flex items-center gap-1.5">
+                            <span id="cliente-hist-count" class="text-[10px] font-extrabold bg-slate-800 text-emerald-300 px-2 py-0.5 rounded-full border border-slate-700">0 reg.</span>
+                            <button onclick="alternarExpandirTodosDiasCliente()" id="btn-expandir-dias-cli" class="text-[10px] font-extrabold bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg border border-slate-700">
+                                Expandir Todos
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-1 bg-slate-800 p-1 rounded-xl">
+                        <button onclick="setFiltroPeriodoCliente('HOJE')" id="btn-cli-hist-HOJE" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Hoje</button>
+                        <button onclick="setFiltroPeriodoCliente('ONTEM')" id="btn-cli-hist-ONTEM" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Ontem</button>
+                        <button onclick="setFiltroPeriodoCliente('7DIAS')" id="btn-cli-hist-7DIAS" class="py-1.5 rounded-lg text-[10px] font-extrabold bg-emerald-600 text-white shadow-sm">7 Dias</button>
+                        <button onclick="setFiltroPeriodoCliente('MES')" id="btn-cli-hist-MES" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Mês Atual</button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 flex-1">
+                            <i data-lucide="calendar-search" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            <span class="text-[10px] font-bold text-slate-300">Data específica:</span>
+                            <input type="date" id="input-data-cliente" onchange="filtrarDataEspecificaCliente(this.value)" class="bg-transparent text-white text-[11px] font-extrabold outline-none flex-1">
+                        </div>
+                        <button onclick="abrirModalPdfCliente()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-extrabold px-3 py-2 rounded-xl flex items-center gap-1 flex-shrink-0 shadow-sm">
+                            <i data-lucide="printer" class="w-3.5 h-3.5"></i> PDF
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-4 gap-1 bg-slate-800 p-1 rounded-xl">
-                    <button onclick="setFiltroPeriodoCliente('HOJE')" id="btn-cli-hist-HOJE" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Hoje</button>
-                    <button onclick="setFiltroPeriodoCliente('ONTEM')" id="btn-cli-hist-ONTEM" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Ontem</button>
-                    <button onclick="setFiltroPeriodoCliente('7DIAS')" id="btn-cli-hist-7DIAS" class="py-1.5 rounded-lg text-[10px] font-extrabold bg-emerald-600 text-white shadow-sm">7 Dias</button>
-                    <button onclick="setFiltroPeriodoCliente('MES')" id="btn-cli-hist-MES" class="py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white">Mês Atual</button>
-                </div>
-
-                <div class="flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5">
-                    <i data-lucide="calendar-search" class="w-3.5 h-3.5 text-emerald-400"></i>
-                    <span class="text-[10px] font-bold text-slate-300">Consultar data específica:</span>
-                    <input type="date" id="input-data-cliente" onchange="filtrarDataEspecificaCliente(this.value)" class="bg-transparent text-white text-[11px] font-extrabold outline-none flex-1">
-                </div>
+                <!-- FEED EM SANFONA POR DIA (ACABA COM O SALSICHÃO) -->
+                <div id="feed-auditoria-fotos" class="space-y-2.5"></div>
             </div>
-
-            <div id="feed-auditoria-fotos" class="space-y-3"></div>
         </div>
 
         <!-- ========================================== -->
         <!-- ABA 2: CALENDÁRIO MENSAL & JANELA PODA     -->
         <!-- ========================================== -->
-        <div id="tab-view-calendario" class="hidden space-y-3.5">
-            <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                <button onclick="mudarMesCalendarioCliente(-1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
-                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Ant.
-                </button>
-                <div class="text-center">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase block leading-none">Histórico & Programação</span>
-                    <span id="cal-mes-ano" class="text-sm font-extrabold text-slate-900 capitalize mt-0.5 block"></span>
+        <div id="tab-view-calendario" class="hidden space-y-3.5 lg:grid lg:grid-cols-12 lg:gap-5 lg:space-y-0 items-start">
+            <div class="lg:col-span-7 space-y-3">
+                <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+                    <button onclick="mudarMesCalendarioCliente(-1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i> Ant.
+                    </button>
+                    <div class="text-center">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block leading-none">Histórico & Programação</span>
+                        <span id="cal-mes-ano" class="text-sm font-extrabold text-slate-900 capitalize mt-0.5 block"></span>
+                    </div>
+                    <button onclick="mudarMesCalendarioCliente(1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                        Próx. <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
                 </div>
-                <button onclick="mudarMesCalendarioCliente(1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
-                    Próx. <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </button>
+
+                <div class="month-grid shadow-sm" id="month-days-container"></div>
+
+                <div class="flex justify-center flex-wrap gap-3 text-[10px] font-bold text-slate-600">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Entregue c/ Foto</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-purple-200 border border-purple-400"></span> Época Poda Drástica</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Rotina Prevista</span>
+                </div>
             </div>
 
-            <div class="month-grid shadow-sm" id="month-days-container"></div>
-
-            <div class="flex justify-center flex-wrap gap-3 text-[10px] font-bold text-slate-600">
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Entregue c/ Foto</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-purple-200 border border-purple-400"></span> Época Poda Drástica</span>
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Rotina Prevista</span>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="bg-slate-900 text-white p-3 flex justify-between items-center">
                     <h3 class="font-bold text-xs flex items-center gap-1.5">
                         <i data-lucide="calendar-check" class="w-4 h-4 text-emerald-400"></i>
@@ -156,15 +210,15 @@
                     </h3>
                     <span class="bg-slate-800 border border-slate-700 text-emerald-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full" id="selected-day-count">0 ativ.</span>
                 </div>
-                <div class="p-3 space-y-2.5" id="selected-day-list"></div>
+                <div class="p-3 space-y-2.5 lg:max-h-[68vh] lg:overflow-y-auto" id="selected-day-list"></div>
             </div>
         </div>
 
         <!-- ========================================== -->
         <!-- ABA 3: CANAL DIRETO (EQUIPE + SUPERVISÃO)  -->
         <!-- ========================================== -->
-        <div id="tab-view-solicitacoes" class="hidden">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[66vh]">
+        <div id="tab-view-solicitacoes" class="hidden max-w-3xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[68vh]">
                 <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center">
                     <div>
                         <h3 class="text-xs font-extrabold">Canal Direto • Equipe Local & Supervisão</h3>
@@ -178,9 +232,9 @@
                 <div id="chat-cliente-box" class="flex-1 p-3.5 overflow-y-auto space-y-2.5 bg-slate-50"></div>
 
                 <div class="p-3 bg-white border-t border-slate-200 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <input type="text" id="input-nome-cliente" value="Joelma (Miss Silvia)" class="text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 outline-none w-2/3">
-                        <label class="flex items-center gap-1 text-[10px] font-extrabold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200 cursor-pointer">
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="text" id="input-nome-cliente" value="Administração" class="text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 outline-none flex-1">
+                        <label class="flex items-center gap-1 text-[10px] font-extrabold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200 cursor-pointer flex-shrink-0">
                             <input type="checkbox" id="chk-prioridade-cliente" class="rounded text-red-600"> Prioridade / Evento
                         </label>
                     </div>
@@ -196,6 +250,53 @@
 
     </main>
 
+    <!-- ÁREA OCULTA DEDICADA À IMPRESSÃO / EXPORTAÇÃO PDF EXECUTIVO -->
+    <div id="print-cliente-container" class="hidden bg-white text-slate-900"></div>
+
+    <!-- MODAL: EXPORTAR RELATÓRIO PDF EXECUTIVO -->
+    <div id="modal-pdf-cliente" class="fixed inset-0 bg-slate-950/75 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3.5">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Relatório de Paisagismo</span>
+                    <h3 class="text-base font-extrabold text-slate-900 mt-1">Exportar Relatório em PDF</h3>
+                </div>
+                <button onclick="document.getElementById('modal-pdf-cliente').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+            </div>
+            <p class="text-xs text-slate-600" id="pdf-cli-resumo-escopo">Período atual filtrado na tela.</p>
+
+            <div class="space-y-2">
+                <label class="flex items-start gap-2.5 p-3 rounded-xl border border-emerald-300 hover:border-emerald-500 cursor-pointer bg-emerald-50/40">
+                    <input type="radio" name="modo-pdf-cliente" value="EXECUTIVO_MOSAICO" checked class="mt-0.5 text-emerald-600">
+                    <div>
+                        <p class="text-xs font-extrabold text-slate-900">🌟 Executivo c/ Mosaico "Depois" (Recomendado p/ Mês)</p>
+                        <p class="text-[10px] text-slate-600">Resumo + Matriz (Setor × Serviço) + Mosaico elegante (9–12 fotos/folha) com a foto final mais recente de cada setor + relação completa.</p>
+                    </div>
+                </label>
+                <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-emerald-400 cursor-pointer bg-slate-50">
+                    <input type="radio" name="modo-pdf-cliente" value="SEM_FOTOS" class="mt-0.5 text-emerald-600">
+                    <div>
+                        <p class="text-xs font-extrabold text-slate-900">📄 Analítico Sem Fotos (Leve / Faturamento)</p>
+                        <p class="text-[10px] text-slate-500">Resumo Executivo + Matriz por Setor + lista completa das datas e atividades. Ideal para anexo de nota fiscal ou reunião.</p>
+                    </div>
+                </label>
+                <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-emerald-400 cursor-pointer bg-slate-50">
+                    <input type="radio" name="modo-pdf-cliente" value="FOTOGRAFICO_COMPLETO" class="mt-0.5 text-emerald-600">
+                    <div>
+                        <p class="text-xs font-extrabold text-slate-900">📸 Fotográfico Completo (Ideal p/ 7 Dias)</p>
+                        <p class="text-[10px] text-slate-500">Todas as entregas do filtro com foto de conclusão ("Depois") organizadas em grid compacto (9–12 por página).</p>
+                    </div>
+                </label>
+            </div>
+
+            <div id="pdf-cli-aviso-peso" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-amber-900 font-semibold"></div>
+
+            <button onclick="gerarPdfCliente()" id="btn-gerar-pdf-cliente" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md">
+                <i data-lucide="printer" class="w-4 h-4 text-emerald-400"></i> Gerar e Salvar PDF
+            </button>
+        </div>
+    </div>
+
     <!-- MODAL DE ZOOM DAS FOTOS (LIGHTBOX) -->
     <div id="lightbox-modal" onclick="fecharZoomFoto()" class="fixed inset-0 bg-slate-950/90 z-50 hidden flex flex-col items-center justify-center p-4">
         <img id="lightbox-img" class="max-w-full max-h-[82vh] rounded-xl shadow-2xl border border-slate-700 object-contain">
@@ -203,8 +304,8 @@
         <p class="text-[10px] text-slate-400 mt-1">Toque em qualquer lugar para fechar</p>
     </div>
 
-    <!-- NAVEGAÇÃO INFERIOR DO CLIENTE -->
-    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
+    <!-- NAVEGAÇÃO INFERIOR MOBILE (OCULTA NO DESKTOP) -->
+    <nav class="lg:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
         <div class="max-w-md mx-auto grid grid-cols-3 px-2 pb-3 pt-1.5">
             <button onclick="trocarAbaCliente('entregas')" id="nav-entregas" class="flex flex-col items-center py-1.5 text-emerald-600 transition-colors relative">
                 <i data-lucide="check-circle-2" class="w-5 h-5 mb-0.5"></i>
@@ -224,30 +325,40 @@
 
     <script>
         // =========================================================================
-        // PORTAL DO CLIENTE • CONDOMÍNIO MISS SILVIA (v9.4 - LOTES & BLINDAGEM)
+        // PORTAL DO CLIENTE • NOVA ERA (v9.5 - DINÂMICO, DESKTOP, SANFONA & PDF)
         // =========================================================================
-        const CLIENTE_FIXO = "Miss Silvia";
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const STATUS_OCULTOS_CLIENTE = ['NAO_REALIZADA', 'IMPEDIMENTO_EPI'];
 
+        let clienteAtivo = '';
+        let clienteObjAtual = null;
         let tetoHorasCliente = 6;
         let quadroContratoCliente = 2;
         let cronogramaDB = [];
         let execucoesDB = [];
+        let presencasMesDB = [];
         let especiesDB = [];
+        let tiposAtividadeDB = [];
         let feriadosDB = [];
         let agendaMesAtual = {};
         let agendaCalendario = {};
         let fotosZoomClienteCache = [];
         let abaClienteAtiva = 'entregas';
         let naoLidasCliente = 0;
+        let realtimeIniciado = false;
 
         let filtroPeriodoCliente = '7DIAS';
         let dataEspecificaCliente = '';
         let execucoesDataEspecificaClienteDB = [];
+
+        // Estado da sanfona por dia
+        let diasExpandidosCliente = new Set();
+        let ultimoFiltroChaveAccordion = '';
+        let todosDiasExpandidosCli = false;
+        let datasVisiveisFeedCache = [];
 
         let calAnoCli = new Date().getFullYear();
         let calMesCli = new Date().getMonth();
@@ -255,8 +366,12 @@
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+        function normalizarTexto(str) {
+            return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
         function formatarMinutosStr(min) {
-            const mTotal = Math.max(1, Math.round(Number(min) || 0));
+            const mTotal = Math.max(0, Math.round(Number(min) || 0));
+            if (mTotal === 0) return '0m';
             const h = Math.floor(mTotal / 60), m = mTotal % 60;
             if (h > 0 && m > 0) return `${h}h ${m}m`;
             if (h > 0) return `${h}h`;
@@ -315,6 +430,14 @@
                 mapa.get(k).registros.push(e);
             });
             return Array.from(mapa.values());
+        }
+        function classificarTipoAtividade(textoAtiv) {
+            const norm = normalizarTexto(textoAtiv);
+            for (const tipo of tiposAtividadeDB) {
+                const kws = String(tipo.palavras_chave || tipo.nome || '').split(',').map(p => normalizarTexto(p.trim())).filter(Boolean);
+                if (kws.some(kw => norm.includes(kw))) return tipo.nome;
+            }
+            return 'Outros';
         }
 
         // =========================================================================
@@ -381,42 +504,76 @@
         }
 
         function atualizarBadgeCliente() {
-            const dot = document.getElementById('dot-msg-cliente');
-            if (!dot) return;
-            if (naoLidasCliente > 0) { dot.classList.remove('hidden'); dot.textContent = naoLidasCliente > 9 ? '9+' : naoLidasCliente; }
-            else dot.classList.add('hidden');
+            ['dot-msg-cliente', 'dot-msg-cliente-desk'].forEach(id => {
+                const dot = document.getElementById(id);
+                if (!dot) return;
+                if (naoLidasCliente > 0) { dot.classList.remove('hidden'); dot.textContent = naoLidasCliente > 9 ? '9+' : naoLidasCliente; }
+                else dot.classList.add('hidden');
+            });
         }
 
         // =========================================================================
-        // CARREGAMENTO DO PORTAL E AGENDA ISOLADA
+        // RESOLUÇÃO DINÂMICA DO CONTRATO (URL ?c=CODIGO OU BANCO) E CARREGAMENTO
         // =========================================================================
+        async function resolverContratoCliente() {
+            if (clienteObjAtual) return;
+            const params = new URLSearchParams(window.location.search);
+            const paramCod = (params.get('c') || params.get('cliente') || '').trim();
+            const { data: listaCli } = await sb.from('clientes').select('*').eq('ativo', true).order('nome', { ascending: true });
+            const clientes = listaCli || [];
+
+            if (paramCod) {
+                const normP = normalizarTexto(paramCod);
+                clienteObjAtual = clientes.find(c =>
+                    normalizarTexto(c.codigo) === normP || normalizarTexto(c.nome) === normP
+                ) || null;
+            }
+            if (!clienteObjAtual) {
+                clienteObjAtual = clientes.find(c => normalizarTexto(c.nome) === 'miss silvia') || clientes[0] || { nome: 'Miss Silvia', teto_diario_horas: 6, quadro_contratado_qtd: 2, contato_nome: 'Administração' };
+            }
+
+            clienteAtivo = clienteObjAtual.nome;
+            tetoHorasCliente = Number(clienteObjAtual.teto_diario_horas) || 6;
+            quadroContratoCliente = Number(clienteObjAtual.quadro_contratado_qtd) || 2;
+
+            document.title = `${clienteAtivo} • Portal de Paisagismo Nova Era`;
+            document.getElementById('header-cliente-nome').textContent = clienteAtivo;
+
+            const inpNome = document.getElementById('input-nome-cliente');
+            if (inpNome && inpNome.value === 'Administração') {
+                inpNome.value = clienteObjAtual.contato_nome ? `${clienteObjAtual.contato_nome} (${clienteAtivo})` : `Administração (${clienteAtivo})`;
+            }
+        }
+
         async function carregarPortalCliente() {
+            await resolverContratoCliente();
+            iniciarRealtimeCliente();
+
             const hoje = new Date(), hojeStr = dataISO(hoje);
             const inicioMes = dataISO(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
 
-            const [resCli, resCrono, resExec, resFer, resPres, resEsp] = await Promise.all([
-                sb.from('clientes').select('teto_diario_horas, quadro_contratado_qtd').eq('nome', CLIENTE_FIXO).limit(1),
-                sb.from('cronograma_mestre').select('*').eq('cliente', CLIENTE_FIXO).eq('ativo', true),
-                sb.from('execucoes_auditoria').select('*').eq('cliente', CLIENTE_FIXO).gte('data_referencia', inicioMes).order('dh_envio_servidor', { ascending: false }),
+            const [resCrono, resExec, resFer, resPresMes, resEsp, resTipos] = await Promise.all([
+                sb.from('cronograma_mestre').select('*').eq('cliente', clienteAtivo).eq('ativo', true),
+                sb.from('execucoes_auditoria').select('*').eq('cliente', clienteAtivo).gte('data_referencia', inicioMes).order('dh_envio_servidor', { ascending: false }),
                 sb.from('feriados_config').select('*'),
-                sb.from('presenca_posto').select('*').eq('cliente', CLIENTE_FIXO).eq('data_turno', hojeStr).order('dh_checkin_aparelho', { ascending: false }).limit(1),
-                sb.from('cliente_especies').select('*').eq('cliente', CLIENTE_FIXO).eq('ativo', true)
+                sb.from('presenca_posto').select('*').eq('cliente', clienteAtivo).gte('data_turno', inicioMes).order('dh_checkin_aparelho', { ascending: false }),
+                sb.from('cliente_especies').select('*').eq('cliente', clienteAtivo).eq('ativo', true),
+                sb.from('tipos_atividade').select('*').eq('ativo', true).order('ordem', { ascending: true })
             ]);
 
-            if (resCli.data?.[0]) {
-                tetoHorasCliente = Number(resCli.data[0].teto_diario_horas) || 6;
-                quadroContratoCliente = Number(resCli.data[0].quadro_contratado_qtd) || 2;
-            }
             cronogramaDB = resCrono.data || [];
             execucoesDB = resExec.data || [];
+            presencasMesDB = resPresMes.data || [];
             especiesDB = resEsp.data || [];
+            tiposAtividadeDB = resTipos.data || [];
             feriadosDB = (resFer.data || []).map(f => f.data_feriado);
 
             if (calAnoCli === hoje.getFullYear() && calMesCli === hoje.getMonth()) {
                 execucoesCalendarioCliCache = execucoesDB.filter(e => !STATUS_OCULTOS_CLIENTE.includes(e.status_execucao));
             }
 
-            atualizarStatusPresenca(resPres.data?.[0] || null);
+            const presencaHoje = presencasMesDB.find(p => p.data_turno === hojeStr) || null;
+            atualizarStatusPresenca(presencaHoje);
             agendaMesAtual = gerarAgendaCliente(hoje.getFullYear(), hoje.getMonth(), execucoesDB);
             agendaCalendario = (calAnoCli === hoje.getFullYear() && calMesCli === hoje.getMonth())
                 ? agendaMesAtual
@@ -489,7 +646,6 @@
                 agenda[dStr].minutos += (Number(item.duracao_minutos) || 30);
             };
 
-            // 1. Tarefas extras / únicas ainda pendentes
             cronogramaDB.forEach(t => {
                 if (t.data_alvo && t.data_alvo < hojeStr) {
                     const foiResolvida = execucoesDB.some(e => ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
@@ -497,7 +653,6 @@
                 }
             });
 
-            // 2. Fixas e com data_alvo
             cronogramaDB.forEach(t => {
                 const flutuante = isFreqFlutuante(t.frequencia);
                 if (t.data_alvo && agenda[t.data_alvo]) {
@@ -509,7 +664,6 @@
                 }
             });
 
-            // 3. Vitais periódicas transbordadas para hoje (exibidas de forma natural na grade de hoje)
             if (agenda[hojeStr]) {
                 cronogramaDB.forEach(t => {
                     if (!t.vital || t.data_alvo || isFreqFlutuante(t.frequencia) || isFreqDiaria(t.frequencia)) return;
@@ -525,7 +679,6 @@
                 });
             }
 
-            // 4. Flutuantes (1x/mês, 2x/mês, Quinzenal)
             const diasFuturos = diasUteis.filter(d => d >= hojeStr);
             const baseFlutuantes = diasFuturos.length > 0 ? diasFuturos : diasUteis;
 
@@ -550,7 +703,6 @@
                 }
             });
 
-            // 5. Atividades abertas hoje sempre visíveis
             if (agenda[hojeStr]) {
                 execucoesDB.filter(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao)).forEach(execAberta => {
                     const jaExiste = agenda[hojeStr].tarefas.some(t => execCorrespondeTarefa(execAberta, t));
@@ -561,7 +713,7 @@
         }
 
         // =========================================================================
-        // FILTROS DE HISTÓRICO (BLINDADO CONTRA NAO_REALIZADA E IMPEDIMENTO_EPI)
+        // FILTROS DE HISTÓRICO & SANFONA POR DIA (BLINDADO CONTRA NAO_REALIZADA)
         // =========================================================================
         function setFiltroPeriodoCliente(periodo) {
             filtroPeriodoCliente = periodo; dataEspecificaCliente = '';
@@ -580,7 +732,7 @@
             ['HOJE', 'ONTEM', '7DIAS', 'MES'].forEach(p => { document.getElementById(`btn-cli-hist-${p}`).className = "py-1.5 rounded-lg text-[10px] font-extrabold text-slate-300 hover:text-white"; });
 
             const { data } = await sb.from('execucoes_auditoria')
-                .select('*').eq('cliente', CLIENTE_FIXO).eq('data_referencia', dataVal).order('dh_envio_servidor', { ascending: false });
+                .select('*').eq('cliente', clienteAtivo).eq('data_referencia', dataVal).order('dh_envio_servidor', { ascending: false });
 
             execucoesDataEspecificaClienteDB = (data || []).filter(e => !STATUS_OCULTOS_CLIENTE.includes(e.status_execucao));
             renderizarFeedFotosCliente();
@@ -597,6 +749,30 @@
             return visiveisCliente;
         }
 
+        function obterDescricaoPeriodoCliente() {
+            if (filtroPeriodoCliente === 'DATA_ESPECIFICA' && dataEspecificaCliente) return `Data: ${new Date(dataEspecificaCliente + 'T12:00:00').toLocaleDateString('pt-BR')}`;
+            if (filtroPeriodoCliente === 'HOJE') return `Hoje (${new Date().toLocaleDateString('pt-BR')})`;
+            if (filtroPeriodoCliente === 'ONTEM') { const o = new Date(); o.setDate(o.getDate() - 1); return `Ontem (${o.toLocaleDateString('pt-BR')})`; }
+            if (filtroPeriodoCliente === '7DIAS') return 'Últimos 7 Dias';
+            return `Mês Atual (${new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })})`;
+        }
+
+        function toggleDiaFeedCliente(dataStr) {
+            if (diasExpandidosCliente.has(dataStr)) diasExpandidosCliente.delete(dataStr);
+            else diasExpandidosCliente.add(dataStr);
+            renderizarFeedFotosCliente();
+        }
+
+        function alternarExpandirTodosDiasCliente() {
+            todosDiasExpandidosCli = !todosDiasExpandidosCli;
+            if (todosDiasExpandidosCli) datasVisiveisFeedCache.forEach(d => diasExpandidosCliente.add(d));
+            else {
+                diasExpandidosCliente.clear();
+                if (datasVisiveisFeedCache[0]) diasExpandidosCliente.add(datasVisiveisFeedCache[0]);
+            }
+            renderizarFeedFotosCliente();
+        }
+
         // =========================================================================
         // PAINEL DE ATIVIDADES DE HOJE (AGRUPADO POR SETOR + ATIVIDADE)
         // =========================================================================
@@ -605,7 +781,6 @@
             const tarefasHoje = agendaMesAtual[hojeStr]?.tarefas || [];
             const listaHojeEl = document.getElementById('lista-programadas-hoje');
 
-            // Agrupa tarefas do dia por Setor + Atividade (exibe todas as espécies juntas)
             const mapaBlocos = new Map();
             tarefasHoje.forEach(t => {
                 const k = `${t.setor}||${t.atividade}`;
@@ -690,94 +865,397 @@
         }
 
         // =========================================================================
-        // FEED DE FOTOS CONSOLIDADO POR LOTE (grupo_execucao_id)
+        // FEED DE FOTOS EM SANFONA POR DIA (CONSOLIDADO POR LOTE)
         // =========================================================================
+        function construirCartaoFotoClienteHtml(lote) {
+            const e = lote.principal;
+            const especiesTxt = [...new Set(lote.registros.map(r => r.especie).filter(Boolean))].join(', ');
+            const isDispensado = e.status_execucao === 'DISPENSADO';
+            const emCurso = !['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao);
+            const horaFmt = new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            const fotosAntesArr = extrairListaFotos(e.foto_antes_url);
+            const fotosDepoisArr = extrairListaFotos(e.foto_depois_url);
+
+            let badgeTopo = `<span class="text-[10px] font-semibold text-slate-400">${horaFmt}</span>`;
+            if (isDispensado) badgeTopo = `<span class="text-[10px] font-extrabold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">☑️ Vistoriado</span>`;
+            else if (e.status_execucao === 'PAUSADO') badgeTopo = `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏸️ Pausado</span>`;
+            else if (e.status_execucao === 'EM_ANDAMENTO') badgeTopo = `<span class="text-[10px] font-extrabold bg-orange-500 text-white px-2 py-0.5 rounded-full animate-pulse">🟠 Em Execução</span>`;
+
+            let blocoFotos = '';
+            if (isDispensado) {
+                const urlVist = fotosDepoisArr[0] || fotosAntesArr[0] || '';
+                const zVist = urlVist ? registrarFotoZoomCliente(urlVist, `VISTORIA TÉCNICA • ${e.setor}`) : -1;
+                blocoFotos = `<div ${zVist >= 0 ? `onclick="abrirZoomFotoByIdx(${zVist})"` : ''} class="relative h-36 bg-slate-100 rounded-xl overflow-hidden border-2 border-sky-300 cursor-pointer">
+                    ${urlVist ? `<img src="${urlVist}" class="w-full h-full object-cover">` : ''}
+                    <span class="absolute bottom-2 left-2 bg-sky-900/90 text-white text-[9px] font-extrabold px-2.5 py-1 rounded">FOTO DE VISTORIA LOCAL</span>
+                </div>`;
+            } else {
+                const zA0 = fotosAntesArr[0] ? registrarFotoZoomCliente(fotosAntesArr[0], `REGISTRO INICIAL / ANDAMENTO • ${e.setor}`) : -1;
+                const zD0 = fotosDepoisArr[0] ? registrarFotoZoomCliente(fotosDepoisArr[0], `DEPOIS • ${e.setor}`) : -1;
+
+                const thumbsDepoisExtras = fotosDepoisArr.length > 1
+                    ? `<div class="flex gap-1.5 mt-1.5">${fotosDepoisArr.map((u, idx) => `<img onclick="abrirZoomFotoByIdx(${registrarFotoZoomCliente(u, `DEPOIS (Foto ${idx + 1}) • ${e.setor}`)})" src="${u}" class="w-9 h-9 rounded-lg object-cover border border-emerald-400 cursor-pointer">`).join('')}</div>`
+                    : '';
+
+                blocoFotos = `<div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <div ${zA0 >= 0 ? `onclick="abrirZoomFotoByIdx(${zA0})"` : ''} class="relative h-28 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 cursor-pointer">
+                            ${fotosAntesArr[0] ? `<img src="${fotosAntesArr[0]}" class="w-full h-full object-cover">` : `<div class="flex items-center justify-center h-full text-[10px] text-slate-400">Sem foto</div>`}
+                            <span class="absolute bottom-1 left-1 bg-slate-900/85 text-white text-[7.5px] font-extrabold px-1.5 py-0.5 rounded">INICIAL</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div ${zD0 >= 0 ? `onclick="abrirZoomFotoByIdx(${zD0})"` : ''} class="relative h-28 bg-slate-100 rounded-xl overflow-hidden border-2 ${emCurso ? 'border-dashed border-orange-300' : 'border-emerald-400'} cursor-pointer">
+                            ${fotosDepoisArr[0]
+                                ? `<img src="${fotosDepoisArr[0]}" class="w-full h-full object-cover">`
+                                : `<div class="flex flex-col items-center justify-center h-full text-[10px] font-bold text-orange-600 bg-orange-50/50 p-2 text-center">⏳ Em execução...</div>`}
+                            <span class="absolute bottom-1 left-1 bg-emerald-700 text-white text-[7.5px] font-extrabold px-1.5 py-0.5 rounded">${fotosDepoisArr.length > 1 ? `DEPOIS (${fotosDepoisArr.length})` : 'DEPOIS'}</span>
+                        </div>
+                        ${thumbsDepoisExtras}
+                    </div>
+                </div>`;
+            }
+
+            return `
+            <div class="bg-white rounded-2xl p-3.5 border ${emCurso ? 'border-2 border-orange-300' : (isDispensado ? 'border-sky-200' : 'border-slate-200')} shadow-sm">
+                <div class="flex justify-between items-start mb-1.5 gap-2">
+                    <div class="min-w-0">
+                        <span class="text-[10px] font-extrabold ${isDispensado ? 'bg-sky-100 text-sky-800' : 'bg-emerald-100 text-emerald-800'} px-2 py-0.5 rounded-md">${e.setor}</span>
+                        <h4 class="text-xs font-extrabold text-slate-900 mt-1 leading-snug">${e.atividade}</h4>
+                        ${especiesTxt ? `<p class="text-[10px] font-bold text-emerald-800 mt-0.5 truncate">🌿 ${especiesTxt}</p>` : ''}
+                    </div>
+                    <div class="flex-shrink-0">${badgeTopo}</div>
+                </div>
+                <p class="text-[11px] text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-100 mb-2.5 line-clamp-2">"${e.observacao || 'Atividade em andamento...'}"</p>
+                ${blocoFotos}
+                <div class="mt-2 pt-1.5 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-500 font-semibold">
+                    <span class="truncate">👷 ${e.equipe_executora}</span>
+                    <span class="${emCurso ? 'text-orange-600' : (isDispensado ? 'text-sky-700' : 'text-emerald-700')} font-bold flex-shrink-0 ml-1">${emCurso ? '🔄 Ao Vivo' : '✓ Auditado'}</span>
+                </div>
+            </div>`;
+        }
+
         function renderizarFeedFotosCliente() {
             fotosZoomClienteCache = [];
             const listaFiltrada = obterExecucoesFiltradasCliente();
             const lotes = agruparExecucoesEmLotes(listaFiltrada);
-            document.getElementById('cliente-hist-count').textContent = `${lotes.length} registro(s)`;
+            document.getElementById('cliente-hist-count').textContent = `${lotes.length} reg.`;
 
             const feedEl = document.getElementById('feed-auditoria-fotos');
             if (lotes.length === 0) {
+                datasVisiveisFeedCache = [];
                 feedEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-slate-200 text-xs text-slate-400">Nenhuma atividade ou foto encontrada para o período selecionado. Altere o filtro acima para consultar outros dias.</div>`;
                 return;
             }
 
-            feedEl.innerHTML = lotes.map(lote => {
-                const e = lote.principal;
-                const especiesTxt = [...new Set(lote.registros.map(r => r.especie).filter(Boolean))].join(', ');
-                const isDispensado = e.status_execucao === 'DISPENSADO';
-                const emCurso = !['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao);
-                const dataFmt = new Date(e.dh_inicio_tarefa || e.dh_envio_servidor).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            // Agrupa lotes por data_referencia (ordem decrescente)
+            const mapaDias = new Map();
+            lotes.forEach(lote => {
+                const dt = lote.principal.data_referencia || dataISO();
+                if (!mapaDias.has(dt)) mapaDias.set(dt, []);
+                mapaDias.get(dt).push(lote);
+            });
+            const diasOrdenados = Array.from(mapaDias.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+            datasVisiveisFeedCache = diasOrdenados.map(d => d[0]);
 
-                const fotosAntesArr = extrairListaFotos(e.foto_antes_url);
-                const fotosDepoisArr = extrairListaFotos(e.foto_depois_url);
+            // Ao trocar o filtro, abre automaticamente apenas o dia mais recente (evita salsichão)
+            const chaveAtualFiltro = `${filtroPeriodoCliente}::${dataEspecificaCliente}`;
+            if (ultimoFiltroChaveAccordion !== chaveAtualFiltro) {
+                ultimoFiltroChaveAccordion = chaveAtualFiltro;
+                diasExpandidosCliente.clear();
+                todosDiasExpandidosCli = false;
+                if (datasVisiveisFeedCache[0]) diasExpandidosCliente.add(datasVisiveisFeedCache[0]);
+            }
 
-                let badgeTopo = `<span class="text-[10px] font-semibold text-slate-400">${dataFmt}</span>`;
-                if (isDispensado) badgeTopo = `<span class="text-[10px] font-extrabold bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full">☑️ Vistoriado • ${dataFmt}</span>`;
-                else if (e.status_execucao === 'PAUSADO') badgeTopo = `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏸️ Pausado (${e.motivo_pausa || 'Intervalo'})</span>`;
-                else if (e.status_execucao === 'EM_ANDAMENTO') badgeTopo = `<span class="text-[10px] font-extrabold bg-orange-500 text-white px-2 py-0.5 rounded-full animate-pulse">🟠 Em Execução Agora</span>`;
+            const btnExp = document.getElementById('btn-expandir-dias-cli');
+            if (btnExp) {
+                btnExp.classList.toggle('hidden', diasOrdenados.length <= 1);
+                btnExp.textContent = todosDiasExpandidosCli ? 'Recolher' : 'Expandir Todos';
+            }
 
-                let blocoFotos = '';
-                if (isDispensado) {
-                    const urlVist = fotosDepoisArr[0] || fotosAntesArr[0] || '';
-                    const zVist = urlVist ? registrarFotoZoomCliente(urlVist, `VISTORIA TÉCNICA • ${e.setor}`) : -1;
-                    blocoFotos = `<div ${zVist >= 0 ? `onclick="abrirZoomFotoByIdx(${zVist})"` : ''} class="relative h-40 bg-slate-100 rounded-xl overflow-hidden border-2 border-sky-300 cursor-pointer">
-                        ${urlVist ? `<img src="${urlVist}" class="w-full h-full object-cover">` : ''}
-                        <span class="absolute bottom-2 left-2 bg-sky-900/90 text-white text-[9px] font-extrabold px-2.5 py-1 rounded">FOTO DE VISTORIA TÉCNICA NO LOCAL</span>
-                    </div>`;
-                } else {
-                    const zA0 = fotosAntesArr[0] ? registrarFotoZoomCliente(fotosAntesArr[0], `REGISTRO INICIAL / ANDAMENTO • ${e.setor}`) : -1;
-                    const zD0 = fotosDepoisArr[0] ? registrarFotoZoomCliente(fotosDepoisArr[0], `DEPOIS • ${e.setor}`) : -1;
+            feedEl.innerHTML = diasOrdenados.map(([dtISO, lotesDoDia]) => {
+                const aberto = diasOrdenados.length === 1 || diasExpandidosCliente.has(dtISO);
+                const dObj = new Date(dtISO + 'T12:00:00');
+                const dtBonita = dObj.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+                const ehHoje = dtISO === dataISO();
+                const setoresUnicos = [...new Set(lotesDoDia.map(l => l.principal.setor))];
+                const qtdFotos = lotesDoDia.reduce((acc, l) => acc + extrairListaFotos(l.principal.foto_depois_url).length, 0);
 
-                    const thumbsAntesExtras = fotosAntesArr.length > 1
-                        ? `<div class="flex gap-1.5 mt-1.5">${fotosAntesArr.map((u, idx) => `<img onclick="abrirZoomFotoByIdx(${registrarFotoZoomCliente(u, `REGISTRO INICIAL / ANDAMENTO (${idx + 1}) • ${e.setor}`)})" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-slate-300 cursor-pointer">`).join('')}</div>`
-                        : '';
-
-                    const thumbsDepoisExtras = fotosDepoisArr.length > 1
-                        ? `<div class="flex gap-1.5 mt-1.5">${fotosDepoisArr.map((u, idx) => `<img onclick="abrirZoomFotoByIdx(${registrarFotoZoomCliente(u, `DEPOIS (Foto ${idx + 1}) • ${e.setor}`)})" src="${u}" class="w-10 h-10 rounded-lg object-cover border border-emerald-400 cursor-pointer">`).join('')}</div>`
-                        : '';
-
-                    blocoFotos = `<div class="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <div ${zA0 >= 0 ? `onclick="abrirZoomFotoByIdx(${zA0})"` : ''} class="relative h-32 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 cursor-pointer">
-                                ${fotosAntesArr[0] ? `<img src="${fotosAntesArr[0]}" class="w-full h-full object-cover">` : `<div class="flex items-center justify-center h-full text-[10px] text-slate-400">Sem foto</div>`}
-                                <span class="absolute bottom-1.5 left-1.5 bg-slate-900/85 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded">${fotosAntesArr.length > 1 ? `INICIAL / ANDAM. (${fotosAntesArr.length})` : 'INICIAL / ANDAMENTO'}</span>
-                            </div>
-                            ${thumbsAntesExtras}
-                        </div>
-                        <div>
-                            <div ${zD0 >= 0 ? `onclick="abrirZoomFotoByIdx(${zD0})"` : ''} class="relative h-32 bg-slate-100 rounded-xl overflow-hidden border-2 ${emCurso ? 'border-dashed border-orange-300' : 'border-emerald-400'} cursor-pointer">
-                                ${fotosDepoisArr[0]
-                                    ? `<img src="${fotosDepoisArr[0]}" class="w-full h-full object-cover">`
-                                    : `<div class="flex flex-col items-center justify-center h-full text-[10px] font-bold text-orange-600 bg-orange-50/50 p-2 text-center">⏳ Em execução...<br><span class="font-normal text-slate-400">Foto final ao concluir</span></div>`}
-                                <span class="absolute bottom-1.5 left-1.5 bg-emerald-700 text-white text-[8px] font-extrabold px-2 py-0.5 rounded">${fotosDepoisArr.length > 1 ? `DEPOIS (${fotosDepoisArr.length} fotos)` : 'DEPOIS'}</span>
-                            </div>
-                            ${thumbsDepoisExtras}
-                        </div>
-                    </div>`;
-                }
+                const corpoDiaHtml = aberto ? `
+                    <div class="p-3 bg-slate-50/70 border-t border-slate-200 grid grid-cols-1 lg:grid-cols-2 gap-3">
+                        ${lotesDoDia.map(lote => construirCartaoFotoClienteHtml(lote)).join('')}
+                    </div>` : '';
 
                 return `
-                <div class="bg-white rounded-2xl p-4 border ${emCurso ? 'border-2 border-orange-300' : (isDispensado ? 'border-sky-200' : 'border-slate-200')} shadow-sm">
-                    <div class="flex justify-between items-start mb-1.5 gap-2">
-                        <div>
-                            <span class="text-[10px] font-extrabold ${isDispensado ? 'bg-sky-100 text-sky-800' : 'bg-emerald-100 text-emerald-800'} px-2 py-0.5 rounded-md">${e.setor}</span>
-                            <h4 class="text-sm font-extrabold text-slate-900 mt-1">${e.atividade}</h4>
-                            ${especiesTxt ? `<p class="text-[10px] font-bold text-emerald-800 mt-0.5">🌿 ${especiesTxt}</p>` : ''}
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <button type="button" onclick="toggleDiaFeedCliente('${dtISO}')" class="w-full px-4 py-3 flex items-center justify-between gap-2 text-left hover:bg-emerald-50/40 transition-colors">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-xl ${aberto ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'} flex items-center justify-center flex-shrink-0 transition-colors">
+                                <i data-lucide="${aberto ? 'chevron-down' : 'chevron-right'}" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-extrabold text-slate-900 capitalize flex items-center gap-1.5">
+                                    <span>📅 ${ehHoje ? 'Hoje • ' : ''}${dtBonita}</span>
+                                </p>
+                                <p class="text-[10px] text-slate-500 truncate">${setoresUnicos.slice(0, 3).join(', ')}${setoresUnicos.length > 3 ? ` +${setoresUnicos.length - 3}` : ''}</p>
+                            </div>
                         </div>
-                        ${badgeTopo}
-                    </div>
-                    <p class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-3">"${e.observacao || 'Atividade em andamento...'}"</p>
-                    ${blocoFotos}
-                    <div class="mt-2.5 pt-2 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-500 font-semibold">
-                        <span>👷 Equipe: ${e.equipe_executora}</span>
-                        <span class="${emCurso ? 'text-orange-600' : (isDispensado ? 'text-sky-700' : 'text-emerald-700')} font-bold">${emCurso ? '🔄 Ao Vivo no Local' : '✓ Auditado'}</span>
-                    </div>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">${lotesDoDia.length} entrega(s)</span>
+                            ${qtdFotos > 0 ? `<span class="hidden sm:inline text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-full">📸 ${qtdFotos}</span>` : ''}
+                        </div>
+                    </button>
+                    ${corpoDiaHtml}
                 </div>`;
             }).join('');
             initIcons();
+        }
+
+        // =========================================================================
+        // EXPORTAÇÃO PDF EXECUTIVO (SEM FOTOS / MOSAICO "DEPOIS" / COMPLETO)
+        // =========================================================================
+        function abrirModalPdfCliente() {
+            const lista = obterExecucoesFiltradasCliente();
+            const lotes = agruparExecucoesEmLotes(lista);
+            document.getElementById('pdf-cli-resumo-escopo').innerHTML = `Contrato: <b>${clienteAtivo}</b> • Período: <b>${obterDescricaoPeriodoCliente()}</b> • <b>${lotes.length}</b> entrega(s) auditadas.`;
+
+            const aviso = document.getElementById('pdf-cli-aviso-peso');
+            if (lotes.length > 50) {
+                aviso.classList.remove('hidden');
+                aviso.textContent = `💡 Este período possui ${lotes.length} registros. Para evitar um PDF pesado no celular, recomendamos o modo "Executivo c/ Mosaico" ou "Analítico Sem Fotos".`;
+            } else aviso.classList.add('hidden');
+
+            document.getElementById('modal-pdf-cliente').classList.remove('hidden');
+            initIcons();
+        }
+
+        async function aguardarImagensPrintCliente(container) {
+            const imgs = Array.from(container.querySelectorAll('img'));
+            if (imgs.length === 0) return;
+            await Promise.all(imgs.map(img => new Promise(resolve => {
+                if (img.complete && img.naturalWidth > 0) return resolve();
+                const timer = setTimeout(resolve, 4500);
+                img.onload = () => { clearTimeout(timer); resolve(); };
+                img.onerror = () => { clearTimeout(timer); resolve(); };
+            })));
+        }
+
+        async function gerarPdfCliente() {
+            const modo = document.querySelector('input[name="modo-pdf-cliente"]:checked')?.value || 'EXECUTIVO_MOSAICO';
+            const btn = document.getElementById('btn-gerar-pdf-cliente');
+            btn.disabled = true; btn.textContent = "Montando relatório...";
+
+            const lista = obterExecucoesFiltradasCliente();
+            const lotes = agruparExecucoesEmLotes(lista);
+            const concluidos = lotes.filter(l => l.principal.status_execucao === 'CONCLUIDO');
+            const vistorias = lotes.filter(l => l.principal.status_execucao === 'DISPENSADO');
+            const setoresAtendidos = [...new Set(lotes.map(l => l.principal.setor))];
+
+            // Calcula impacto climático (chuva acumulada nas datas do filtro)
+            const datasNoFiltro = new Set(lotes.map(l => l.principal.data_referencia));
+            const minChuvaPeriodo = presencasMesDB
+                .filter(p => datasNoFiltro.size === 0 || datasNoFiltro.has(p.data_turno))
+                .reduce((acc, p) => acc + (Number(p.minutos_chuva_acumulados) || 0), 0);
+
+            // Tabela Matriz (Setor × Tipo de Serviço)
+            const tiposUsadosSet = new Set();
+            const matriz = {};
+            concluidos.forEach(l => {
+                const setor = l.principal.setor;
+                const tipo = classificarTipoAtividade(l.principal.atividade);
+                tiposUsadosSet.add(tipo);
+                if (!matriz[setor]) matriz[setor] = { total: 0 };
+                matriz[setor][tipo] = (matriz[setor][tipo] || 0) + 1;
+                matriz[setor].total++;
+            });
+
+            // Ordena colunas de tipos pela ordem de tiposAtividadeDB (limitando a até 6 colunas para caber elegante na A4)
+            const tiposCols = Array.from(tiposUsadosSet).sort((a, b) => {
+                const ia = tiposAtividadeDB.findIndex(t => t.nome === a);
+                const ib = tiposAtividadeDB.findIndex(t => t.nome === b);
+                return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+            });
+
+            const setoresOrdenados = Object.keys(matriz).sort((a, b) => matriz[b].total - matriz[a].total);
+            const totaisPorCol = {};
+            tiposCols.forEach(c => totaisPorCol[c] = 0);
+            let totalGeralMatriz = 0;
+
+            const linhasMatrizHtml = setoresOrdenados.map(s => {
+                totalGeralMatriz += matriz[s].total;
+                const tds = tiposCols.map(col => {
+                    const v = matriz[s][col] || 0;
+                    totaisPorCol[col] += v;
+                    return `<td class="py-1.5 px-2 text-center ${v > 0 ? 'font-bold text-slate-900' : 'text-slate-300'}">${v > 0 ? v : '–'}</td>`;
+                }).join('');
+                return `<tr class="border-b border-slate-200"><td class="py-1.5 px-2 font-bold text-slate-800">${s}</td>${tds}<td class="py-1.5 px-2 text-center font-extrabold bg-emerald-50 text-emerald-900">${matriz[s].total}</td></tr>`;
+            }).join('') || `<tr><td colspan="${tiposCols.length + 2}" class="py-3 text-center text-slate-400">Nenhuma entrega concluída no período selecionado.</td></tr>`;
+
+            const rodapeMatrizHtml = setoresOrdenados.length > 0 ? `
+                <tr class="bg-slate-900 text-white font-extrabold">
+                    <td class="py-1.5 px-2">TOTAL GERAL</td>
+                    ${tiposCols.map(c => `<td class="py-1.5 px-2 text-center">${totaisPorCol[c]}</td>`).join('')}
+                    <td class="py-1.5 px-2 text-center text-emerald-300">${totalGeralMatriz}</td>
+                </tr>` : '';
+
+            // Bloco Fotográfico (Apenas foto DEPOIS / VISTORIA em grid 3 colunas = 9-12 por folha)
+            let blocoFotosHtml = '';
+            if (modo !== 'SEM_FOTOS') {
+                let lotesParaFoto = lotes.filter(l => {
+                    const e = l.principal;
+                    return extrairListaFotos(e.foto_depois_url).length > 0 || (e.status_execucao === 'DISPENSADO' && extrairListaFotos(e.foto_antes_url).length > 0);
+                });
+
+                if (modo === 'EXECUTIVO_MOSAICO') {
+                    // Mantém a foto "Depois" mais recente de cada combinação única de Setor + Atividade
+                    const vistos = new Set();
+                    lotesParaFoto = lotesParaFoto.filter(l => {
+                        const k = `${l.principal.setor}||${l.principal.atividade}`;
+                        if (vistos.has(k)) return false;
+                        vistos.add(k);
+                        return true;
+                    });
+                }
+
+                if (lotesParaFoto.length > 0) {
+                    const subtituloFotos = modo === 'EXECUTIVO_MOSAICO'
+                        ? `Mosaico Fotográfico — Evidência Mais Recente por Setor/Serviço (${lotesParaFoto.length} registros)`
+                        : `Relatório Fotográfico Completo — Conclusões do Período (${lotesParaFoto.length} registros)`;
+
+                    blocoFotosHtml = `
+                    <div class="print-page-break">
+                        <div class="flex justify-between items-end border-b-2 border-emerald-700 pb-1.5 mb-3">
+                            <h3 class="text-xs font-extrabold text-slate-900 uppercase">${subtituloFotos}</h3>
+                            <span class="text-[9px] font-bold text-slate-500">${clienteAtivo} • ${obterDescricaoPeriodoCliente()}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            ${lotesParaFoto.map(l => {
+                                const e = l.principal;
+                                const isDisp = e.status_execucao === 'DISPENSADO';
+                                const fotoUrl = extrairListaFotos(e.foto_depois_url)[0] || extrairListaFotos(e.foto_antes_url)[0] || '';
+                                const dt = new Date((e.data_referencia || dataISO()) + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                                const esp = [...new Set(l.registros.map(r => r.especie).filter(Boolean))].join(', ');
+                                return `
+                                <div class="border border-slate-200 rounded-xl overflow-hidden bg-white print-avoid-break">
+                                    <div class="relative h-28 bg-slate-100">
+                                        <img src="${fotoUrl}" loading="eager" class="w-full h-full object-cover">
+                                        <span class="absolute top-1.5 left-1.5 bg-slate-900/85 text-white text-[7.5px] font-extrabold px-1.5 py-0.5 rounded">${dt}</span>
+                                        <span class="absolute bottom-1.5 right-1.5 ${isDisp ? 'bg-sky-700/90' : 'bg-emerald-700/90'} text-white text-[7px] font-extrabold px-1.5 py-0.5 rounded">${isDisp ? 'VISTORIA' : 'CONCLUÍDO'}</span>
+                                    </div>
+                                    <div class="p-2">
+                                        <p class="text-[8.5px] font-extrabold text-emerald-800 uppercase truncate">${e.setor}</p>
+                                        <p class="text-[9.5px] font-extrabold text-slate-900 leading-tight truncate">${e.atividade}</p>
+                                        ${esp ? `<p class="text-[8px] text-slate-500 truncate mt-0.5">🌿 ${esp}</p>` : ''}
+                                    </div>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>`;
+                }
+            }
+
+            // Anexo Analítico Completo (no modo Sem Fotos e no Executivo Mosaico)
+            let anexoTabelaHtml = '';
+            if (modo !== 'FOTOGRAFICO_COMPLETO') {
+                anexoTabelaHtml = `
+                <div class="${modo === 'EXECUTIVO_MOSAICO' && blocoFotosHtml ? 'print-page-break' : 'mt-5'}">
+                    <div class="flex justify-between items-end border-b-2 border-slate-900 pb-1 mb-2">
+                        <h3 class="text-xs font-extrabold text-slate-900 uppercase">Detalhamento Cronológico das Atividades (${lotes.length} registros)</h3>
+                        <span class="text-[9px] font-bold text-slate-500">${clienteAtivo}</span>
+                    </div>
+                    <table class="w-full text-[9px] border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900 text-white text-left">
+                                <th class="p-1.5">Data</th>
+                                <th class="p-1.5">Setor / Área</th>
+                                <th class="p-1.5">Atividade & Espécies</th>
+                                <th class="p-1.5">Equipe</th>
+                                <th class="p-1.5 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lotes.map(l => {
+                                const e = l.principal;
+                                const dt = new Date((e.data_referencia || dataISO()) + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                                const esp = [...new Set(l.registros.map(r => r.especie).filter(Boolean))].join(', ');
+                                const stLbl = e.status_execucao === 'DISPENSADO' ? 'Vistoriado' : (e.status_execucao === 'CONCLUIDO' ? 'Concluído' : 'Em andamento');
+                                return `<tr class="border-b border-slate-200"><td class="p-1.5 font-bold whitespace-nowrap">${dt}</td><td class="p-1.5 font-semibold text-slate-800">${e.setor}</td><td class="p-1.5"><b>${e.atividade}</b>${esp ? ` <span class="text-slate-500">• ${esp}</span>` : ''}</td><td class="p-1.5 text-slate-600">${e.equipe_executora}</td><td class="p-1.5 text-center font-bold ${e.status_execucao === 'DISPENSADO' ? 'text-sky-700' : 'text-emerald-700'}">${stLbl}</td></tr>`;
+                            }).join('') || `<tr><td colspan="5" class="p-3 text-center text-slate-400">Sem atividades registradas no período.</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>`;
+            }
+
+            const geradoEm = new Date().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            const printBox = document.getElementById('print-cliente-container');
+            printBox.innerHTML = `
+                <div class="p-1">
+                    <!-- CABEÇALHO EXECUTIVO -->
+                    <div class="flex justify-between items-center border-b-2 border-emerald-700 pb-3 mb-4">
+                        <div class="flex items-center gap-3">
+                            <img src="Logo.jpg" onerror="this.style.display='none'" class="w-12 h-12 rounded-xl object-cover border border-slate-300">
+                            <div>
+                                <p class="text-[9px] font-extrabold text-emerald-700 uppercase tracking-wider">Nova Era Serviços • Paisagismo Corporativo</p>
+                                <h1 class="text-lg font-extrabold text-slate-900 leading-tight">Relatório de Manutenção de Áreas Verdes</h1>
+                                <p class="text-[10px] text-slate-600">Unidade: <b>${clienteAtivo}</b>${clienteObjAtual?.endereco ? ' • ' + clienteObjAtual.endereco : ''}</p>
+                            </div>
+                        </div>
+                        <div class="text-right text-[9.5px] text-slate-600">
+                            <p><b>Período:</b> ${obterDescricaoPeriodoCliente()}</p>
+                            <p><b>Emissão:</b> ${geradoEm}</p>
+                            <p><b>Portal Auditado</b></p>
+                        </div>
+                    </div>
+
+                    <!-- KPIs EXECUTIVOS -->
+                    <div class="grid grid-cols-4 gap-2.5 mb-4">
+                        <div class="border border-emerald-200 rounded-xl p-2.5 bg-emerald-50/70 text-center">
+                            <p class="text-[8.5px] font-bold text-emerald-800 uppercase">Atividades Entregues</p>
+                            <p class="text-lg font-extrabold text-emerald-900">${concluidos.length}</p>
+                        </div>
+                        <div class="border border-slate-200 rounded-xl p-2.5 bg-slate-50 text-center">
+                            <p class="text-[8.5px] font-bold text-slate-500 uppercase">Setores Atendidos</p>
+                            <p class="text-lg font-extrabold text-slate-900">${setoresAtendidos.length}</p>
+                        </div>
+                        <div class="border border-sky-200 rounded-xl p-2.5 bg-sky-50/70 text-center">
+                            <p class="text-[8.5px] font-bold text-sky-800 uppercase">Vistorias Técnicas</p>
+                            <p class="text-lg font-extrabold text-sky-900">${vistorias.length}</p>
+                        </div>
+                        <div class="border border-slate-200 rounded-xl p-2.5 bg-slate-50 text-center">
+                            <p class="text-[8.5px] font-bold text-slate-500 uppercase">Impacto de Chuva</p>
+                            <p class="text-lg font-extrabold text-blue-800">${minChuvaPeriodo > 0 ? formatarMinutosStr(minChuvaPeriodo) : 'Seco'}</p>
+                        </div>
+                    </div>
+
+                    <!-- TABELA MATRIZ (SETOR × TIPO DE SERVIÇO) -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden print-avoid-break">
+                        <div class="bg-slate-100 px-3 py-1.5 border-b border-slate-200 text-[10px] font-extrabold text-slate-800 uppercase">
+                            Matriz de Entregas por Setor × Tipo de Serviço
+                        </div>
+                        <table class="w-full text-[9px] border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-left">
+                                    <th class="py-1.5 px-2">Setor / Área</th>
+                                    ${tiposCols.map(c => `<th class="py-1.5 px-2 text-center">${c}</th>`).join('')}
+                                    <th class="py-1.5 px-2 text-center bg-emerald-50 text-emerald-900">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${linhasMatrizHtml}
+                                ${rodapeMatrizHtml}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    ${blocoFotosHtml}
+                    ${anexoTabelaHtml}
+                </div>`;
+
+            await aguardarImagensPrintCliente(printBox);
+            btn.disabled = false; btn.textContent = "Gerar e Salvar PDF";
+            document.getElementById('modal-pdf-cliente').classList.add('hidden');
+            setTimeout(() => window.print(), 250);
         }
 
         // =========================================================================
@@ -792,7 +1270,7 @@
             if (calMesCli < 0) { calMesCli = 11; calAnoCli--; } else if (calMesCli > 11) { calMesCli = 0; calAnoCli++; }
 
             const { data } = await sb.from('execucoes_auditoria')
-                .select('*').eq('cliente', CLIENTE_FIXO)
+                .select('*').eq('cliente', clienteAtivo)
                 .gte('data_referencia', dataISO(new Date(calAnoCli, calMesCli, 1)))
                 .lte('data_referencia', dataISO(new Date(calAnoCli, calMesCli + 1, 0)))
                 .order('dh_envio_servidor', { ascending: false });
@@ -893,7 +1371,7 @@
         // =========================================================================
         async function carregarChatCliente() {
             const { data } = await sb.from('mensagens_chat')
-                .select('*').eq('cliente', CLIENTE_FIXO).eq('canal', 'CLIENTE').order('criado_em', { ascending: true });
+                .select('*').eq('cliente', clienteAtivo).eq('canal', 'CLIENTE').order('criado_em', { ascending: true });
 
             const box = document.getElementById('chat-cliente-box');
             if (!data || data.length === 0) {
@@ -913,12 +1391,12 @@
         async function enviarSolicitacaoCliente() {
             const input = document.getElementById('input-msg-cliente'), texto = input.value.trim();
             if (!texto) return;
-            const autor = document.getElementById('input-nome-cliente').value.trim() || 'Joelma (Miss Silvia)';
+            const autor = document.getElementById('input-nome-cliente').value.trim() || `Administração (${clienteAtivo})`;
             const urgente = document.getElementById('chk-prioridade-cliente').checked;
             input.value = ''; document.getElementById('chk-prioridade-cliente').checked = false;
 
             await sb.from('mensagens_chat').insert([{
-                cliente: CLIENTE_FIXO, canal: 'CLIENTE', autor_nome: autor, autor_perfil: 'CLIENTE', mensagem: texto, urgente
+                cliente: clienteAtivo, canal: 'CLIENTE', autor_nome: autor, autor_perfil: 'CLIENTE', mensagem: texto, urgente
             }]);
             carregarChatCliente();
         }
@@ -927,32 +1405,41 @@
             abaClienteAtiva = aba;
             ['entregas', 'calendario', 'solicitacoes'].forEach(a => {
                 document.getElementById(`tab-view-${a}`).classList.toggle('hidden', a !== aba);
-                document.getElementById(`nav-${a}`).className = (a === aba)
+                const navMob = document.getElementById(`nav-${a}`);
+                if (navMob) navMob.className = (a === aba)
                     ? "flex flex-col items-center py-1.5 text-emerald-600 transition-colors relative"
                     : "flex flex-col items-center py-1.5 text-slate-400 hover:text-emerald-600 transition-colors relative";
+                const navDesk = document.getElementById(`nav-desk-${a}`);
+                if (navDesk) navDesk.className = (a === aba)
+                    ? "px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition-all relative flex items-center gap-1.5"
+                    : "px-3.5 py-1.5 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition-all relative flex items-center gap-1.5";
             });
             if (aba === 'calendario') renderizarCalendarioCliente();
             if (aba === 'solicitacoes') { naoLidasCliente = 0; atualizarBadgeCliente(); carregarChatCliente(); }
         }
 
-        sb.channel('portal-miss-silvia-v94')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarPortalCliente())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarPortalCliente())
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
-                const msg = payload.new;
-                if (msg.cliente === CLIENTE_FIXO && msg.canal === 'CLIENTE') {
-                    if (msg.autor_perfil !== 'CLIENTE') {
-                        tocarChimeNotificacao();
-                        if (abaClienteAtiva !== 'solicitacoes') {
-                            naoLidasCliente++;
-                            atualizarBadgeCliente();
-                            dispararNotificacaoCliente(msg.autor_nome, msg.mensagem, msg.urgente);
+        function iniciarRealtimeCliente() {
+            if (realtimeIniciado) return;
+            realtimeIniciado = true;
+            sb.channel('portal-cliente-v95')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarPortalCliente())
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarPortalCliente())
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
+                    const msg = payload.new;
+                    if (msg.cliente === clienteAtivo && msg.canal === 'CLIENTE') {
+                        if (msg.autor_perfil !== 'CLIENTE') {
+                            tocarChimeNotificacao();
+                            if (abaClienteAtiva !== 'solicitacoes') {
+                                naoLidasCliente++;
+                                atualizarBadgeCliente();
+                                dispararNotificacaoCliente(msg.autor_nome, msg.mensagem, msg.urgente);
+                            }
                         }
+                        carregarChatCliente();
                     }
-                    carregarChatCliente();
-                }
-            })
-            .subscribe();
+                })
+                .subscribe();
+        }
 
         window.onload = () => {
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
