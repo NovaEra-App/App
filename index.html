@@ -15,6 +15,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background-color: #e2e8f0; border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow: hidden; }
         .month-header { text-align: center; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; padding: 8px 0; background-color: #f8fafc; }
@@ -33,7 +35,7 @@
 
     <!-- CABEÇALHO OPERACIONAL COM LOGO OFICIAL -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
-        <div class="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-md lg:max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2.5">
                 <img src="Logo.jpg" onerror="this.style.display='none'" alt="Nova Era" class="w-9 h-9 rounded-xl object-cover border border-slate-700 bg-white flex-shrink-0">
                 <div>
@@ -59,27 +61,70 @@
         </div>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="max-w-md mx-auto pb-safe pt-3 px-3.5" id="main-content">
+    <!-- CONTEÚDO PRINCIPAL (RESPONSIVO: MOBILE COMPACTO / DESKTOP 2 COLUNAS) -->
+    <main class="max-w-md lg:max-w-5xl mx-auto pb-safe pt-3 px-3.5 lg:px-6" id="main-content">
 
-        <!-- BANNER DE PRESENÇA E DISPONIBILIDADE INDIVIDUAL NO POSTO -->
-        <div id="checkin-banner" class="mb-3 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div id="checkin-icon-box" class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0">
-                    <i data-lucide="radio" class="w-5 h-5"></i>
+        <!-- TOPO OPERACIONAL: BANNER PRESENÇA + SELETOR DO POSTO LADO A LADO NO DESKTOP -->
+        <div class="lg:grid lg:grid-cols-12 lg:gap-4 mb-3 space-y-3 lg:space-y-0">
+            <!-- BANNER DE PRESENÇA E DISPONIBILIDADE INDIVIDUAL NO POSTO -->
+            <div id="checkin-banner" class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div id="checkin-icon-box" class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="radio" class="w-5 h-5"></i>
+                    </div>
+                    <div class="truncate">
+                        <p id="checkin-title" class="text-xs font-bold text-slate-800 truncate">Posto Aguardando Ativação</p>
+                        <p id="checkin-subtitle" class="text-[11px] text-slate-500 truncate">Confirme a presença da equipe no local</p>
+                    </div>
                 </div>
-                <div class="truncate">
-                    <p id="checkin-title" class="text-xs font-bold text-slate-800 truncate">Posto Aguardando Ativação</p>
-                    <p id="checkin-subtitle" class="text-[11px] text-slate-500 truncate">Confirme a presença da equipe no local</p>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <button id="btn-checkin-action" onclick="iniciarFluxoCheckinPosto()" class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm transition-all">
+                        Ativar Posto
+                    </button>
+                    <button id="btn-checkout-action" onclick="abrirModalSaidaTurno()" class="hidden bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1">
+                        <i data-lucide="flag" class="w-3.5 h-3.5 text-orange-400"></i> Saída / Encerrar
+                    </button>
                 </div>
             </div>
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-                <button id="btn-checkin-action" onclick="iniciarFluxoCheckinPosto()" class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm transition-all">
-                    Ativar Posto
-                </button>
-                <button id="btn-checkout-action" onclick="abrirModalSaidaTurno()" class="hidden bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold px-2.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1">
-                    <i data-lucide="flag" class="w-3.5 h-3.5 text-orange-400"></i> Saída / Encerrar
-                </button>
+
+            <!-- SELETOR DO POSTO E CONTROLES DO TURNO -->
+            <div class="lg:col-span-7 bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80">
+                <div class="flex justify-between items-start mb-2.5">
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="building-2" class="w-3.5 h-3.5 text-orange-500"></i>
+                            <select id="posto-trabalho" onchange="trocarClienteManual(this.value)" class="text-xs font-extrabold text-orange-600 bg-transparent uppercase tracking-wider border-none p-0 focus:ring-0 cursor-pointer outline-none">
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <h2 class="text-xl font-extrabold text-slate-900 mt-0.5" id="view-title">Cronograma de Hoje</h2>
+                        <p class="text-xs text-slate-500 capitalize" id="current-date">Carregando...</p>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="toggleChuva()" id="btn-chuva" class="bg-slate-100 border border-slate-200 px-2.5 py-2 rounded-xl text-slate-600 hover:text-blue-600 transition-all flex items-center gap-1 text-xs font-bold" title="Registrar início/fim de chuva">
+                            <i data-lucide="cloud-rain" class="w-4 h-4"></i>
+                            <span id="txt-chuva">Seco</span>
+                        </button>
+                        <button onclick="carregarDadosSupabase()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 p-2 rounded-xl border border-slate-200" title="Atualizar">
+                            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BARRA DE PROGRESSO E ACUMULADOR DE CHUVA -->
+                <div class="pt-2 border-t border-slate-100">
+                    <div class="flex justify-between items-center text-[11px] font-semibold mb-1.5">
+                        <span id="progresso-texto" class="text-slate-600">0 de 0 concluídas</span>
+                        <div class="flex items-center gap-1.5">
+                            <span id="chuva-acumulada-badge" class="hidden text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-md">🌧️ 0m</span>
+                            <span id="carga-hoje-badge" class="text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md font-bold">0h / 12h</span>
+                        </div>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="progresso-barra" class="h-full bg-gradient-to-r from-orange-500 to-emerald-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -101,51 +146,12 @@
             </div>
         </div>
 
-        <!-- SELETOR DO POSTO E CONTROLES DO TURNO -->
-        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 mb-3">
-            <div class="flex justify-between items-start mb-2.5">
-                <div>
-                    <div class="flex items-center gap-1.5">
-                        <i data-lucide="building-2" class="w-3.5 h-3.5 text-orange-500"></i>
-                        <select id="posto-trabalho" onchange="trocarClienteManual(this.value)" class="text-xs font-extrabold text-orange-600 bg-transparent uppercase tracking-wider border-none p-0 focus:ring-0 cursor-pointer outline-none">
-                            <option value="Miss Silvia">Miss Silvia</option>
-                        </select>
-                    </div>
-                    <h2 class="text-xl font-extrabold text-slate-900 mt-0.5" id="view-title">Cronograma de Hoje</h2>
-                    <p class="text-xs text-slate-500 capitalize" id="current-date">Carregando...</p>
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                    <button onclick="toggleChuva()" id="btn-chuva" class="bg-slate-100 border border-slate-200 px-2.5 py-2 rounded-xl text-slate-600 hover:text-blue-600 transition-all flex items-center gap-1 text-xs font-bold" title="Registrar início/fim de chuva">
-                        <i data-lucide="cloud-rain" class="w-4 h-4"></i>
-                        <span id="txt-chuva">Seco</span>
-                    </button>
-                    <button onclick="carregarDadosSupabase()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 p-2 rounded-xl border border-slate-200" title="Atualizar">
-                        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- BARRA DE PROGRESSO E ACUMULADOR DE CHUVA -->
-            <div class="pt-2 border-t border-slate-100">
-                <div class="flex justify-between items-center text-[11px] font-semibold mb-1.5">
-                    <span id="progresso-texto" class="text-slate-600">0 de 0 concluídas</span>
-                    <div class="flex items-center gap-1.5">
-                        <span id="chuva-acumulada-badge" class="hidden text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-md">🌧️ 0m</span>
-                        <span id="carga-hoje-badge" class="text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md font-bold">0h / 12h</span>
-                    </div>
-                </div>
-                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div id="progresso-barra" class="h-full bg-gradient-to-r from-orange-500 to-emerald-500 transition-all duration-500" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
         <!-- ========================================== -->
-        <!-- VISÃO 1: TAREFAS DE HOJE + ENTREGUES HOJE  -->
+        <!-- VISÃO 1: TAREFAS DE HOJE + FILTROS RÁPIDOS -->
         <!-- ========================================== -->
         <div id="tasks-view">
-            <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl mb-3 border border-slate-300/60">
+            <!-- FILTRO DE STATUS -->
+            <div class="grid grid-cols-3 gap-1.5 bg-slate-200/80 p-1 rounded-2xl mb-2.5 border border-slate-300/60 max-w-md">
                 <button onclick="setFiltroTarefas('PENDENTES')" id="btn-filtro-PENDENTES" class="py-2 px-2 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white shadow-sm transition-all flex items-center justify-center gap-1">
                     ⏳ Pendentes <span id="count-filtro-PENDENTES" class="bg-orange-500 text-white text-[9px] px-1.5 py-0.2 rounded-full">0</span>
                 </button>
@@ -157,13 +163,16 @@
                 </button>
             </div>
 
+            <!-- NOVO FILTRO RÁPIDO POR TIPO DE ATIVIDADE (DINÂMICO VIA BANCO) -->
+            <div id="filtro-tipo-atividades-bar" class="hidden flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-2.5 no-scrollbar"></div>
+
             <div id="loader-tasks" class="py-12 text-center">
                 <i data-lucide="loader-2" class="w-8 h-8 mx-auto animate-spin text-orange-500 mb-3"></i>
                 <h3 class="text-sm font-bold text-slate-700">Sincronizando cronograma...</h3>
-                <p class="text-xs text-slate-500 mt-1">Verificando ciclos, espécies e capacidade</p>
+                <p class="text-xs text-slate-500 mt-1">Carregando catálogos, ciclos e espécies do banco</p>
             </div>
 
-            <div class="space-y-3 hidden" id="task-container"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start hidden" id="task-container"></div>
 
             <div id="empty-state-tasks" class="hidden py-10 text-center bg-white rounded-2xl border border-slate-200 p-6">
                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 mb-3">
@@ -181,7 +190,7 @@
                     </h3>
                     <span id="badge-qtd-resolvidas-rodape" class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">0</span>
                 </div>
-                <div id="lista-concluidas-rodape" class="space-y-2.5"></div>
+                <div id="lista-concluidas-rodape" class="grid grid-cols-1 lg:grid-cols-2 gap-2.5 items-start"></div>
             </div>
         </div>
 
@@ -189,44 +198,48 @@
         <!-- VISÃO 2: CALENDÁRIO, HISTÓRICO & PODA      -->
         <!-- ========================================== -->
         <div id="calendar-view" class="hidden">
-            <div class="flex justify-between items-center mb-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-                <button onclick="mudarMesCalendario(-1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
-                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Ant.
-                </button>
-                <div class="text-center">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase block leading-none">Histórico & Janela Fenológica</span>
-                    <h3 class="font-extrabold text-sm text-slate-900 capitalize mt-0.5" id="mes-titulo">Novembro 2026</h3>
+            <div class="space-y-3 lg:grid lg:grid-cols-12 lg:gap-5 lg:space-y-0 items-start">
+                <div class="lg:col-span-7">
+                    <div class="flex justify-between items-center mb-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
+                        <button onclick="mudarMesCalendario(-1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i> Ant.
+                        </button>
+                        <div class="text-center">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase block leading-none">Histórico & Janela Fenológica</span>
+                            <h3 class="font-extrabold text-sm text-slate-900 capitalize mt-0.5" id="mes-titulo">Carregando...</h3>
+                        </div>
+                        <button onclick="mudarMesCalendario(1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
+                            Próx. <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="month-grid mb-3 shadow-sm" id="month-days-container"></div>
+
+                    <div class="flex justify-center flex-wrap gap-3 mb-2 text-[10px] font-bold text-slate-600">
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Feito c/ Foto</span>
+                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-purple-200 border border-purple-400"></span> Janela Poda Drástica</span>
+                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Programado</span>
+                    </div>
                 </div>
-                <button onclick="mudarMesCalendario(1)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1 text-xs font-bold">
-                    Próx. <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </button>
-            </div>
 
-            <div class="month-grid mb-3 shadow-sm" id="month-days-container"></div>
-
-            <div class="flex justify-center flex-wrap gap-3 mb-4 text-[10px] font-bold text-slate-600">
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Feito c/ Foto</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-purple-200 border border-purple-400"></span> Janela Poda Drástica</span>
-                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Programado</span>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
-                <div class="bg-slate-900 text-white p-3 flex justify-between items-center">
-                    <h3 class="font-bold text-xs flex items-center gap-1.5">
-                        <i data-lucide="calendar-search" class="w-4 h-4 text-orange-400"></i>
-                        <span id="selected-day-title">Dia Selecionado</span>
-                    </h3>
-                    <span class="bg-slate-800 border border-slate-700 text-orange-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full" id="selected-day-count">0h</span>
+                <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6">
+                    <div class="bg-slate-900 text-white p-3 flex justify-between items-center">
+                        <h3 class="font-bold text-xs flex items-center gap-1.5">
+                            <i data-lucide="calendar-search" class="w-4 h-4 text-orange-400"></i>
+                            <span id="selected-day-title">Dia Selecionado</span>
+                        </h3>
+                        <span class="bg-slate-800 border border-slate-700 text-orange-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full" id="selected-day-count">0h</span>
+                    </div>
+                    <div class="p-3 space-y-2.5 lg:max-h-[65vh] lg:overflow-y-auto" id="selected-day-list"></div>
                 </div>
-                <div class="p-3 space-y-2.5" id="selected-day-list"></div>
             </div>
         </div>
 
         <!-- ========================================== -->
         <!-- VISÃO 3: SUPRIMENTOS, EPI E FERRAMENTAS    -->
         <!-- ========================================== -->
-        <div id="suprimentos-view" class="hidden space-y-3.5">
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <div id="suprimentos-view" class="hidden space-y-3.5 lg:grid lg:grid-cols-12 lg:gap-5 lg:space-y-0 items-start">
+            <div class="lg:col-span-5 bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-[10px] font-extrabold text-orange-600 uppercase">Requisição ao Supervisor</span>
@@ -253,8 +266,14 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-600 mb-0.5">3. Item Necessário</label>
-                        <select id="sup-item-select" onchange="recalcularInsumoPorMetragem()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-800"></select>
+                        <select id="sup-item-select" onchange="aoTrocarItemSuprimento()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-800"></select>
                     </div>
+                </div>
+
+                <!-- CAMPO LIVRE QUANDO ESCOLHER "OUTRO ITEM" -->
+                <div id="sup-item-custom-box" class="hidden">
+                    <label class="block text-[10px] font-extrabold text-orange-700 mb-0.5">Especifique o Item / Equipamento <span class="text-red-500">*</span></label>
+                    <input type="text" id="sup-item-custom-input" placeholder="Ex: Soprador elétrico 220V, Alicate de poda..." class="w-full bg-orange-50/50 border border-orange-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-orange-500">
                 </div>
 
                 <div id="box-info-metragem-insumo" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-[11px] text-emerald-900 font-semibold">
@@ -268,7 +287,7 @@
                     </div>
                     <div class="col-span-2">
                         <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Observação (Opcional)</label>
-                        <input type="text" id="sup-obs-input" placeholder="Ex: Estoque zerado / Reposição..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
+                        <input type="text" id="sup-obs-input" placeholder="Ex: Estoque zerado / Substituição..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-2 text-xs">
                     </div>
                 </div>
 
@@ -282,7 +301,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="bg-slate-50 px-3.5 py-2.5 border-b border-slate-200 flex justify-between items-center">
                     <h4 class="text-xs font-extrabold text-slate-800">Pedidos do Posto (Acompanhamento)</h4>
                     <span class="text-[10px] font-bold text-slate-500">Status ao vivo</span>
@@ -294,7 +313,7 @@
         <!-- ========================================== -->
         <!-- VISÃO 4: COMUNICADOR INSTANTÂNEO (CHAT)    -->
         <!-- ========================================== -->
-        <div id="chat-view" class="hidden">
+        <div id="chat-view" class="hidden max-w-2xl mx-auto">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[68vh]">
                 <div class="grid grid-cols-3 gap-1 p-1.5 bg-slate-100 border-b border-slate-200">
                     <button onclick="selecionarCanalChat('EQUIPE')" id="btn-canal-EQUIPE" class="py-2 px-2 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-sm transition-all flex items-center justify-center">
@@ -337,13 +356,13 @@
     </div>
 
     <!-- BOTÃO FLUTUANTE (+) NOVA TAREFA EXTRA -->
-    <button id="fab-add" onclick="openExtraModal()" class="fixed bottom-20 right-4 w-13 h-13 p-3.5 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center text-white hover:scale-105 transition-transform z-30">
+    <button id="fab-add" onclick="openExtraModal()" class="fixed bottom-20 right-4 lg:right-8 w-13 h-13 p-3.5 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center text-white hover:scale-105 transition-transform z-30" title="Abrir Nova Tarefa Extra">
         <i data-lucide="plus" class="w-6 h-6"></i>
     </button>
 
     <!-- NAVEGAÇÃO INFERIOR (4 ABAS) -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
-        <div class="max-w-md mx-auto grid grid-cols-4 px-1 pb-3 pt-1.5">
+        <div class="max-w-md lg:max-w-2xl mx-auto grid grid-cols-4 px-1 pb-3 pt-1.5">
             <button onclick="switchTab('hoje')" id="tab-hoje" class="flex flex-col items-center py-1.5 text-orange-500 transition-colors relative">
                 <i data-lucide="list-checks" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Hoje</span>
@@ -355,12 +374,12 @@
             <button onclick="switchTab('suprimentos')" id="tab-suprimentos" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-orange-500 transition-colors relative">
                 <i data-lucide="package" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Suprimentos</span>
-                <span id="sup-unread-dot" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-amber-600 rounded-full flex items-center justify-center absolute top-1 right-5 shadow-sm">0</span>
+                <span id="sup-unread-dot" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-amber-600 rounded-full flex items-center justify-center absolute top-1 right-5 lg:right-12 shadow-sm">0</span>
             </button>
             <button onclick="switchTab('chat')" id="tab-chat" class="flex flex-col items-center py-1.5 text-slate-400 hover:text-orange-500 transition-colors relative">
                 <i data-lucide="message-square-text" class="w-5 h-5 mb-0.5"></i>
                 <span class="text-[10px] font-bold">Chat</span>
-                <span id="chat-unread-dot" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-red-600 rounded-full flex items-center justify-center absolute top-1 right-5 shadow-sm">0</span>
+                <span id="chat-unread-dot" class="hidden w-4 h-4 text-[9px] font-extrabold text-white bg-red-600 rounded-full flex items-center justify-center absolute top-1 right-5 lg:right-12 shadow-sm">0</span>
             </button>
         </div>
     </nav>
@@ -403,11 +422,7 @@
             <div id="lista-operadores-saida" class="space-y-2"></div>
             <div>
                 <label class="block text-[11px] font-bold text-slate-600 mb-1">Motivo (Caso seja saída antecipada de 1 operador)</label>
-                <select id="select-motivo-saida-parcial" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-semibold text-slate-800">
-                    <option value="Fim de expediente normal">🏁 Fim de expediente normal</option>
-                    <option value="Realocado para apoio em outro contrato">🚚 Realocado para apoio em outro contrato</option>
-                    <option value="Saída particular / médica autorizada">🩺 Saída particular / médica autorizada</option>
-                </select>
+                <select id="select-motivo-saida-parcial" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-semibold text-slate-800"></select>
             </div>
             <button onclick="confirmarSaidaSelecionados()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-md">
                 Confirmar Saída dos Selecionados
@@ -428,7 +443,7 @@
                 </div>
             </div>
             <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
-                <p class="text-xs font-extrabold text-amber-950" id="epi-alert-texto">Colete Refletivo</p>
+                <p class="text-xs font-extrabold text-amber-950" id="epi-alert-texto">EPI Obrigatório</p>
                 <p class="text-[11px] text-amber-800 mt-1">Confirme que toda a equipe envolvida está utilizando os equipamentos de proteção antes de iniciar.</p>
             </div>
             <div class="grid grid-cols-2 gap-2 pt-1">
@@ -452,12 +467,7 @@
                 <button onclick="fecharModalPausa()"><i data-lucide="x" class="w-4 h-4 text-slate-400"></i></button>
             </div>
             <p class="text-xs text-slate-500">A tarefa <b>continua na sua lista de hoje</b> e o tempo parado será descontado automaticamente.</p>
-            <select id="select-motivo-pausa" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-800">
-                <option value="Intervalo de Almoço / Refeição">🍽️ Intervalo de Almoço / Refeição</option>
-                <option value="Alto Fluxo de Pedestres no Local">🚶 Alto Fluxo de Pedestres no Local</option>
-                <option value="Interrupção por Chuva Momentânea">🌧️ Interrupção por Chuva Momentânea</option>
-                <option value="Apoio Emergencial em Outro Setor">🛠️ Apoio Emergencial em Outro Setor</option>
-            </select>
+            <select id="select-motivo-pausa" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-800"></select>
             <button onclick="confirmarPausaTarefa()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs shadow-sm">
                 Confirmar Pausa
             </button>
@@ -554,11 +564,7 @@
             <div id="bloco-skip-vistoria" class="space-y-3">
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-700 mb-1.5 uppercase">1. Motivo da Dispensa Técnica <span class="text-red-500">*</span></label>
-                    <div class="flex flex-wrap gap-1.5 mb-2">
-                        <button type="button" onclick="selecionarMotivoSkip('Solo já úmido devido à chuva anterior — rega dispensada para preservar as plantas.')" class="text-[10px] font-bold bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 px-2.5 py-1.5 rounded-xl">🌧️ Solo já úmido</button>
-                        <button type="button" onclick="selecionarMotivoSkip('Setor vistoriado e limpo — sem acúmulo de folhas ou demanda técnica hoje.')" class="text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-xl">🍃 Área já limpa</button>
-                        <button type="button" onclick="selecionarMotivoSkip('Área isolada/interditada temporariamente pelo condomínio ou evento.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1.5 rounded-xl">🚧 Local interditado</button>
-                    </div>
+                    <div id="chips-skip-motivos" class="flex flex-wrap gap-1.5 mb-2"></div>
                     <textarea id="skip-obs-input" rows="2" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500" placeholder="Toque em um motivo acima ou descreva..."></textarea>
                 </div>
 
@@ -585,15 +591,8 @@
                 </div>
                 <div>
                     <label class="block text-[11px] font-extrabold text-slate-700 mb-1 uppercase">Qual EPI ou Equipamento está faltando? <span class="text-red-500">*</span></label>
-                    <select id="select-epi-faltante" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 mb-2">
-                        <option value="Colete Refletivo">🦺 Colete Refletivo</option>
-                        <option value="Perneira / Óculos de Proteção">🥽 Perneira / Óculos de Proteção</option>
-                        <option value="Cones de Sinalização">🚧 Cones de Sinalização</option>
-                        <option value="Roçadeira / Soprador em Manutenção">🛠️ Roçadeira / Soprador em Manutenção</option>
-                        <option value="Fio de Nylon / Combustível / Óleo 2T">⛽ Fio de Nylon / Combustível / Óleo 2T</option>
-                        <option value="Outro EPI ou Ferramenta">📦 Outro EPI ou Ferramenta</option>
-                    </select>
-                    <input type="text" id="input-epi-detalhe" placeholder="Detalhe adicional (opcional)..." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500">
+                    <select id="select-epi-faltante" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-slate-800 mb-2"></select>
+                    <input type="text" id="input-epi-detalhe" placeholder="Detalhe adicional ou nome do item (opcional)..." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500">
                 </div>
             </div>
 
@@ -648,11 +647,7 @@
 
                 <div id="box-contingencia" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5">
                     <label class="block text-[10px] font-extrabold text-amber-900 uppercase mb-1">Motivo do Envio Posterior (Galeria):</label>
-                    <select id="select-contingencia" class="w-full bg-white border border-amber-300 rounded-lg p-1.5 text-xs font-semibold text-slate-800">
-                        <option value="Celular carregando no horário da execução">🔋 Celular carregando no horário da execução</option>
-                        <option value="Sem sinal de internet no subsolo/setor">📵 Sem sinal de internet no subsolo/setor</option>
-                        <option value="Foto registrada por colega de equipe">📱 Foto registrada por colega de equipe</option>
-                    </select>
+                    <select id="select-contingencia" class="w-full bg-white border border-amber-300 rounded-lg p-1.5 text-xs font-semibold text-slate-800"></select>
                 </div>
 
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
@@ -720,7 +715,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: NOVA TAREFA EXTRAORDINÁRIA -->
+    <!-- MODAL 3: NOVA TAREFA EXTRAORDINÁRIA (COM SELETOR PADRONIZADO DO BANCO) -->
     <div id="extra-modal" class="fixed inset-0 bg-slate-950/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl p-5">
             <div class="flex justify-between items-center mb-3">
@@ -730,29 +725,34 @@
             <div class="space-y-3">
                 <div class="grid grid-cols-3 gap-2">
                     <div class="col-span-2">
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Setor / Área</label>
-                        <input list="setores-list" id="input-modal-setor" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500" placeholder="Ex: Fumódromo">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">1. Setor / Área</label>
+                        <input list="setores-list" id="input-modal-setor" oninput="atualizarSugestoesEspecieExtra()" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500 font-semibold" placeholder="Selecione ou digite">
                         <datalist id="setores-list"></datalist>
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-slate-600 mb-1">Minutos</label>
-                        <input type="number" id="input-modal-duracao" value="45" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500">
+                        <input type="number" id="input-modal-duracao" value="45" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500 font-bold">
                     </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">2. Tipo de Atividade</label>
+                    <select id="select-modal-tipo-atividade" onchange="aoSelecionarTipoAtividadeExtra()" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500 font-bold text-slate-800"></select>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Descrição da Atividade</label>
-                        <input id="input-modal-tarefa" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500" placeholder="Ex: Poda drástica">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1" id="label-modal-tarefa">Detalhe (Opcional)</label>
+                        <input id="input-modal-tarefa" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500" placeholder="Ex: Folhas secas">
                     </div>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Espécie / Alvo</label>
-                        <input id="input-modal-especie" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500" placeholder="Ex: Moréias Brancas">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">3. Espécie / Alvo</label>
+                        <input list="especies-extra-list" id="input-modal-especie" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-xl p-2.5 outline-none focus:border-orange-500" placeholder="Ex: Moréias Brancas">
+                        <datalist id="especies-extra-list"></datalist>
                     </div>
                 </div>
                 <label class="flex items-center gap-2 text-xs font-bold text-red-700 cursor-pointer">
                     <input type="checkbox" id="input-modal-vital" class="rounded text-red-600 w-4 h-4"> 🚨 Atividade Vital (não pode pular sem transbordo)
                 </label>
-                <button id="btn-criar-extra" onclick="adicionarTarefaExtra()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-sm">
+                <button id="btn-criar-extra" onclick="adicionarTarefaExtra()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm shadow-sm">
                     Inserir no Cronograma de Hoje
                 </button>
             </div>
@@ -760,7 +760,7 @@
     </div>
     <script>
         // =========================================================================
-        // 1. CONFIGURAÇÃO SUPABASE (NOVA ERA v9.4 - AGRUPAMENTO, VITAL & EXPIRAÇÃO)
+        // 1. CONFIGURAÇÃO SUPABASE (NOVA ERA v9.5 - CATÁLOGOS NO BANCO & FILTROS)
         // =========================================================================
         const SUPABASE_URL = "https://vocrljiimyknofyhdatg.supabase.co";
         const SUPABASE_KEY = "sb_publishable_o0WnhKjaTBmvfO7Joh6QJA_VzzW_2Zc";
@@ -777,6 +777,9 @@
         window.pedidosSuprimentosDB = [];
         window.feriadosDB = [];
         window.obsRapidasDB = [];
+        window.catalogoSuprimentosDB = [];
+        window.tiposAtividadeDB = [];
+        window.listasSistemaDB = [];
         window.presencaHojeDB = null;
 
         window.agendaMesAtual = {};
@@ -786,14 +789,15 @@
         window.lotesResolvidosCache = [];
         window.especiesPodaMesCache = [];
         window.fotosZoomCache = [];
+        window.motivosDispensaCache = [];
 
-        let clienteAtivo = localStorage.getItem('novaera_cliente_ativo') || 'Miss Silvia';
+        let clienteAtivo = localStorage.getItem('novaera_cliente_ativo') || '';
         let equipeLogada = JSON.parse(localStorage.getItem('novaera_equipe_v9') || '[]');
-        let tarefasEmAndamentoLocal = JSON.parse(localStorage.getItem('novaera_tarefas_andamento') || '{}');
         let filaOffline = JSON.parse(localStorage.getItem('novaera_fila_offline') || '[]');
         let hashesConhecidos = new Set(JSON.parse(localStorage.getItem('novaera_hashes_fotos') || '[]'));
 
         let filtroTarefasHoje = 'PENDENTES';
+        let filtroTipoAtividadeHoje = 'TODOS';
         let modoChuvaAtivo = false;
         let canalChatAtivo = 'EQUIPE';
         let tabAtual = 'hoje';
@@ -808,6 +812,9 @@
 
         function initIcons() { try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) {} }
         function dataISO(d = new Date()) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+        function normalizarTexto(str) {
+            return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
         function formatarMinutosStr(min) {
             const mTotal = Math.max(1, Math.round(Number(min) || 0));
             const h = Math.floor(mTotal / 60), m = mTotal % 60;
@@ -888,6 +895,20 @@
             return null;
         }
 
+        function atividadeCombinaComTipo(textoAtividade, tipoObj) {
+            if (!tipoObj) return false;
+            const normAtiv = normalizarTexto(textoAtividade);
+            const palavras = String(tipoObj.palavras_chave || tipoObj.nome || '')
+                .split(',')
+                .map(p => normalizarTexto(p.trim()))
+                .filter(Boolean);
+            return palavras.some(kw => normAtiv.includes(kw));
+        }
+
+        function obterListaSistema(grupo) {
+            return window.listasSistemaDB.filter(l => l.grupo === grupo && l.ativo !== false);
+        }
+
         // =========================================================================
         // 2. MOTOR HÍBRIDO DE SLA (POR TAREFA_ID / ESPÉCIE + 20% + ARRED. 5 MIN)
         // =========================================================================
@@ -925,7 +946,7 @@
         // 3. EXPIRAÇÃO AUTOMÁTICA DE CICLOS VENCIDOS (VITAL VS. ROTINA)
         // =========================================================================
         async function sincronizarCiclosExpirados() {
-            if (!navigator.onLine || ciclosVerificadosPorCliente[clienteAtivo]) return;
+            if (!navigator.onLine || !clienteAtivo || ciclosVerificadosPorCliente[clienteAtivo]) return;
             ciclosVerificadosPorCliente[clienteAtivo] = true;
 
             const hoje = new Date(), hojeStr = dataISO(hoje);
@@ -936,7 +957,6 @@
             const presencasDatas = new Set(window.presencasRecentesDB.filter(p => p.cliente === clienteAtivo && p.status_validacao !== 'AUTORIZADO_GESTAO').map(p => p.data_turno));
             const paraGravar = [];
 
-            // Varre até os últimos 7 dias corridos (dentro do mês atual)
             for (let offset = 7; offset >= 1; offset--) {
                 const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - offset);
                 if (d.getMonth() !== hoje.getMonth() || !diaUtil(d)) continue;
@@ -944,8 +964,6 @@
 
                 tarefasRec.forEach(t => {
                     if (!diaCorrespondeFrequencia(t.frequencia, d.getDay())) return;
-
-                    // Se já existe qualquer registro (feito, dispensado, impedimento ou já expirado) na data original
                     const temRegistroNoDia = execsCli.some(e => e.data_referencia === dStr && execCorrespondeTarefa(e, t));
                     if (temRegistroNoDia) return;
 
@@ -953,7 +971,6 @@
                     const vital = Boolean(t.vital);
 
                     if (vital && !diaria) {
-                        // Periódica Vital só expira se chegou a próxima ocorrência sem execução no intervalo [dStr, proxOcorrencia)
                         const proxISO = proximaOcorrenciaRecorrenteISO(t.frequencia, dStr);
                         if (!proxISO || hojeStr < proxISO) return;
                         const atendidaNoCiclo = execsCli.some(e =>
@@ -970,21 +987,13 @@
                         : `Ciclo vencido (${vital ? 'Atividade Vital' : 'Rotina'}) — Posto sem ativação na data.`;
 
                     paraGravar.push({
-                        tarefa_id: t.id,
-                        data_referencia: dStr,
-                        cliente: clienteAtivo,
-                        setor: t.setor,
-                        atividade: t.atividade,
-                        especie: t.especie || 'Geral',
-                        equipe_executora: 'Sistema (Ciclo Vencido)',
-                        registrado_por: 'Automático',
-                        observacao: motivoAuto,
-                        dh_inicio_tarefa: `${dStr}T17:00:00`,
+                        tarefa_id: t.id, data_referencia: dStr, cliente: clienteAtivo, setor: t.setor,
+                        atividade: t.atividade, especie: t.especie || 'Geral',
+                        equipe_executora: 'Sistema (Ciclo Vencido)', registrado_por: 'Automático',
+                        observacao: motivoAuto, dh_inicio_tarefa: `${dStr}T17:00:00`,
                         dh_envio_servidor: new Date().toISOString(),
-                        duracao_estimada_min: Number(t.duracao_minutos) || 30,
-                        duracao_real_min: 0,
-                        flag_auditoria: 'CICLO_PERDIDO',
-                        status_execucao: 'NAO_REALIZADA'
+                        duracao_estimada_min: Number(t.duracao_minutos) || 30, duracao_real_min: 0,
+                        flag_auditoria: 'CICLO_PERDIDO', status_execucao: 'NAO_REALIZADA'
                     });
                 });
             }
@@ -1211,7 +1220,8 @@
         async function confirmarSaidaSelecionados() {
             const selecionadosSaida = Array.from(document.querySelectorAll('#lista-operadores-saida input:checked')).map(c => c.value);
             if (selecionadosSaida.length === 0) { alert("Marque ao menos um operador."); return; }
-            const motivo = document.getElementById('select-motivo-saida-parcial').value, agoraISO = new Date().toISOString(), reg = window.presencaHojeDB;
+            const motivo = document.getElementById('select-motivo-saida-parcial').value || 'Fim de expediente normal';
+            const agoraISO = new Date().toISOString(), reg = window.presencaHojeDB;
             let listaDisp = Array.isArray(reg.disponibilidade_operadores) && reg.disponibilidade_operadores.length > 0
                 ? [...reg.disponibilidade_operadores]
                 : equipeLogada.map(n => ({ nome: n, inicio: reg.dh_checkin_aparelho, fim: null }));
@@ -1268,7 +1278,7 @@
             btnOut.classList.add('hidden');
 
             if (postoBloqueadoHoje()) {
-                box.className = "mb-3 bg-slate-200/80 border border-slate-300 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
+                box.className = "lg:col-span-5 bg-slate-200/80 border border-slate-300 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
                 iconBox.className = "w-9 h-9 rounded-xl bg-slate-300 text-slate-700 flex items-center justify-center flex-shrink-0";
                 iconBox.innerHTML = `<i data-lucide="lock" class="w-5 h-5"></i>`;
                 title.className = "text-xs font-bold text-slate-800 truncate"; title.textContent = "🔒 Posto Fechado (Fim de Semana / Feriado)";
@@ -1279,7 +1289,7 @@
             const reg = window.presencaHojeDB, txtEquipe = equipeLogada.length > 0 ? equipeLogada.join(', ') : 'Toque para identificar';
 
             if (reg && reg.status_validacao === 'AUTORIZADO_GESTAO') {
-                box.className = "mb-3 bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
+                box.className = "lg:col-span-5 bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
                 iconBox.className = "w-9 h-9 rounded-xl bg-amber-200 text-amber-800 flex items-center justify-center flex-shrink-0";
                 iconBox.innerHTML = `<i data-lucide="unlock" class="w-5 h-5"></i>`;
                 title.className = "text-xs font-bold text-slate-800 truncate"; title.textContent = "🔓 Plantão Autorizado pela Supervisão";
@@ -1287,7 +1297,7 @@
                 btnIn.classList.remove('hidden'); btnIn.disabled = false; btnIn.textContent = "Ativar Plantão"; initIcons(); return;
             }
             if (!reg) {
-                box.className = "mb-3 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
+                box.className = "lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
                 iconBox.className = "w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0";
                 iconBox.innerHTML = `<i data-lucide="radio" class="w-5 h-5"></i>`;
                 title.className = "text-xs font-bold text-slate-800 truncate"; title.textContent = "Posto Aguardando Ativação";
@@ -1299,20 +1309,20 @@
             btnIn.classList.add('hidden');
             if (reg.status_validacao === 'TURNO_ENCERRADO') {
                 const horaOut = reg.dh_checkout_posto ? new Date(reg.dh_checkout_posto).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
-                box.className = "mb-3 bg-slate-800 text-white border border-slate-700 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
+                box.className = "lg:col-span-5 bg-slate-800 text-white border border-slate-700 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
                 iconBox.className = "w-9 h-9 rounded-xl bg-slate-700 text-emerald-400 flex items-center justify-center flex-shrink-0";
                 iconBox.innerHTML = `<i data-lucide="check-circle-2" class="w-5 h-5"></i>`;
                 title.className = "text-xs font-bold text-white truncate"; title.textContent = `🏁 Expediente Encerrado (${horaIn} às ${horaOut})`;
                 sub.className = "text-[11px] text-slate-300 truncate"; sub.textContent = `Equipe: ${reg.equipe_presente}`;
             } else if (reg.status_validacao === 'AGUARDANDO_VALIDACAO_SUPERFICIE') {
-                box.className = "mb-3 bg-amber-50 border border-amber-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
+                box.className = "lg:col-span-5 bg-amber-50 border border-amber-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
                 iconBox.className = "w-9 h-9 rounded-xl bg-amber-200 text-amber-800 flex items-center justify-center flex-shrink-0";
                 iconBox.innerHTML = `<i data-lucide="wifi-off" class="w-5 h-5"></i>`;
                 title.className = "text-xs font-bold text-amber-950 truncate"; title.textContent = `⏳ Iniciado no Subsolo (-2) às ${horaIn}`;
                 sub.className = "text-[11px] text-amber-800 truncate"; sub.textContent = `Aguardando sinal GPS • ${reg.equipe_presente}`;
                 btnOut.classList.remove('hidden');
             } else {
-                box.className = "mb-3 bg-emerald-50 border border-emerald-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
+                box.className = "lg:col-span-5 bg-emerald-50 border border-emerald-200 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-2";
                 iconBox.className = "w-9 h-9 rounded-xl bg-emerald-200 text-emerald-800 flex items-center justify-center flex-shrink-0";
                 iconBox.innerHTML = `<i data-lucide="radio" class="w-5 h-5"></i>`;
                 title.className = "text-xs font-bold text-slate-800 truncate"; title.textContent = `🟢 Posto Ativo desde ${horaIn}`;
@@ -1323,7 +1333,7 @@
         }
 
         // =========================================================================
-        // 6. CARREGAMENTO SUPABASE E MOTOR DE AGENDAMENTO + VITAIS
+        // 6. CARREGAMENTO SUPABASE (100% BASE DE DADOS) E MOTOR DE AGENDAMENTO
         // =========================================================================
         async function carregarDadosSupabase() {
             document.getElementById('loader-tasks').classList.remove('hidden');
@@ -1333,20 +1343,33 @@
                 const d60 = new Date(); d60.setDate(d60.getDate() - 60);
                 const d10 = new Date(); d10.setDate(d10.getDate() - 10);
 
-                const [resCli, resColab, resCrono, resExec60d, resFer, resObs, resPresRec, resAreas, resEsp, resSup] = await Promise.all([
+                // Primeiro carrega dados globais + clientes para garantir clienteAtivo dinâmico
+                const [resCli, resColab, resCrono, resExec60d, resFer, resObs, resCatSup, resTipos, resListas] = await Promise.all([
                     sb.from('clientes').select('*').eq('ativo', true).order('nome', { ascending: true }),
                     sb.from('colaboradores').select('*').eq('ativo', true).order('nome', { ascending: true }),
                     sb.from('cronograma_mestre').select('*').eq('ativo', true).order('prioridade', { ascending: true }),
                     sb.from('execucoes_auditoria').select('*').gte('data_referencia', dataISO(d60)).order('dh_envio_servidor', { ascending: false }),
                     sb.from('feriados_config').select('*'),
                     sb.from('obs_rapidas').select('*').order('ordem', { ascending: true }),
-                    sb.from('presenca_posto').select('*').eq('cliente', clienteAtivo).gte('data_turno', dataISO(d10)).order('dh_checkin_aparelho', { ascending: false }),
-                    sb.from('cliente_areas').select('*').eq('cliente', clienteAtivo).eq('ativo', true).order('nome_area', { ascending: true }),
-                    sb.from('cliente_especies').select('*').eq('cliente', clienteAtivo).eq('ativo', true),
-                    sb.from('pedidos_suprimentos').select('*').eq('cliente', clienteAtivo).order('criado_em', { ascending: false }).limit(30)
+                    sb.from('catalogo_suprimentos').select('*').eq('ativo', true).order('ordem', { ascending: true }),
+                    sb.from('tipos_atividade').select('*').eq('ativo', true).order('ordem', { ascending: true }),
+                    sb.from('listas_sistema').select('*').eq('ativo', true).order('ordem', { ascending: true })
                 ]);
 
                 if (resCli.data) window.clientesDB = resCli.data;
+                if (!clienteAtivo || !window.clientesDB.some(c => c.nome === clienteAtivo)) {
+                    clienteAtivo = window.clientesDB[0]?.nome || 'Miss Silvia';
+                    localStorage.setItem('novaera_cliente_ativo', clienteAtivo);
+                }
+
+                // Agora busca dados específicos do clienteAtivo
+                const [resPresRec, resAreas, resEsp, resSup] = await Promise.all([
+                    sb.from('presenca_posto').select('*').eq('cliente', clienteAtivo).gte('data_turno', dataISO(d10)).order('dh_checkin_aparelho', { ascending: false }),
+                    sb.from('cliente_areas').select('*').eq('cliente', clienteAtivo).eq('ativo', true).order('nome_area', { ascending: true }),
+                    sb.from('cliente_especies').select('*').eq('cliente', clienteAtivo).eq('ativo', true),
+                    sb.from('pedidos_suprimentos').select('*').eq('cliente', clienteAtivo).order('criado_em', { ascending: false }).limit(40)
+                ]);
+
                 if (resColab.data) window.colaboradoresTodosDB = resColab.data;
                 if (resCrono.data) window.cronogramaTodosDB = resCrono.data;
                 if (resExec60d.data) {
@@ -1356,6 +1379,10 @@
                 }
                 if (resFer.data) window.feriadosDB = resFer.data.map(f => f.data_feriado);
                 if (resObs.data) window.obsRapidasDB = resObs.data;
+                if (resCatSup.data) window.catalogoSuprimentosDB = resCatSup.data;
+                if (resTipos.data) window.tiposAtividadeDB = resTipos.data;
+                if (resListas.data) window.listasSistemaDB = resListas.data;
+
                 if (resAreas.data) window.areasClienteDB = resAreas.data;
                 if (resEsp.data) window.especiesClienteDB = resEsp.data;
                 if (resSup.data) window.pedidosSuprimentosDB = resSup.data;
@@ -1388,10 +1415,13 @@
         }
 
         function popularMenusIniciais() {
+            // Postos / Clientes
             const selPosto = document.getElementById('posto-trabalho');
             if (window.clientesDB.length > 0) {
                 selPosto.innerHTML = window.clientesDB.map(c => `<option value="${c.nome}" ${c.nome === clienteAtivo ? 'selected' : ''}>${c.nome}</option>`).join('');
             }
+
+            // Equipe do Posto
             const colabsPosto = window.colaboradoresTodosDB.filter(c => c.ativo !== false && (!c.cliente_padrao || c.cliente_padrao === clienteAtivo) && ['OPERADOR', 'ENCARREGADO'].includes(c.perfil));
             equipeLogada = equipeLogada.filter(n => colabsPosto.map(c => c.nome).includes(n));
 
@@ -1399,14 +1429,46 @@
                 ? 'Identificar'
                 : (equipeLogada.length === 1 ? equipeLogada[0].split(' ')[0] : `${equipeLogada[0].split(' ')[0]} +${equipeLogada.length - 1}`);
 
+            // Chips de Observação Rápida (obs_rapidas)
             const chipsBox = document.getElementById('chips-obs-rapidas');
             if (chipsBox && window.obsRapidasDB.length > 0) {
                 chipsBox.innerHTML = window.obsRapidasDB.map((o, i) => `<button type="button" onclick="aplicarChipObs(${i})" class="text-[10px] font-semibold bg-slate-100 hover:bg-orange-100 hover:text-orange-800 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 transition-colors">${o.texto}</button>`).join('');
             }
 
+            // Listas Dinâmicas do Banco (listas_sistema)
+            const pausas = obterListaSistema('MOTIVO_PAUSA');
+            document.getElementById('select-motivo-pausa').innerHTML = pausas.map(p => `<option value="${p.texto}">${p.rotulo}</option>`).join('');
+
+            const saidas = obterListaSistema('MOTIVO_SAIDA');
+            document.getElementById('select-motivo-saida-parcial').innerHTML = saidas.map(s => `<option value="${s.texto}">${s.rotulo}</option>`).join('');
+
+            const contingencias = obterListaSistema('MOTIVO_CONTINGENCIA');
+            document.getElementById('select-contingencia').innerHTML = contingencias.map(c => `<option value="${c.texto}">${c.rotulo}</option>`).join('');
+
+            window.motivosDispensaCache = obterListaSistema('MOTIVO_DISPENSA');
+            document.getElementById('chips-skip-motivos').innerHTML = window.motivosDispensaCache.map((m, i) =>
+                `<button type="button" onclick="aplicarMotivoSkipByIdx(${i})" class="text-[10px] font-bold bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 px-2.5 py-1.5 rounded-xl">${m.rotulo}</button>`
+            ).join('');
+
+            // Seletor de EPI / Equipamento Faltante (catalogo_suprimentos)
+            const itensImpedimento = window.catalogoSuprimentosDB.filter(i => i.exibir_em_impedimento || i.categoria === 'EPI');
+            document.getElementById('select-epi-faltante').innerHTML =
+                itensImpedimento.map(i => `<option value="${i.nome}">${i.categoria === 'EPI' ? '🦺' : '🛠️'} ${i.nome}</option>`).join('') +
+                `<option value="__OUTRO__">📦 Outro EPI ou Equipamento (especificar abaixo)</option>`;
+
+            // Seletor de Tipos de Atividade no Modal Nova Tarefa Extra (tipos_atividade)
+            const selTipoExtra = document.getElementById('select-modal-tipo-atividade');
+            if (selTipoExtra) {
+                selTipoExtra.innerHTML =
+                    window.tiposAtividadeDB.map(t => `<option value="${t.nome}">${t.icone || '🌿'} ${t.nome}</option>`).join('') +
+                    `<option value="__OUTRA__">➕ Outra atividade (digitar)</option>`;
+            }
+
+            // Checkboxes de equipe
             document.getElementById('team-checkboxes-view').innerHTML = colabsPosto.map(c => `<label class="flex items-center justify-between p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50"><div class="flex items-center gap-3"><input type="checkbox" value="${c.nome}" ${equipeLogada.includes(c.nome) ? 'checked' : ''} class="w-4 h-4 text-orange-500 rounded"><span class="text-xs font-bold text-slate-800">${c.nome}</span></div><span class="text-[10px] font-semibold text-slate-400">${c.perfil}</span></label>`).join('');
             document.getElementById('executors-checkboxes').innerHTML = colabsPosto.map(c => `<label class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl cursor-pointer"><input type="checkbox" value="${c.nome}" ${equipeLogada.includes(c.nome) ? 'checked' : ''} class="w-3.5 h-3.5 text-orange-500 rounded"><span class="text-xs font-bold text-slate-700">${c.nome}</span></label>`).join('');
 
+            // Áreas do Posto
             const selSupArea = document.getElementById('sup-area-select'), areaAntes = selSupArea.value || 'Todo o Posto';
             const datalistSetores = document.getElementById('setores-list');
             if (window.areasClienteDB.length > 0) {
@@ -1415,8 +1477,10 @@
                 datalistSetores.innerHTML = window.areasClienteDB.map(a => `<option value="${a.nome_area}">`).join('');
             }
             if (!suprimentosInicializado) { suprimentosInicializado = true; selecionarCategoriaSup('INSUMO'); }
+            else { selecionarCategoriaSup(categoriaSuprimentoAtiva); }
         }
         function aplicarChipObs(idx) { if (window.obsRapidasDB[idx]) document.getElementById('obs-input').value = window.obsRapidasDB[idx].texto; }
+        function aplicarMotivoSkipByIdx(idx) { if (window.motivosDispensaCache[idx]) document.getElementById('skip-obs-input').value = window.motivosDispensaCache[idx].texto; }
 
         function gerarMatrizMes(anoRef, mesRef, execsBase) {
             const agenda = {};
@@ -1449,7 +1513,7 @@
                 agenda[dStr].minutos += (Number(item.duracao_minutos) || 30);
             };
 
-            // 1. Tarefas Únicas / Extras atrasadas (sempre 1 cópia)
+            // 1. Tarefas Únicas / Extras atrasadas
             tarefasCliente.forEach(t => {
                 if (t.data_alvo && t.data_alvo < hojeStr) {
                     const foiResolvida = execsCli.some(e => ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
@@ -1467,7 +1531,6 @@
                     diasUteisMes.forEach(dStr => {
                         if (diaCorrespondeFrequencia(t.frequencia, agenda[dStr].data.getDay())) {
                             let extraFlags = {};
-                            // Se for Vital Diária e não foi feita no último dia útil, nasce CRÍTICA hoje
                             if (dStr === hojeStr && t.vital && isFreqDiaria(t.frequencia)) {
                                 const feitaOntem = execsCli.some(e => e.data_referencia === ultimoUtilAnt && ['CONCLUIDO', 'DISPENSADO'].includes(e.status_execucao) && execCorrespondeTarefa(e, t));
                                 if (!feitaOntem) extraFlags = { vital_critica_ontem: true, prioridade: 0 };
@@ -1478,13 +1541,11 @@
                 }
             });
 
-            // 3. Periódicas VITAIS não feitas no ciclo atual transbordam 1 cópia para hoje (Prioridade 0)
+            // 3. Periódicas VITAIS atrasadas transbordam 1 cópia (Prioridade 0)
             if (agenda[hojeStr]) {
                 tarefasCliente.forEach(t => {
                     if (!t.vital || t.data_alvo || isFreqFlutuante(t.frequencia) || isFreqDiaria(t.frequencia)) return;
-                    if (agenda[hojeStr].tarefas.some(x => x.id === t.id)) return; // Hoje já é a nova ocorrência natural
-
-                    // Procura a ocorrência mais recente antes de hoje (nos últimos 7 dias)
+                    if (agenda[hojeStr].tarefas.some(x => x.id === t.id)) return;
                     for (let off = 1; off <= 7; off++) {
                         const dAnt = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - off);
                         if (!diaUtil(dAnt) || !diaCorrespondeFrequencia(t.frequencia, dAnt.getDay())) continue;
@@ -1503,7 +1564,7 @@
                 });
             }
 
-            // 4. Tarefas Flutuantes (1x/mês, 2x/mês, Quinzenal) distribuídas nos dias mais leves
+            // 4. Flutuantes (1x/mês, 2x/mês, Quinzenal)
             const diasUteisAlvo = diasUteisMes.filter(dStr => dStr >= hojeStr);
             const baseDiasFlutuantes = diasUteisAlvo.length > 0 ? diasUteisAlvo : diasUteisMes;
 
@@ -1529,7 +1590,7 @@
                 }
             });
 
-            // 5. Atividades já abertas (EM_ANDAMENTO / PAUSADO) sempre visíveis hoje
+            // 5. Atividades já abertas sempre visíveis hoje
             if (agenda[hojeStr]) {
                 window.execucoesMesDB.filter(e => e.cliente === clienteAtivo && ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao)).forEach(execAberta => {
                     const jaExiste = agenda[hojeStr].tarefas.some(t => execCorrespondeTarefa(execAberta, t));
@@ -1581,6 +1642,44 @@
                     : "py-2 px-2 rounded-xl text-[11px] font-extrabold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1";
             });
             renderizarTarefasHoje();
+        }
+
+        function setFiltroTipoAtividade(tipoNome) {
+            filtroTipoAtividadeHoje = tipoNome;
+            renderizarTarefasHoje();
+        }
+
+        function renderizarBarraFiltroTipos(atividadesVisiveisNoStatus) {
+            const bar = document.getElementById('filtro-tipo-atividades-bar');
+            if (!bar) return;
+
+            if (atividadesVisiveisNoStatus.length === 0 && filtroTipoAtividadeHoje === 'TODOS') {
+                bar.classList.add('hidden');
+                return;
+            }
+
+            const contagens = [];
+            window.tiposAtividadeDB.forEach(tipo => {
+                const qtd = atividadesVisiveisNoStatus.filter(txt => atividadeCombinaComTipo(txt, tipo)).length;
+                if (qtd > 0 || filtroTipoAtividadeHoje === tipo.nome) {
+                    contagens.push({ nome: tipo.nome, icone: tipo.icone || '🌿', qtd });
+                }
+            });
+
+            if (contagens.length < 2 && filtroTipoAtividadeHoje === 'TODOS') {
+                bar.classList.add('hidden');
+                return;
+            }
+
+            bar.classList.remove('hidden');
+            const chipTodos = `<button onclick="setFiltroTipoAtividade('TODOS')" class="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-extrabold transition-all border ${filtroTipoAtividadeHoje === 'TODOS' ? 'bg-orange-500 text-white border-orange-500 shadow-sm' : 'bg-white text-slate-700 border-slate-300 hover:border-orange-400'}">Todas (${atividadesVisiveisNoStatus.length})</button>`;
+            const chipsTipos = contagens.map(c => {
+                const ativo = filtroTipoAtividadeHoje === c.nome;
+                const nomeEsc = c.nome.replace(/'/g, "\\'");
+                return `<button onclick="setFiltroTipoAtividade('${nomeEsc}')" class="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-extrabold transition-all border flex items-center gap-1 ${ativo ? 'bg-orange-500 text-white border-orange-500 shadow-sm' : 'bg-white text-slate-700 border-slate-300 hover:border-orange-400'}"><span>${c.icone}</span><span>${c.nome}</span><span class="text-[9px] px-1.5 py-0.2 rounded-full ${ativo ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'}">${c.qtd}</span></button>`;
+            }).join('');
+
+            bar.innerHTML = chipTodos + chipsTipos;
         }
 
         // =========================================================================
@@ -1685,21 +1784,18 @@
             const tarefasHoje = bloqueado ? [] : diaAgenda.tarefas;
             const execsCliente = window.execucoesMesDB.filter(e => e.cliente === clienteAtivo);
 
-            // 1. Separa Ativos (EM_ANDAMENTO / PAUSADO), Resolvidos Hoje e Pendentes
             const execsAtivasHoje = execsCliente.filter(e => ['EM_ANDAMENTO', 'PAUSADO'].includes(e.status_execucao));
             const execsResolvidasHoje = execsCliente.filter(e => ['CONCLUIDO', 'DISPENSADO', 'IMPEDIMENTO_EPI'].includes(e.status_execucao) && e.data_referencia === hojeStr);
 
             window.lotesAtivosCache = agruparExecucoesEmLotes(execsAtivasHoje);
             window.lotesResolvidosCache = agruparExecucoesEmLotes(execsResolvidasHoje);
 
-            // Tarefas ainda pendentes hoje (nem ativas nem resolvidas hoje)
             const tarefasPendentes = tarefasHoje.filter(t => {
                 const estaAtiva = execsAtivasHoje.some(e => execCorrespondeTarefa(e, t));
                 const estaResolvida = execsResolvidasHoje.some(e => execCorrespondeTarefa(e, t));
                 return !estaAtiva && !estaResolvida;
             });
 
-            // Agrupa pendentes por Setor + Atividade + Frequência (1 cartão com checkboxes por espécie)
             const mapaGrupos = new Map();
             tarefasPendentes.forEach(t => {
                 const chaveGrp = `${t.setor}||${t.atividade}||${t.frequencia}||${t.vital_atrasada_de || ''}`;
@@ -1718,18 +1814,34 @@
             });
             window.gruposPendentesCache = Array.from(mapaGrupos.values()).sort((a, b) => a.prioridade - b.prioridade);
 
+            // Monta barra de filtro rápido por tipo baseada no filtro de status ativo
+            const atividadesNoStatusAtual = [];
+            if (filtroTarefasHoje !== 'RESOLVIDAS') {
+                window.lotesAtivosCache.forEach(l => atividadesNoStatusAtual.push(l.principal.atividade));
+                window.gruposPendentesCache.forEach(g => atividadesNoStatusAtual.push(g.atividade));
+            }
+            if (filtroTarefasHoje !== 'PENDENTES') {
+                window.lotesResolvidosCache.forEach(l => atividadesNoStatusAtual.push(l.principal.atividade));
+            }
+            renderizarBarraFiltroTipos(atividadesNoStatusAtual);
+
+            const tipoFiltroObj = filtroTipoAtividadeHoje === 'TODOS'
+                ? null
+                : window.tiposAtividadeDB.find(t => t.nome === filtroTipoAtividadeHoje);
+
+            const passaFiltroTipo = (nomeAtiv) => !tipoFiltroObj || atividadeCombinaComTipo(nomeAtiv, tipoFiltroObj);
+
             const pendentesCartoesCount = window.lotesAtivosCache.length + window.gruposPendentesCache.length;
             const resolvidasCartoesCount = window.lotesResolvidosCache.length;
             const totalCartoesDia = pendentesCartoesCount + resolvidasCartoesCount;
 
-            // 2. Monta HTML dos cartões
             let htmlPrincipal = '';
             let htmlConcluidasRodape = '';
 
-            // 2A. Lotes Em Andamento / Pausados (sempre no topo em PENDENTES ou TODAS)
             if (filtroTarefasHoje !== 'RESOLVIDAS') {
                 window.lotesAtivosCache.forEach((lote, lIdx) => {
                     const e = lote.principal;
+                    if (!passaFiltroTipo(e.atividade)) return;
                     const especiesTxt = [...new Set(lote.registros.map(r => r.especie).filter(Boolean))].join(', ');
                     const fotosAntesArr = extrairListaFotos(e.foto_antes_url);
 
@@ -1783,8 +1895,8 @@
                     }
                 });
 
-                // 2B. Grupos Pendentes (1 cartão por Setor+Atividade+Freq com checkboxes por espécie)
                 window.gruposPendentesCache.forEach((grp, grpIdx) => {
+                    if (!passaFiltroTipo(grp.atividade)) return;
                     const areaObj = window.areasClienteDB.find(a => a.nome_area === grp.setor);
                     const epiExtra = grp.itens.map(i => i.epi_especifico).filter(Boolean)[0] || '';
                     const epiExigido = [areaObj?.epi_obrigatorio, epiExtra].filter(Boolean).join(' + ');
@@ -1803,7 +1915,6 @@
                         ? 'border-2 border-red-400 bg-red-50/30'
                         : (grp.prioridade === 1 ? 'border border-slate-200 border-l-4 border-l-orange-500 bg-white' : 'border border-slate-200/90 bg-white');
 
-                    // Se houver mais de 1 espécie no grupo, exibe checkboxes interativos
                     let blocoEspeciesHtml = '';
                     if (grp.itens.length > 1) {
                         blocoEspeciesHtml = `
@@ -1843,20 +1954,20 @@
                 });
             }
 
-            // 2C. Lotes Resolvidos Hoje
             window.lotesResolvidosCache.forEach((lote, lIdx) => {
                 const cardHtml = construirCartaoLoteResolvidoHtml(lote, lIdx, turnoEncerradoHoje);
-                htmlConcluidasRodape += cardHtml;
-                if (filtroTarefasHoje !== 'PENDENTES') htmlPrincipal += cardHtml;
+                if (passaFiltroTipo(lote.principal.atividade)) {
+                    htmlConcluidasRodape += cardHtml;
+                    if (filtroTarefasHoje !== 'PENDENTES') htmlPrincipal += cardHtml;
+                }
             });
 
-            // 3. Atualiza contadores, barra e ALERTA DE FORÇA DE TRABALHO INSUFICIENTE
             document.getElementById('count-filtro-PENDENTES').textContent = pendentesCartoesCount;
             document.getElementById('count-filtro-TODAS').textContent = totalCartoesDia;
             document.getElementById('count-filtro-RESOLVIDAS').textContent = resolvidasCartoesCount;
 
             const secRodape = document.getElementById('secao-concluidas-sempre-visivel');
-            if (resolvidasCartoesCount > 0 && filtroTarefasHoje === 'PENDENTES') {
+            if (htmlConcluidasRodape && filtroTarefasHoje === 'PENDENTES') {
                 secRodape.classList.remove('hidden');
                 document.getElementById('badge-qtd-resolvidas-rodape').textContent = resolvidasCartoesCount;
                 document.getElementById('lista-concluidas-rodape').innerHTML = htmlConcluidasRodape;
@@ -1891,6 +2002,7 @@
             if (!htmlPrincipal) {
                 container.classList.add('hidden'); emptyState.classList.remove('hidden');
                 if (bloqueado) { emptyTitle.textContent = "Posto Fechado Hoje"; emptySub.textContent = "Expediente suspenso (Fim de Semana / Feriado)."; }
+                else if (filtroTipoAtividadeHoje !== 'TODOS') { emptyTitle.textContent = `Nenhuma atividade de "${filtroTipoAtividadeHoje}"`; emptySub.textContent = "Toque em 'Todas' nos filtros acima para ver o restante da grade."; }
                 else if (filtroTarefasHoje === 'PENDENTES' && totalCartoesDia > 0) { emptyTitle.textContent = "🎉 Zero Pendências!"; emptySub.textContent = "Todos os blocos de hoje foram resolvidos. Veja ou corrija logo abaixo."; }
                 else { emptyTitle.textContent = "Nenhuma atividade neste filtro"; emptySub.textContent = "Altere o filtro acima para visualizar as demais tarefas."; }
             } else {
@@ -1902,8 +2014,8 @@
         // =========================================================================
         // 8. AÇÕES EM LOTE (INICIAR, PAUSAR, EDITAR, PROGRESSO, SKIP E CONCLUSÃO)
         // =========================================================================
-        let tarefasSelecionadasLote = []; // Array de tarefas do cronograma selecionadas pelos checkboxes
-        let loteAtivoSelecionado = null;  // Objeto de window.lotesAtivosCache
+        let tarefasSelecionadasLote = [];
+        let loteAtivoSelecionado = null;
         let etapaCaptura = 'antes', origemCaptura = 'CAMERA_APP', listaFotosDepois = [];
 
         function obterItensMarcadosDoGrupo(grpIdx) {
@@ -1950,7 +2062,7 @@
         function fecharModalPausa() { loteParaPausa = null; document.getElementById('pause-modal').classList.add('hidden'); }
         async function confirmarPausaTarefa() {
             if (!loteParaPausa) return;
-            await sb.from('execucoes_auditoria').update({ status_execucao: 'PAUSADO', motivo_pausa: document.getElementById('select-motivo-pausa').value, dh_inicio_pausa: new Date().toISOString() }).in('id', obterIdsLote(loteParaPausa));
+            await sb.from('execucoes_auditoria').update({ status_execucao: 'PAUSADO', motivo_pausa: document.getElementById('select-motivo-pausa').value || 'Intervalo', dh_inicio_pausa: new Date().toISOString() }).in('id', obterIdsLote(loteParaPausa));
             fecharModalPausa(); carregarDadosSupabase();
         }
         async function retomarLotePausado(lIdx) {
@@ -2039,7 +2151,6 @@
             document.getElementById('skip-modal').classList.remove('hidden'); initIcons();
         }
         function fecharModalSkip() { document.getElementById('skip-modal').classList.add('hidden'); }
-        function selecionarMotivoSkip(texto) { document.getElementById('skip-obs-input').value = texto; }
 
         async function confirmarDispensaTecnica() {
             const btn = document.getElementById('btn-salvar-skip');
@@ -2047,14 +2158,21 @@
             const grupoId = tarefasSelecionadasLote.length > 1 ? `GRP_${Date.now()}_${Math.floor(Math.random()*1000)}` : null;
 
             if (tipoSkipAtivo === 'EPI') {
-                const epiItem = document.getElementById('select-epi-faltante').value, detalhe = document.getElementById('input-epi-detalhe').value.trim();
+                const epiSel = document.getElementById('select-epi-faltante').value;
+                const detalhe = document.getElementById('input-epi-detalhe').value.trim();
+                const epiItem = epiSel === '__OUTRO__' ? detalhe : epiSel;
+                if (!epiItem) { alert("Informe qual EPI ou equipamento está faltando."); return; }
+
+                const catItemObj = window.catalogoSuprimentosDB.find(c => c.nome === epiItem);
+                const catPedido = catItemObj ? catItemObj.categoria : 'EPI';
+
                 btn.disabled = true; btn.textContent = "Notificando supervisão...";
                 try {
                     await sb.from('pedidos_suprimentos').insert([{
                         cliente: clienteAtivo, solicitante: equipeLogada.join(', ') || 'Operador',
-                        categoria: epiItem.toLowerCase().includes('roçadeira') ? 'EQUIPAMENTO' : 'EPI',
-                        area_destino: prim.setor, item: epiItem, quantidade_calculada: `${equipeLogada.length || 1} un`,
-                        observacao: `Impedimento na tarefa "${prim.atividade}" (${tarefasSelecionadasLote.map(i => i.especie).join(', ')}). ${detalhe}`,
+                        categoria: catPedido, area_destino: prim.setor, item: epiItem,
+                        quantidade_calculada: `${equipeLogada.length || 1} ${catItemObj?.unidade_exibicao || 'un'}`,
+                        observacao: `Impedimento na tarefa "${prim.atividade}" (${tarefasSelecionadasLote.map(i => i.especie).join(', ')}).${epiSel !== '__OUTRO__' && detalhe ? ' ' + detalhe : ''}`,
                         urgente: true, origem_impedimento: true, status_pedido: 'SOLICITADO'
                     }]);
 
@@ -2252,7 +2370,6 @@
             document.getElementById('chk-entrega-parcial').checked = false;
             document.getElementById('obs-input').value = '';
 
-            // Mostra checkboxes das espécies do lote para permitir finalizar apenas as concluídas
             const boxEsp = document.getElementById('box-especies-conclusao');
             if (loteAtivoSelecionado.registros.length > 1) {
                 boxEsp.classList.remove('hidden');
@@ -2281,7 +2398,6 @@
             const obs = document.getElementById('obs-input').value.trim();
             if (obs.length < 10 || obs.split(/\s+/).length < 2 || !/[aeiouáéíóúãõâêô]/i.test(obs)) { alert("Digite uma observação válida (mínimo de 2 palavras reais)."); return; }
 
-            // Quais registros do lote foram efetivamente concluídos agora
             let idsConcluidos = loteAtivoSelecionado.registros.map(r => r.id);
             if (loteAtivoSelecionado.registros.length > 1) {
                 idsConcluidos = Array.from(document.querySelectorAll('#lista-especies-conclusao input:checked')).map(c => Number(c.value));
@@ -2323,12 +2439,10 @@
                 for (const f of listaFotosDepois) urlsDepoisArr.push(await uploadBase64Storage(f.base64, 'DEPOIS'));
                 const fotoDepoisStr = urlsDepoisArr.join('|');
 
-                // Devolve para Pendente qualquer espécie desmarcada no lote
                 if (regsDevolvidos.length > 0) {
                     await sb.from('execucoes_auditoria').delete().in('id', regsDevolvidos.map(r => r.id));
                 }
 
-                // Rateio proporcional do tempo real entre as espécies concluídas (100% limpo quando há só 1 espécie)
                 for (const r of regsConcluidos) {
                     const peso = (Number(r.duracao_estimada_min) || 30) / Math.max(1, somaEstConcluidos);
                     const tempoRateado = regsConcluidos.length === 1 ? duracaoTotalRealMin : Math.max(1, Math.round(duracaoTotalRealMin * peso));
@@ -2431,25 +2545,49 @@
         }
 
         // =========================================================================
-        // 10. SUPRIMENTOS, EPI E CÁLCULO DE INSUMOS POR METRAGEM
+        // 10. SUPRIMENTOS 100% DO BANCO, "OUTRO ITEM" E STATUS NEGADO
         // =========================================================================
         let categoriaSuprimentoAtiva = 'INSUMO';
         function selecionarCategoriaSup(cat) {
             categoriaSuprimentoAtiva = cat;
             ['INSUMO', 'EPI', 'EQUIPAMENTO'].forEach(c => {
-                document.getElementById(`btn-cat-${c}`).className = (c === cat) ? "py-2 px-1.5 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white border border-slate-900" : "py-2 px-1.5 rounded-xl text-[11px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200";
+                document.getElementById(`btn-cat-${c}`).className = (c === cat)
+                    ? "py-2 px-1.5 rounded-xl text-[11px] font-extrabold bg-slate-900 text-white border border-slate-900"
+                    : "py-2 px-1.5 rounded-xl text-[11px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200";
             });
             const selItem = document.getElementById('sup-item-select');
-            if (cat === 'INSUMO') selItem.innerHTML = `<option value="Adubo NPK 10-10-10">Adubo NPK 10-10-10</option><option value="Composto Orgânico / Húmus">Composto Orgânico / Húmus</option><option value="Terra Vegetal / Substrato">Terra Vegetal / Substrato</option><option value="Herbicida / Mata-mato Seletivo">Herbicida / Mata-mato</option><option value="Óleo de Neem / Controle Pragas">Óleo de Neem / Inseticida</option>`;
-            else if (cat === 'EPI') selItem.innerHTML = `<option value="Colete Refletivo">🦺 Colete Refletivo</option><option value="Perneira de Proteção">🦵 Perneira de Proteção</option><option value="Óculos de Proteção">🥽 Óculos de Proteção</option><option value="Luva Nitrílica / Couro">🧤 Luva Nitrílica / Couro</option><option value="Protetor Auricular">🎧 Protetor Auricular</option><option value="Cones de Sinalização">🚧 Cones de Sinalização</option>`;
-            else selItem.innerHTML = `<option value="Fio de Nylon p/ Roçadeira">🧵 Fio de Nylon p/ Roçadeira</option><option value="Gasolina + Óleo 2T">⛽ Gasolina + Óleo 2T</option><option value="Saco de Lixo Reforçado 100L">🗑️ Saco de Lixo 100L (Fardo)</option><option value="Vassoura / Rastelo de Jardim">🧹 Vassoura / Rastelo</option><option value="Tesoura de Poda / Serrote">✂️ Tesoura de Poda / Serrote</option>`;
+            const itensCat = window.catalogoSuprimentosDB.filter(i => i.categoria === cat && i.ativo !== false);
+            selItem.innerHTML =
+                itensCat.map(i => `<option value="${i.nome}">${i.nome}</option>`).join('') +
+                `<option value="__OUTRO__">➕ Outro item (especificar)</option>`;
+            aoTrocarItemSuprimento();
+        }
+
+        function aoTrocarItemSuprimento() {
+            const val = document.getElementById('sup-item-select').value;
+            const customBox = document.getElementById('sup-item-custom-box');
+            customBox.classList.toggle('hidden', val !== '__OUTRO__');
+            if (val !== '__OUTRO__') document.getElementById('sup-item-custom-input').value = '';
             recalcularInsumoPorMetragem();
         }
 
         function recalcularInsumoPorMetragem() {
             const boxInfo = document.getElementById('box-info-metragem-insumo'), qtdInput = document.getElementById('sup-qtd-input');
-            if (categoriaSuprimentoAtiva !== 'INSUMO') { boxInfo.classList.add('hidden'); qtdInput.value = '1 un'; return; }
-            const areaSel = document.getElementById('sup-area-select').value, itemSel = document.getElementById('sup-item-select').value;
+            const itemNome = document.getElementById('sup-item-select').value;
+            if (itemNome === '__OUTRO__') { boxInfo.classList.add('hidden'); qtdInput.value = '1 un'; return; }
+
+            const itemObj = window.catalogoSuprimentosDB.find(i => i.categoria === categoriaSuprimentoAtiva && i.nome === itemNome);
+            const dose = Number(itemObj?.dose_por_m2) || 0;
+            const emb = Number(itemObj?.tamanho_embalagem) || 1;
+            const unid = itemObj?.unidade_exibicao || 'un';
+
+            if (dose <= 0) {
+                boxInfo.classList.add('hidden');
+                qtdInput.value = `1 ${unid}`;
+                return;
+            }
+
+            const areaSel = document.getElementById('sup-area-select').value;
             const especiesAlvo = areaSel === 'Todo o Posto' ? window.especiesClienteDB : window.especiesClienteDB.filter(sp => sp.nome_area === areaSel);
             let areaTotalM2 = 0;
             especiesAlvo.forEach(sp => {
@@ -2459,31 +2597,75 @@
                 else areaTotalM2 += v;
             });
             if (areaTotalM2 <= 0) areaTotalM2 = 20;
-            let qtdCalc = '1 un';
-            if (itemSel.includes('NPK')) qtdCalc = `${Math.max(0.5, areaTotalM2 * 0.10).toFixed(1)} kg`;
-            else if (itemSel.includes('Húmus')) qtdCalc = `${Math.ceil(areaTotalM2 * 2)} kg`;
-            else if (itemSel.includes('Terra')) qtdCalc = `${Math.max(1, Math.ceil((areaTotalM2 * 30) / 25))} saco(s) 25kg`;
-            else if (itemSel.includes('Herbicida')) qtdCalc = `${(Math.round(areaTotalM2 * 50) / 1000).toFixed(1)}L calda`;
-            else if (itemSel.includes('Neem')) qtdCalc = `${(Math.round(areaTotalM2 * 40) / 1000).toFixed(1)}L calda`;
-            qtdInput.value = qtdCalc; boxInfo.classList.remove('hidden');
+
+            let qtdCalc = `1 ${unid}`;
+            if (emb > 1) {
+                qtdCalc = `${Math.max(1, Math.ceil((areaTotalM2 * dose) / emb))} ${unid}`;
+            } else if (dose < 1) {
+                qtdCalc = `${Math.max(0.2, areaTotalM2 * dose).toFixed(1)} ${unid}`;
+            } else {
+                qtdCalc = `${Math.max(1, Math.ceil(areaTotalM2 * dose))} ${unid}`;
+            }
+
+            qtdInput.value = qtdCalc;
+            boxInfo.classList.remove('hidden');
             boxInfo.textContent = `📐 Área estimada (${areaSel}): ~${Math.round(areaTotalM2)}m² → Dose sugerida: ${qtdCalc}`;
         }
 
         async function enviarPedidoSuprimento() {
+            const itemSel = document.getElementById('sup-item-select').value;
+            const itemFinal = itemSel === '__OUTRO__' ? document.getElementById('sup-item-custom-input').value.trim() : itemSel;
+            if (!itemFinal) { alert("Especifique o nome do item ou equipamento."); return; }
+
             const btn = document.getElementById('btn-enviar-sup'); btn.disabled = true; btn.textContent = "Enviando...";
-            await sb.from('pedidos_suprimentos').insert([{ cliente: clienteAtivo, solicitante: equipeLogada.join(', ') || 'Operador', categoria: categoriaSuprimentoAtiva, area_destino: document.getElementById('sup-area-select').value, item: document.getElementById('sup-item-select').value, quantidade_calculada: document.getElementById('sup-qtd-input').value.trim() || '1 un', observacao: document.getElementById('sup-obs-input').value.trim(), urgente: document.getElementById('sup-urgente-chk').checked, status_pedido: 'SOLICITADO' }]);
-            document.getElementById('sup-obs-input').value = ''; document.getElementById('sup-urgente-chk').checked = false;
-            btn.disabled = false; btn.textContent = "Enviar Pedido"; carregarDadosSupabase();
+            await sb.from('pedidos_suprimentos').insert([{
+                cliente: clienteAtivo, solicitante: equipeLogada.join(', ') || 'Operador',
+                categoria: categoriaSuprimentoAtiva, area_destino: document.getElementById('sup-area-select').value,
+                item: itemFinal, quantidade_calculada: document.getElementById('sup-qtd-input').value.trim() || '1 un',
+                observacao: document.getElementById('sup-obs-input').value.trim(),
+                urgente: document.getElementById('sup-urgente-chk').checked, status_pedido: 'SOLICITADO'
+            }]);
+            document.getElementById('sup-obs-input').value = '';
+            document.getElementById('sup-item-custom-input').value = '';
+            document.getElementById('sup-urgente-chk').checked = false;
+            btn.disabled = false; btn.textContent = "Enviar Pedido";
+            carregarDadosSupabase();
         }
 
         function renderizarSuprimentos() {
-            const lista = window.pedidosSuprimentosDB || [], pendentes = lista.filter(p => p.status_pedido !== 'ENTREGUE').length;
+            const lista = window.pedidosSuprimentosDB || [];
+            const pendentes = lista.filter(p => !['ENTREGUE', 'NEGADO'].includes(p.status_pedido)).length;
             const dotSup = document.getElementById('sup-unread-dot');
             if (dotSup) { if (pendentes > 0) { dotSup.classList.remove('hidden'); dotSup.textContent = pendentes; } else dotSup.classList.add('hidden'); }
             const el = document.getElementById('lista-pedidos-suprimentos');
             if (lista.length === 0) { el.innerHTML = `<p class="p-6 text-xs text-slate-400 text-center">Nenhuma solicitação registrada neste posto.</p>`; return; }
-            const badges = { SOLICITADO: `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏳ Solicitado</span>`, EM_COMPRA: `<span class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">🚚 Em Separação</span>`, ENTREGUE: `<span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">✅ Entregue</span>` };
-            el.innerHTML = lista.map(p => `<div class="p-3.5 text-xs flex justify-between items-start gap-2"><div><div class="flex items-center gap-1.5 flex-wrap">${p.urgente ? `<span class="text-[9px] font-extrabold bg-red-600 text-white px-1.5 py-0.5 rounded">URGENTE</span>` : ''}<span class="font-extrabold text-slate-900">${p.item}</span><span class="text-[11px] font-bold text-orange-600">(${p.quantidade_calculada})</span></div><p class="text-[10px] text-slate-500 mt-0.5">Local: ${p.area_destino} • Pedido em ${new Date(p.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} por ${p.solicitante}</p>${p.observacao ? `<p class="text-[10px] text-slate-600 italic mt-0.5">"${p.observacao}"</p>` : ''}</div><div class="flex-shrink-0">${badges[p.status_pedido] || p.status_pedido}</div></div>`).join('');
+
+            const badges = {
+                SOLICITADO: `<span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">⏳ Solicitado</span>`,
+                EM_COMPRA: `<span class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">🚚 Em Separação</span>`,
+                ENTREGUE: `<span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">✅ Entregue</span>`,
+                NEGADO: `<span class="text-[10px] font-extrabold bg-red-100 text-red-800 px-2 py-0.5 rounded-full border border-red-200">❌ Negado</span>`
+            };
+
+            el.innerHTML = lista.map(p => {
+                const isNegado = p.status_pedido === 'NEGADO';
+                return `
+                <div class="p-3.5 text-xs ${isNegado ? 'bg-red-50/40' : ''}">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                ${p.urgente && !isNegado && p.status_pedido !== 'ENTREGUE' ? `<span class="text-[9px] font-extrabold bg-red-600 text-white px-1.5 py-0.5 rounded">URGENTE</span>` : ''}
+                                <span class="font-extrabold ${isNegado ? 'text-slate-600 line-through' : 'text-slate-900'}">${p.item}</span>
+                                <span class="text-[11px] font-bold text-orange-600">(${p.quantidade_calculada})</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Local: ${p.area_destino} • Pedido em ${new Date(p.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} por ${p.solicitante}</p>
+                            ${p.observacao ? `<p class="text-[10px] text-slate-600 italic mt-0.5">"${p.observacao}"</p>` : ''}
+                        </div>
+                        <div class="flex-shrink-0">${badges[p.status_pedido] || p.status_pedido}</div>
+                    </div>
+                    ${isNegado ? `<div class="mt-2 bg-red-100/70 border border-red-200 rounded-xl px-2.5 py-1.5 text-[11px] text-red-900 font-semibold">↳ <b>Motivo da Supervisão:</b> ${p.motivo_negacao || 'Solicitação não aprovada.'}</div>` : ''}
+                </div>`;
+            }).join('');
         }
 
         // =========================================================================
@@ -2517,10 +2699,11 @@
         function iniciarRealtimeSupabase() {
             if (canalRealtimeIniciado) return;
             canalRealtimeIniciado = true;
-            sb.channel('novaera-operador-v94')
+            sb.channel('novaera-operador-v95')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'presenca_posto' }, () => carregarDadosSupabase())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'execucoes_auditoria' }, () => carregarDadosSupabase())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos_suprimentos' }, () => carregarDadosSupabase())
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'catalogo_suprimentos' }, () => carregarDadosSupabase())
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensagens_chat' }, payload => {
                     const msg = payload.new; if (msg.cliente !== clienteAtivo) return;
                     if (msg.autor_nome !== (equipeLogada[0] || '')) {
@@ -2586,10 +2769,20 @@
         function agendarPodaDrasticaByIdx(idx) {
             const sp = window.especiesPodaMesCache[idx]; if (!sp) return;
             document.getElementById('input-modal-setor').value = sp.nome_area;
-            document.getElementById('input-modal-tarefa').value = `Poda drástica de rejuvenescimento`;
+            const selTipo = document.getElementById('select-modal-tipo-atividade');
+            if ([...selTipo.options].some(o => o.value === 'Poda Drástica')) {
+                selTipo.value = 'Poda Drástica';
+                aoSelecionarTipoAtividadeExtra();
+                document.getElementById('input-modal-tarefa').value = 'Rejuvenescimento';
+            } else {
+                selTipo.value = '__OUTRA__';
+                aoSelecionarTipoAtividadeExtra();
+                document.getElementById('input-modal-tarefa').value = 'Poda drástica de rejuvenescimento';
+            }
             document.getElementById('input-modal-especie').value = sp.especie;
             document.getElementById('input-modal-duracao').value = 60;
-            openExtraModal();
+            atualizarSugestoesEspecieExtra();
+            openExtraModal(true);
         }
 
         function selecionarDiaCalendario(dStr, day, el) {
@@ -2621,7 +2814,6 @@
                 }).join('');
             }
 
-            // Agrupa previstos por Setor+Atividade no calendário mostrando todas as espécies claramente
             if (ag && ag.tarefas.length > 0) {
                 const mapaPrev = new Map();
                 ag.tarefas.forEach(t => {
@@ -2647,15 +2839,70 @@
             initIcons();
         }
 
+        // =========================================================================
+        // 13. NOVA TAREFA EXTRA (PADRONIZADA VIA tipos_atividade + ESPÉCIES DA ÁREA)
+        // =========================================================================
+        function aoSelecionarTipoAtividadeExtra() {
+            const val = document.getElementById('select-modal-tipo-atividade').value;
+            const lbl = document.getElementById('label-modal-tarefa');
+            const inp = document.getElementById('input-modal-tarefa');
+            const dur = document.getElementById('input-modal-duracao');
+            const chkVital = document.getElementById('input-modal-vital');
+
+            if (val === '__OUTRA__') {
+                lbl.innerHTML = `Descrição da Atividade <span class="text-red-500">*</span>`;
+                inp.placeholder = 'Ex: Troca de vaso / Escoramento';
+                chkVital.checked = false;
+            } else {
+                const tipoObj = window.tiposAtividadeDB.find(t => t.nome === val);
+                lbl.textContent = 'Detalhe (Opcional)';
+                inp.placeholder = 'Ex: Folhas secas / Lado esquerdo';
+                if (tipoObj) {
+                    dur.value = Number(tipoObj.duracao_padrao_min) || 45;
+                    chkVital.checked = Boolean(tipoObj.vital_padrao);
+                }
+            }
+        }
+
+        function atualizarSugestoesEspecieExtra() {
+            const setorDigitado = document.getElementById('input-modal-setor').value.trim();
+            const dl = document.getElementById('especies-extra-list');
+            if (!dl) return;
+            const filtradas = setorDigitado
+                ? window.especiesClienteDB.filter(sp => normalizarTexto(sp.nome_area) === normalizarTexto(setorDigitado))
+                : window.especiesClienteDB;
+            const listaFinal = filtradas.length > 0 ? filtradas : window.especiesClienteDB;
+            const nomesUnicos = [...new Set(listaFinal.map(s => s.especie).filter(Boolean))];
+            dl.innerHTML = nomesUnicos.map(n => `<option value="${n}">`).join('');
+        }
+
+        function openExtraModal(preservarValores = false) {
+            if (!preservarValores) {
+                document.getElementById('input-modal-setor').value = '';
+                document.getElementById('input-modal-tarefa').value = '';
+                document.getElementById('input-modal-especie').value = '';
+                const sel = document.getElementById('select-modal-tipo-atividade');
+                if (sel && sel.options.length > 0) sel.selectedIndex = 0;
+                aoSelecionarTipoAtividadeExtra();
+                atualizarSugestoesEspecieExtra();
+            }
+            document.getElementById('extra-modal').classList.remove('hidden');
+            initIcons();
+        }
+        function closeExtraModal() { document.getElementById('extra-modal').classList.add('hidden'); }
+
         async function adicionarTarefaExtra() {
             if (postoBloqueadoHoje()) { alert("🔒 Posto fechado hoje."); return; }
-            const setor = document.getElementById('input-modal-setor').value.trim(), ativ = document.getElementById('input-modal-tarefa').value.trim();
+            const setor = document.getElementById('input-modal-setor').value.trim();
+            const tipoSel = document.getElementById('select-modal-tipo-atividade').value;
+            const detalhe = document.getElementById('input-modal-tarefa').value.trim();
+            const ativ = tipoSel === '__OUTRA__' ? detalhe : (detalhe ? `${tipoSel} — ${detalhe}` : tipoSel);
             const min = parseInt(document.getElementById('input-modal-duracao').value, 10) || 45;
-            const especie = document.getElementById('input-modal-especie').value.trim() || 'Personalizada';
+            const especie = document.getElementById('input-modal-especie').value.trim() || 'Geral';
             const vital = document.getElementById('input-modal-vital').checked;
+
             if (!setor || !ativ) { alert("Preencha o Setor e a Atividade."); return; }
             await sb.from('cronograma_mestre').insert([{ cliente: clienteAtivo, setor, ambiente: 'Extra', atividade: ativ, frequencia: 'Extraordinária', duracao_str: formatarMinutosStr(min), duracao_minutos: min, especie, vital, permite_chuva: true, prioridade: vital ? 0 : 1, data_alvo: dataISO() }]);
-            document.getElementById('input-modal-especie').value = ''; document.getElementById('input-modal-vital').checked = false;
             closeExtraModal(); carregarDadosSupabase();
         }
 
@@ -2672,7 +2919,13 @@
             if (tab === 'chat') { mensagensNaoLidas[canalChatAtivo] = 0; atualizarBadgesNaoLidas(); carregarMensagensChat(); }
         }
 
-        function trocarClienteManual(novoCli) { clienteAtivo = novoCli; localStorage.setItem('novaera_cliente_ativo', clienteAtivo); suprimentosInicializado = false; carregarDadosSupabase(); }
+        function trocarClienteManual(novoCli) {
+            clienteAtivo = novoCli;
+            localStorage.setItem('novaera_cliente_ativo', clienteAtivo);
+            filtroTipoAtividadeHoje = 'TODOS';
+            suprimentosInicializado = false;
+            carregarDadosSupabase();
+        }
 
         function openTeamModal(obrigatorio = false) {
             document.getElementById('btn-close-team-modal').classList.toggle('hidden', obrigatorio);
@@ -2699,9 +2952,6 @@
             }
             recalcularTudo();
         }
-
-        function openExtraModal() { document.getElementById('extra-modal').classList.remove('hidden'); }
-        function closeExtraModal() { document.getElementById('extra-modal').classList.add('hidden'); }
 
         window.addEventListener('online', () => { document.getElementById('net-badge').textContent = "ONLINE"; document.getElementById('net-badge').className = "text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"; sincronizarFilaOffline(); validarCheckinSubsoloPendente(); });
         window.addEventListener('offline', () => { document.getElementById('net-badge').textContent = "SUBSOLO / OFFLINE"; document.getElementById('net-badge').className = "text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30"; });
