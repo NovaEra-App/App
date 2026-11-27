@@ -1,10 +1,12 @@
-const CACHE_NAME = 'novaera-app-v10.0';
+const CACHE_NAME = 'novaera-app-v10.1';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './auth.js',
   './offline.js',
+  './app-core.js',
+  './app-acoes.js',
   './Logo.jpg'
 ];
 
@@ -29,10 +31,10 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // Nunca faz cache de chamadas da API do Supabase
+  // Nunca faz cache das chamadas da API do Supabase
   if (url.hostname.includes('supabase.co')) return;
 
-  // Network-First para arquivos do próprio app (garante atualizações quando online e fallback offline no subsolo)
+  // Network-First para arquivos do próprio app (pega atualizações online e usa cache no subsolo)
   if (url.origin === self.location.origin) {
     event.respondWith(
       fetch(req)
