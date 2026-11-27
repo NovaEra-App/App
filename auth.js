@@ -56,7 +56,7 @@
           <div>
             <label class="block text-[11px] font-extrabold text-slate-700 uppercase mb-1">Usuário</label>
             <input type="text" id="auth-input-user" autocomplete="username" autocapitalize="none" autocorrect="off" required
-              placeholder="Ex: apastre, lrafaela, aramos"
+              placeholder="Digite seu usuário"
               class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-sm font-bold text-slate-900 outline-none focus:border-orange-500 focus:bg-white">
           </div>
 
@@ -114,7 +114,6 @@
   async function buscarPerfilColaborador(user) {
     if (!user) return null;
 
-    // Tenta buscar do banco com timeout curto (5s) para não travar no subsolo
     try {
       const queryPromise = _sb
         .from('colaboradores')
@@ -142,7 +141,6 @@
         return perfil;
       }
     } catch (e) {
-      // Offline ou sinal ruim: usa o perfil salvo em cache se bater o auth_user_id
       const cached = lerPerfilLocal();
       if (cached && cached.auth_user_id === user.id) return cached;
     }
@@ -229,7 +227,6 @@
         }
       }
     } catch (e) {
-      // Fallback offline se já havia perfil autenticado no aparelho
       const cached = lerPerfilLocal();
       if (cached && perfilAutorizado(cached)) {
         fecharTelaLogin();
