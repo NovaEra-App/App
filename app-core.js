@@ -1473,7 +1473,7 @@ window.onload = () => {
   initIcons();
 
   NovaEraAuth.init(sb, {
-    allowedRoles: ['OPERADOR', 'ENCARREGADO', 'SUPERVISOR', 'ADMIN'],
+    allowedRoles: ['OPERADOR', 'ENCARREGADO', 'ADMIN'],
     titulo: 'Operações de Campo',
     onReady: (profile) => {
       window.usuarioLogado = profile;
